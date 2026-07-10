@@ -1158,7 +1158,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
           <p class="eyebrow">03 / Quality versus cost</p>
           <h2>Three delivery strategies.<br>One display size.</h2>
         </div>
-        <p>Every image below is displayed at 360 × 240 CSS pixels. Compare the delivered dimensions and bytes on your current screen.</p>
+        <p id="demo-source-note">Every image below is displayed at 360 × 240 CSS pixels. Compare the delivered dimensions and bytes on your current screen.</p>
       </div>
 
       <div class="strategy-grid">
@@ -1612,6 +1612,27 @@ const replaceTransformationToken = (segments, matcher, replacement) => segments.
 const buildDeliveryUrl = (parsed, segments) =>
   `${parsed.base}${[...segments, ...parsed.assetSegments].join("/")}${parsed.suffix}`;
 
+const updateDemoAssets = (parsed) => {
+  const logicalTransform = "c_fill,g_auto,w_360,h_240";
+  const sourceUrls = {
+    original: buildDeliveryUrl(parsed, []),
+    baseline: buildDeliveryUrl(parsed, [logicalTransform, "f_auto", "q_auto"]),
+    fixed: buildDeliveryUrl(parsed, [`${logicalTransform},dpr_2.0`, "f_auto", "q_auto"]),
+    auto: buildDeliveryUrl(parsed, [`${logicalTransform},dpr_auto`, "f_auto", "q_auto"])
+  };
+
+  document.querySelector('[data-metric="original"]').src = sourceUrls.original;
+  document.querySelector('[data-metric="baseline"]').src = sourceUrls.baseline;
+  document.querySelector('[data-metric="fixed"]').src = sourceUrls.fixed;
+  document.querySelector('[data-metric="auto"]').src = sourceUrls.auto;
+  document.querySelector('[data-metric="wrong"]').src = sourceUrls.fixed;
+  document.querySelector('[data-metric="correct"]').src = sourceUrls.fixed;
+
+  const assetName = decodeURIComponent(parsed.assetSegments.at(-1) || "selected asset");
+  document.querySelector("#demo-source-note").textContent =
+    `All examples below use “${assetName}”, displayed at 360 × 240 CSS pixels. Compare its delivered dimensions and bytes on your current screen.`;
+};
+
 const getNumericToken = (tokens, key) => {
   const token = [...tokens].reverse().find((candidate) => candidate.startsWith(`${key}_`));
   const value = token?.slice(key.length + 1);
@@ -1865,6 +1886,8 @@ const analyzeAssetUrl = async () => {
   }
 
   const audit = buildAudit(parsed);
+  updateDemoAssets(parsed);
+  measureAll();
   renderTransformationList(parsed.transformationSegments);
   renderIssues(audit.issues);
   setAuditVerdict(audit.issues);
@@ -1961,7 +1984,6 @@ window.addEventListener("resize", () => {
 });
 
 updateDeviceReadout();
-measureAll();
 analyzeAssetUrl();
   </script>
 </body>

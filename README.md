@@ -20,6 +20,7 @@ Paste a standard Cloudinary `/image/upload/` delivery URL into the inspector to:
 - Generate a `dpr_auto` alternative when the inspected URL has a fixed DPR.
 - Generate matching `<img>` display markup.
 - Compare the untransformed original SpaceX file size with the correctly optimized 1× delivery.
+- Reuse the inspected asset across the comparison cards, so entering a new URL updates the rest of the page to that asset.
 
 Automatic optimization components are always normalized to the end of the transformation path:
 
