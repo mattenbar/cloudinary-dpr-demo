@@ -1216,7 +1216,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
             <span class="image-label">DPR omitted</span>
           </div>
           <div class="strategy-copy">
-            <h3>Fixed 1×</h3>
+            <h3>Fixed 1× (f_auto and q_auto applied)</h3>
             <p>Smallest download. Correct for 1× screens, but may look soft on high-density displays.</p>
             <code>.../w_360,h_240/f_auto/q_auto/...</code>
           </div>
@@ -1240,7 +1240,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
             <span class="image-label">dpr_2.0</span>
           </div>
           <div class="strategy-copy">
-            <h3>Hard-coded 2×</h3>
+            <h3>Hard-coded 2× (f_auto and q_auto applied)</h3>
             <p>Crisp on a 2× screen, but sends twice the width and height even when a device only needs 1×.</p>
             <code>.../w_360,h_240,dpr_2.0/f_auto/q_auto/...</code>
           </div>
@@ -1265,7 +1265,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
             <span class="image-label">dpr_auto</span>
           </div>
           <div class="strategy-copy">
-            <h3>Automatic DPR</h3>
+            <h3>Automatic DPR (f_auto and q_auto applied)</h3>
             <p>One URL lets Cloudinary match the requesting device, while the HTML dimensions keep the layout stable.</p>
             <code>.../w_360,h_240,dpr_auto/f_auto/q_auto/...</code>
           </div>
@@ -1313,7 +1313,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
                 <td><a id="result-link-original" class="result-link" href="#" target="_blank" rel="noreferrer">View ↗</a></td>
               </tr>
               <tr data-result-row="baseline">
-                <th>Fixed 1×</th>
+                <th>Fixed 1× (f_auto and q_auto applied)</th>
                 <td><code>DPR omitted</code></td>
                 <td data-result="natural">—</td>
                 <td data-result="rendered">—</td>
@@ -1322,7 +1322,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
                 <td><a id="result-link-baseline" class="result-link" href="#" target="_blank" rel="noreferrer">View ↗</a></td>
               </tr>
               <tr data-result-row="fixed">
-                <th>Hard-coded 2×</th>
+                <th>Hard-coded 2× (f_auto and q_auto applied)</th>
                 <td><code>dpr_2.0</code></td>
                 <td data-result="natural">—</td>
                 <td data-result="rendered">—</td>
@@ -1331,7 +1331,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
                 <td><a id="result-link-fixed" class="result-link" href="#" target="_blank" rel="noreferrer">View ↗</a></td>
               </tr>
               <tr class="result-auto" data-result-row="auto">
-                <th>Automatic</th>
+                <th>Automatic (f_auto and q_auto applied)</th>
                 <td><code>dpr_auto</code></td>
                 <td data-result="natural">—</td>
                 <td data-result="rendered">—</td>
