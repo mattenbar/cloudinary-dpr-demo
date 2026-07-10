@@ -319,6 +319,136 @@ h1 em {
 
 .inspector-heading { margin-bottom: 38px; }
 
+.domain-scanner {
+  margin-bottom: 24px;
+  padding: 24px;
+  border: 1px solid #263653;
+  border-radius: 16px;
+  color: white;
+  background:
+    radial-gradient(circle at 92% 0, rgba(81,214,255,.18), transparent 32%),
+    #101724;
+  box-shadow: 0 14px 40px rgba(16, 23, 36, .16);
+}
+
+.domain-scanner-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 19px;
+}
+
+.domain-scanner-header .inspector-kicker { color: var(--cyan); }
+.domain-scanner-header h3 { margin: 0; font-size: 22px; letter-spacing: -.03em; }
+.domain-scanner-header > p { max-width: 560px; margin: 2px 0 0; color: #9eacc2; font-size: 11px; line-height: 1.6; }
+
+.domain-scan-form > label {
+  display: block;
+  margin: 0 0 9px 2px;
+  color: #b8c4d7;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.domain-scan-input-row { display: flex; gap: 10px; }
+
+.domain-scan-input-row input {
+  min-width: 0;
+  flex: 1;
+  padding: 15px 16px;
+  border: 1px solid #394760;
+  border-radius: 10px;
+  outline: none;
+  color: #e9eef7;
+  background: #182236;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+}
+
+.domain-scan-input-row input::placeholder { color: #718097; }
+.domain-scan-input-row input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(81,214,255,.1); }
+
+.scan-button {
+  flex: 0 0 auto;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 10px;
+  color: #08131e;
+  background: var(--cyan);
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.scan-button:hover { background: #83e3ff; }
+.scan-button:disabled { cursor: wait; opacity: .58; }
+
+.domain-scanner-disclosure { margin: 10px 2px 0; color: #77869d; font-size: 9px; line-height: 1.55; }
+.domain-scanner-disclosure a { color: #aab8ff; text-underline-offset: 3px; }
+
+.domain-scan-status { margin: 16px 2px 0; color: #aab8ca; font-size: 10px; line-height: 1.5; }
+.domain-scan-status:empty { display: none; }
+.domain-scan-status.is-loading::before { display: inline-block; width: 7px; height: 7px; margin-right: 9px; border-radius: 50%; content: ""; background: var(--cyan); box-shadow: 0 0 0 4px rgba(81,214,255,.1); }
+.domain-scan-status.is-error { color: #ffb5af; }
+.domain-scan-status.is-success { color: #7eeab8; }
+
+.domain-scan-results { margin-top: 20px; border-top: 1px solid #2c3850; }
+.domain-scan-results[hidden] { display: none; }
+.domain-scan-results-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 17px 2px 12px; }
+.domain-scan-results-header p { margin: 0; color: #c4cede; font-size: 11px; font-weight: 750; }
+.domain-scan-results-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px 13px; }
+.domain-scan-limit,
+.domain-scan-order { display: flex; align-items: center; gap: 7px; color: #8998ad; font-size: 9px; }
+.domain-scan-limit select,
+.domain-scan-order select { max-width: 230px; padding: 5px 24px 5px 8px; border: 1px solid #3a4860; border-radius: 6px; color: #d8e0ec; background: #182236; font-size: 9px; font-weight: 800; }
+.domain-scan-results-header button { padding: 0; border: 0; color: #98a6ba; background: transparent; font-size: 9px; font-weight: 800; cursor: pointer; }
+.domain-scan-results-header button:hover { color: white; }
+
+.domain-scan-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.domain-scan-result {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #2d3a52;
+  border-radius: 10px;
+  background: #151f31;
+}
+
+.domain-scan-index { display: grid; width: 28px; height: 28px; place-items: center; border-radius: 50%; color: #a9b8cc; background: #222e43; font-size: 9px; font-weight: 850; }
+.domain-scan-result-copy { min-width: 0; }
+.domain-scan-url { display: block; overflow: hidden; color: #e2e8f2; font-size: 10px; line-height: 1.5; text-overflow: ellipsis; white-space: nowrap; }
+.domain-scan-detail { display: block; margin-top: 3px; color: #7f8da3; font-size: 9px; }
+.domain-scan-score { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; padding: 4px 7px; border-radius: 99px; color: #c9d5e7; background: #243148; font-size: 8px; font-weight: 850; letter-spacing: .03em; }
+.domain-scan-score strong { color: white; font-size: 9px; }
+.domain-scan-score.is-high { color: #ffd979; background: #3b3421; }
+.domain-scan-score.is-high strong { color: #ffe8a8; }
+.domain-scan-score.is-low { color: #9fb0c6; background: #202c40; }
+.domain-scan-origin { display: block; margin-top: 4px; color: #a7b6ca; font-size: 9px; }
+.domain-scan-origin.is-custom { color: #ffd979; }
+.domain-scan-actions { display: flex; align-items: center; gap: 8px; }
+.domain-scan-actions button,
+.domain-scan-actions a { padding: 7px 10px; border-radius: 6px; font-size: 9px; font-weight: 850; text-decoration: none; }
+.domain-scan-actions button { border: 0; color: #101724; background: var(--cyan); cursor: pointer; }
+.domain-scan-actions button:hover { background: #83e3ff; }
+.domain-scan-actions a { border: 1px solid #3a4860; color: #bdc8d8; }
+.domain-scan-actions a:hover { border-color: #66758d; color: white; }
+
+.domain-scan-pagination { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 12px; padding-top: 14px; border-top: 1px solid #2c3850; }
+.domain-scan-pagination[hidden] { display: none; }
+.domain-scan-pagination span { min-width: 86px; color: #9ba9bc; font-size: 9px; font-weight: 750; text-align: center; }
+.domain-scan-pagination button { padding: 7px 10px; border: 1px solid #3a4860; border-radius: 6px; color: #c5cfdd; background: #182236; font-size: 9px; font-weight: 850; cursor: pointer; }
+.domain-scan-pagination button:hover:not(:disabled) { border-color: var(--cyan); color: white; }
+.domain-scan-pagination button:disabled { cursor: default; opacity: .38; }
+
+.inspector-divider { display: flex; align-items: center; gap: 14px; margin: 0 2px 24px; color: #7d899d; font-size: 9px; font-weight: 850; letter-spacing: .09em; text-transform: uppercase; }
+.inspector-divider::before,
+.inspector-divider::after { height: 1px; flex: 1; content: ""; background: #cbd1df; }
+
 .url-inspector-form {
   margin-bottom: 24px;
   padding: 22px;
@@ -620,8 +750,7 @@ h1 em {
 .issue-list strong { display: block; margin-bottom: 2px; color: #303c50; font-size: 11px; }
 .issue-list code { color: var(--blue-dark); font-size: .95em; overflow-wrap: anywhere; }
 
-.recommendation-block,
-.markup-block {
+.recommendation-block {
   margin: 0 24px 20px;
   padding: 17px;
   border: 1px solid #dfe3ed;
@@ -630,7 +759,13 @@ h1 em {
 }
 
 .responsive-option { border-color: #cbd1ff; background: #f4f5ff; }
-.markup-block { background: white; }
+.responsive-width-option { border-color: #a9dce9; background: #f0fbfd; }
+.client-hint-option { border-color: #ead7a0; background: #fffaf0; }
+.responsive-option .copy-code-row + .copy-code-row,
+.responsive-width-option .copy-code-row + .copy-code-row,
+.client-hint-option .copy-code-row + .copy-code-row { margin-top: 10px; }
+.client-hint-option .copy-code-row { align-items: flex-start; }
+.client-hint-option .copy-code-row code { overflow: visible; text-overflow: clip; white-space: pre-wrap; overflow-wrap: anywhere; }
 
 .recommendation-heading {
   display: flex;
@@ -833,16 +968,57 @@ h1 em {
 
 .results-section { background: var(--paper); }
 .results-panel { border: 1px solid var(--line); border-radius: 16px; background: white; box-shadow: var(--shadow); overflow: hidden; }
-.table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 21px 22px; border-bottom: 1px solid #e5e8ec; font-size: 13px; text-align: left; white-space: nowrap; }
+.table-wrap { overflow: visible; }
+table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+th, td { padding: 17px 12px; border-bottom: 1px solid #e5e8ec; font-size: 11px; line-height: 1.4; text-align: left; white-space: normal; overflow-wrap: anywhere; }
+thead th:nth-child(1) { width: 24%; }
+thead th:nth-child(2) { width: 11%; }
+thead th:nth-child(3), thead th:nth-child(4) { width: 13%; }
+thead th:nth-child(5) { width: 9%; }
+thead th:nth-child(6) { width: 11%; }
+thead th:nth-child(7) { width: 9%; }
+thead th:nth-child(8) { width: 10%; }
 thead th { color: #7a8595; background: #f8f9fb; font-size: 9px; letter-spacing: .09em; text-transform: uppercase; }
 tbody th { font-size: 13px; }
 tbody td { color: #586577; }
-tbody code { padding: 5px 7px; border-radius: 5px; color: #4452c7; background: var(--blue-pale); font-size: 10px; }
-.result-link { color: var(--blue); font-size: 10px; font-weight: 800; text-decoration-color: #bbc2ff; text-underline-offset: 4px; }
+tbody td[data-result] { white-space: nowrap; }
+tbody code { display: inline-flex; width: max-content; padding: 5px 7px; border-radius: 99px; color: #2747a0; background: #e1e7ff; font-family: inherit; font-size: 8px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+.strategy-cell { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.receipt-badges { display: inline-flex; align-items: center; gap: 5px; }
+.receipt-badges:has(> .efficiency-badge:not([hidden]) ~ .efficiency-badge:not([hidden])) { flex-direction: column; align-items: flex-start; gap: 3px; }
+.efficiency-badge { padding: 5px 7px; border-radius: 99px; font-size: 8px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+.bandwidth-badge { width: max-content; color: #2747a0; background: #e1e7ff; }
+.recommendation-badge { color: #07583d; background: #d8f8e9; }
+.setup-badge { color: #6f4d00; background: #fff0bd; }
+.fluid-layout-badge { width: max-content; color: #155568; background: #d9f4fa; }
+.receipt-detail-button { padding: 7px 10px; border: 1px solid #cdd3ff; border-radius: 6px; color: var(--blue); background: #f2f4ff; font-size: 9px; font-weight: 850; cursor: pointer; }
+.receipt-detail-button:hover { border-color: var(--blue); background: var(--blue-pale); }
 tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
 .result-auto { background: #f7f8ff; }
+.result-fluid { background: #f2fbfd; }
+tbody tr.is-smallest-transfer th,
+tbody tr.is-smallest-transfer td { background: #f5f7ff; }
+tbody tr.is-device-recommended th,
+tbody tr.is-device-recommended td { background: #f1fcf7; }
+tbody tr.needs-client-hint-setup th,
+tbody tr.needs-client-hint-setup td { box-shadow: inset 0 -2px #e0b84e; }
+.receipt-verdicts { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
+.receipt-verdict { margin: 0; padding: 15px 22px; font-size: 11px; line-height: 1.55; }
+.receipt-verdict + .receipt-verdict { border-left: 1px solid var(--line); }
+.bandwidth-verdict { color: #526694; background: #f7f8ff; }
+.bandwidth-verdict strong { color: #263f86; }
+.recommendation-verdict { color: #356b58; background: #f7fcf9; }
+.recommendation-verdict strong { color: #174d3a; }
+.receipt-fluid-recommendation { padding: 18px 22px; border-top: 1px solid var(--line); background: #f2fbfd; }
+.receipt-fluid-measure { position: fixed; z-index: -1; top: 0; left: -10000px; width: min(360px, 100vw); opacity: 0; pointer-events: none; }
+.receipt-fluid-measure img { width: 100%; height: auto; }
+.receipt-fluid-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 22px; margin-bottom: 12px; }
+.receipt-fluid-heading strong { display: block; margin-bottom: 4px; color: #155568; font-size: 11px; }
+.receipt-fluid-heading p { max-width: 760px; margin: 0; color: #557583; font-size: 10px; line-height: 1.55; }
+.receipt-fluid-heading a { flex: 0 0 auto; color: var(--blue); font-size: 9px; font-weight: 800; text-underline-offset: 3px; }
+.receipt-fluid-code { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.receipt-fluid-code .copy-code-row { background: white; }
+.receipt-fluid-code .copy-code-row code { min-width: 0; }
 .results-foot { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 22px; border-top: 1px solid var(--line); background: #fafbfc; }
 .results-foot p { display: flex; align-items: center; gap: 10px; margin: 0; color: #6c7889; font-size: 11px; }
 .results-foot .live-dot { width: 7px; height: 7px; }
@@ -851,12 +1027,94 @@ tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
 .file-size-savings { margin: 16px 0 0; color: #667286; font-size: 12px; line-height: 1.6; text-align: center; }
 .file-size-savings strong { color: var(--ink); }
 
+.receipt-dialog {
+  width: min(960px, calc(100vw - 32px));
+  max-height: min(860px, calc(100vh - 32px));
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  color: var(--ink);
+  background: white;
+  box-shadow: 0 30px 90px rgba(9, 18, 36, .35);
+  overflow: hidden;
+}
+
+.receipt-dialog::backdrop { background: rgba(8, 15, 28, .72); backdrop-filter: blur(5px); }
+.receipt-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding: 23px 26px 19px; border-bottom: 1px solid #e1e5ed; }
+.receipt-dialog-header h3 { margin: 0; font-size: 23px; letter-spacing: -.035em; }
+.receipt-dialog-close { display: grid; flex: 0 0 auto; width: 32px; height: 32px; padding: 0; place-items: center; border: 1px solid #dce1e9; border-radius: 50%; color: #5d697b; background: white; font-size: 18px; cursor: pointer; }
+.receipt-dialog-close:hover { border-color: #aeb6c3; color: var(--ink); }
+.receipt-dialog-body { display: grid; grid-template-columns: minmax(280px, .78fr) minmax(0, 1.22fr); max-height: calc(100vh - 126px); overflow-y: auto; }
+.receipt-dialog-preview { display: grid; min-height: 440px; padding: 28px; place-items: center; background: #101724; }
+.receipt-dialog-preview img { max-width: 100%; max-height: 520px; border-radius: 8px; box-shadow: 0 18px 45px rgba(0,0,0,.32); }
+.receipt-dialog-details { display: grid; align-content: start; gap: 18px; min-width: 0; padding: 26px; }
+.receipt-detail-block { min-width: 0; }
+.receipt-detail-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 8px; }
+.receipt-detail-heading span { color: #798599; font-size: 9px; font-weight: 850; letter-spacing: .09em; text-transform: uppercase; }
+.receipt-detail-heading a { color: var(--blue); font-size: 9px; font-weight: 800; text-underline-offset: 3px; }
+.receipt-dialog-details .copy-code-row { align-items: flex-start; background: #f9fafc; }
+.receipt-dialog-details .copy-code-row code {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  user-select: all;
+}
+.receipt-dialog-details .copy-code-row button { margin-top: 1px; }
+.receipt-dialog-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  border: 1px solid #e1e5ed;
+  border-radius: 10px;
+  background: #fafbfc;
+  overflow: hidden;
+}
+.receipt-dialog-metrics div { min-width: 0; padding: 12px 13px; border-bottom: 1px solid #e7eaf0; }
+.receipt-dialog-metrics div:nth-child(odd) { border-right: 1px solid #e7eaf0; }
+.receipt-dialog-metrics div:nth-last-child(-n + 2) { border-bottom: 0; }
+.receipt-dialog-metrics dt { margin-bottom: 5px; color: #7a8595; font-size: 8px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.receipt-dialog-metrics dd { margin: 0; color: #344054; font-size: 10px; font-weight: 750; line-height: 1.45; overflow-wrap: anywhere; }
+.receipt-dialog-status { display: flex; flex-wrap: wrap; gap: 6px; margin: -6px 0 0; }
+.receipt-dialog-status:empty { display: none; }
+.receipt-dialog-status .efficiency-badge { display: inline-flex; }
+.receipt-dialog-verdicts { display: grid; gap: 8px; }
+.receipt-dialog-verdicts .receipt-verdict { padding: 10px 12px; border: 0; border-radius: 8px; }
+.receipt-dialog-verdicts .receipt-verdict + .receipt-verdict { border: 0; }
+.receipt-dialog-note { margin: 0; padding: 11px 13px; border-radius: 8px; color: #657186; background: #f2f4f8; font-size: 10px; line-height: 1.55; }
+.receipt-dialog-note strong { color: #344054; }
+
 .implementation-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 55px; }
 .implementation-grid article { position: relative; padding: 29px; border-top: 1px solid #bdc4cf; }
 .implementation-grid .step { display: grid; width: 28px; height: 28px; margin-bottom: 35px; place-items: center; border-radius: 50%; color: white; background: var(--blue); font-size: 10px; font-weight: 800; }
 .implementation-grid h3 { margin-bottom: 12px; font-size: 19px; }
 .implementation-grid p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
 .implementation-grid code { color: var(--blue-dark); font-size: .9em; }
+
+.responsive-sizing-card {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: 38px;
+  margin-top: 28px;
+  padding: 32px;
+  border: 1px solid #cdd3e1;
+  border-radius: 16px;
+  background: white;
+  box-shadow: var(--shadow);
+}
+
+.responsive-sizing-copy h3 { margin: 5px 0 12px; font-size: 24px; letter-spacing: -.035em; }
+.responsive-sizing-copy > p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.responsive-sizing-copy > p code { color: var(--blue-dark); }
+.responsive-sizing-copy ul { display: grid; gap: 10px; margin: 22px 0 0; padding: 0; list-style: none; }
+.responsive-sizing-copy li { position: relative; padding-left: 18px; color: #59667a; font-size: 11px; line-height: 1.55; }
+.responsive-sizing-copy li::before { position: absolute; top: .62em; left: 0; width: 6px; height: 6px; border-radius: 50%; content: ""; background: var(--blue); }
+.responsive-sizing-copy code { color: var(--blue-dark); }
+.responsive-sizing-example { display: grid; align-content: start; gap: 13px; min-width: 0; }
+.responsive-sizing-example > span { color: #788498; font-size: 9px; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.responsive-sizing-note { margin: 2px 2px 0; color: #768297; font-size: 10px; line-height: 1.6; }
+.responsive-sizing-note strong { color: #354156; }
 
 .support-note { display: flex; align-items: center; justify-content: space-between; gap: 30px; margin-top: 55px; padding: 28px 30px; border-radius: 14px; color: #dce3ef; background: var(--ink); }
 .support-note > div { display: flex; align-items: flex-start; gap: 17px; }
@@ -884,6 +1142,21 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
   .strategy-copy p { min-height: 0; }
   .strategy-metrics { grid-column: 3; }
   .strategy-card-featured .auto-verdict { grid-column: 3; }
+  .table-wrap { padding: 14px; }
+  table, tbody { display: block; width: 100%; }
+  thead { display: none; }
+  tbody { display: grid; gap: 12px; }
+  tbody tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid #dfe3ea; border-radius: 11px; background: white; overflow: hidden; }
+  tbody th, tbody td { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 18px; padding: 11px 13px; border-bottom: 1px solid #e7eaf0; white-space: normal; }
+  tbody th { grid-column: 1 / -1; background: #f8f9fb; }
+  tbody th::before, tbody td::before { flex: 0 0 auto; color: #7a8595; content: attr(data-label); font-size: 8px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+  tbody th .strategy-cell { flex: 1; justify-content: flex-end; text-align: right; }
+  tbody td[data-result] { white-space: normal; }
+  tbody td:last-child { grid-column: 1 / -1; border-bottom: 0; }
+  tbody tr:last-child th, tbody tr:last-child td { border-bottom: 1px solid #e7eaf0; }
+  tbody tr:last-child td:last-child { border-bottom: 0; }
+  tbody tr.is-smallest-transfer th, tbody tr.is-smallest-transfer td,
+  tbody tr.is-device-recommended th, tbody tr.is-device-recommended td { background: inherit; }
 }
 
 @media (max-width: 780px) {
@@ -894,11 +1167,18 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
   .section { padding-top: 80px; padding-bottom: 80px; }
   .section-heading { grid-template-columns: 1fr; gap: 24px; }
   .section-heading > p { max-width: 580px; }
+  .domain-scanner-header { flex-direction: column; gap: 8px; }
   .implementation-grid { grid-template-columns: 1fr; }
   .implementation-grid article { display: grid; grid-template-columns: 42px 1fr; gap: 0 12px; padding: 22px 0; }
   .implementation-grid .step { grid-row: 1 / 3; margin: 0; }
   .implementation-grid h3 { margin-top: 4px; }
   .implementation-grid p { grid-column: 2; }
+  .responsive-sizing-card { grid-template-columns: 1fr; }
+  .receipt-verdicts { grid-template-columns: 1fr; }
+  .receipt-verdict + .receipt-verdict { border-top: 1px solid var(--line); border-left: 0; }
+  .receipt-fluid-code { grid-template-columns: 1fr; }
+  .receipt-dialog-body { grid-template-columns: 1fr; }
+  .receipt-dialog-preview { min-height: 300px; }
   .support-note { align-items: flex-start; flex-direction: column; }
 }
 
@@ -914,6 +1194,15 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
   .device-stats div:first-child { border: 0; }
   .device-stats dt { margin: 0; }
   .concept-strip span:not(.operator), .concept-strip b { flex: 0 0 auto; }
+  .domain-scanner { margin-inline: -4px; padding: 20px; }
+  .domain-scan-input-row { align-items: stretch; flex-direction: column; }
+  .scan-button { min-height: 46px; }
+  .domain-scan-results-header { align-items: flex-start; flex-direction: column; }
+  .domain-scan-results-controls { width: 100%; justify-content: space-between; }
+  .domain-scan-order { width: 100%; justify-content: space-between; }
+  .domain-scan-order select { min-width: 0; flex: 1; max-width: 250px; }
+  .domain-scan-result { grid-template-columns: 28px minmax(0, 1fr); align-items: start; }
+  .domain-scan-actions { grid-column: 2; }
   .url-inspector-form { padding: 15px; }
   .url-input-row { align-items: stretch; flex-direction: column; }
   .url-input-row input { width: 100%; }
@@ -926,8 +1215,18 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
   .file-size-compare { grid-template-columns: 1fr; margin-inline: 20px; }
   .inspector-card-header { padding: 20px; }
   .transform-readout, .issue-list { padding-inline: 20px; }
-  .recommendation-block, .markup-block { margin-inline: 20px; }
+  .recommendation-block { margin-inline: 20px; }
   .recommendation-heading { flex-direction: column; gap: 2px; }
+  .responsive-sizing-card { margin-inline: -4px; padding: 24px 20px; }
+  .receipt-fluid-heading { flex-direction: column; gap: 8px; }
+  .receipt-dialog { width: calc(100vw - 16px); max-height: calc(100vh - 16px); }
+  .receipt-dialog-header { padding: 19px 20px 16px; }
+  .receipt-dialog-details { padding: 20px; }
+  tbody tr { grid-template-columns: 1fr; }
+  tbody th, tbody td, tbody td:last-child { grid-column: 1; }
+  .receipt-dialog-metrics { grid-template-columns: 1fr; }
+  .receipt-dialog-metrics div:nth-child(odd) { border-right: 0; }
+  .receipt-dialog-metrics div:nth-last-child(2) { border-bottom: 1px solid #e7eaf0; }
   .rule-grid { margin-inline: -4px; }
   .image-stage { min-height: 390px; }
   .natural-size-wrap { min-height: 390px; }
@@ -1005,11 +1304,72 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
     <section id="inspector" class="section inspector-section">
       <div class="section-heading inspector-heading">
         <div>
-          <p class="eyebrow">01 / Inspect your own asset</p>
-          <h2>Paste a Cloudinary URL.<br>See what it really delivers.</h2>
+          <p class="eyebrow">01 / Inspect your own site</p>
+          <h2>Find Cloudinary assets.<br>See what they really deliver.</h2>
         </div>
-        <p>The inspector reads existing transformations, loads the current output, identifies DPR and optimization mistakes, and builds corrected URLs without changing the underlying asset.</p>
+        <p>Scan a public page for Cloudinary delivery URLs or paste one directly. The inspector identifies DPR and optimization mistakes and builds corrected URLs without changing the underlying asset.</p>
       </div>
+
+      <div class="domain-scanner">
+        <div class="domain-scanner-header">
+          <div>
+            <span class="inspector-kicker">Domain scraper</span>
+            <h3>Find DPR optimization candidates on a public page</h3>
+          </div>
+          <p>Enter a webpage URL to find Cloudinary <code>/image/upload/</code> examples that contain a DPR transformation and have a possible optimization recommendation.</p>
+        </div>
+        <form id="domain-scan-form" class="domain-scan-form" novalidate>
+          <label for="domain-url">Website or page URL</label>
+          <div class="domain-scan-input-row">
+            <input
+              id="domain-url"
+              name="domain-url"
+              type="url"
+              inputmode="url"
+              spellcheck="false"
+              autocomplete="url"
+              placeholder="https://www.example.com/page"
+              aria-describedby="domain-scan-disclosure domain-scan-status">
+            <button id="domain-scan-button" class="scan-button" type="submit">Scan page</button>
+          </div>
+          <p id="domain-scan-disclosure" class="domain-scanner-disclosure">Public page content is retrieved as a fresh browser-rendered snapshot through <a href="https://github.com/jina-ai/reader" target="_blank" rel="noreferrer">Jina Reader</a> because browsers block most direct cross-domain scraping. Redirects are followed and canonical page metadata is reported. Optimization-potential percentages weight actionable errors, warnings, DPR alternatives, fluid-width opportunities, and custom-origin setup; a higher percentage means more potential improvement. Private and local network addresses are not accepted.</p>
+        </form>
+        <p id="domain-scan-status" class="domain-scan-status" role="status" aria-live="polite"></p>
+        <div id="domain-scan-results" class="domain-scan-results" hidden>
+          <div class="domain-scan-results-header">
+            <p id="domain-scan-count">0 DPR candidates found</p>
+            <div class="domain-scan-results-controls">
+              <label class="domain-scan-order" for="domain-scan-order">
+                Order
+                <select id="domain-scan-order">
+                  <option value="potential-desc" selected>Most potential optimizations</option>
+                  <option value="potential-asc">Least potential optimizations</option>
+                  <option value="page-asc">Found on page: top to bottom</option>
+                  <option value="page-desc">Found on page: bottom to top</option>
+                </select>
+              </label>
+              <label class="domain-scan-limit" for="domain-scan-limit">
+                Results per page
+                <select id="domain-scan-limit">
+                  <option value="5" selected>5</option>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+              </label>
+              <button id="clear-domain-scan" type="button">Clear results</button>
+            </div>
+          </div>
+          <ol id="domain-scan-list" class="domain-scan-list"></ol>
+          <nav id="domain-scan-pagination" class="domain-scan-pagination" aria-label="Optimization candidate pages" hidden>
+            <button id="domain-scan-previous" type="button">← Previous</button>
+            <span id="domain-scan-page-status">Page 1 of 1</span>
+            <button id="domain-scan-next" type="button">Next →</button>
+          </nav>
+        </div>
+      </div>
+
+      <div class="inspector-divider"><span>Or analyze one delivery URL directly</span></div>
 
       <form id="url-inspector-form" class="url-inspector-form" novalidate>
         <label for="asset-url">Cloudinary delivery URL</label>
@@ -1089,8 +1449,8 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
           <div id="responsive-option" class="recommendation-block responsive-option" hidden>
             <div class="recommendation-heading">
               <div>
-                <span class="inspector-kicker">Responsive option</span>
-                <h4>Let the device choose DPR</h4>
+                <span class="inspector-kicker">Fixed-size option</span>
+                <h4>Automatic DPR for a fixed-size slot</h4>
               </div>
               <a id="responsive-asset-link" href="#" target="_blank" rel="noreferrer">Open dpr_auto ↗</a>
             </div>
@@ -1098,15 +1458,51 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
               <code id="responsive-url">—</code>
               <button type="button" data-copy-target="responsive-url">Copy</button>
             </div>
-          </div>
-
-          <div class="markup-block">
-            <span class="inspector-kicker">Required display markup</span>
             <div class="copy-code-row">
               <code id="suggested-markup">Waiting for output dimensions…</code>
-              <button type="button" data-copy-target="suggested-markup">Copy</button>
+              <button type="button" data-copy-target="suggested-markup">Copy markup</button>
             </div>
+            <p>Use this URL and markup when the CSS slot has a known width and height, but the required pixel density varies by device.</p>
           </div>
+
+          <div id="client-hint-option" class="recommendation-block client-hint-option" hidden>
+            <div class="recommendation-heading">
+              <div>
+                <span class="inspector-kicker">Client-hint setup</span>
+                <h4 id="client-hint-title">Delegate DPR to this delivery origin</h4>
+              </div>
+              <a href="https://cloudinary.com/documentation/responsive_server_side_client_hints#automatic_pixel_density_detection" target="_blank" rel="noreferrer">Setup guide ↗</a>
+            </div>
+            <div class="copy-code-row">
+              <code id="client-hint-meta">—</code>
+              <button type="button" data-copy-target="client-hint-meta">Copy meta</button>
+            </div>
+            <div class="copy-code-row">
+              <code id="client-hint-headers">—</code>
+              <button type="button" data-copy-target="client-hint-headers">Copy headers</button>
+            </div>
+            <p id="client-hint-note">Apply one of these options to the page that requests the image.</p>
+          </div>
+
+          <div id="responsive-width-option" class="recommendation-block responsive-width-option" hidden>
+            <div class="recommendation-heading">
+              <div>
+                <span class="inspector-kicker">Responsive-width option</span>
+                <h4>Automatic width and DPR for a fluid slot</h4>
+              </div>
+              <a id="responsive-width-asset-link" href="#" target="_blank" rel="noreferrer">Open w_auto ↗</a>
+            </div>
+            <div class="copy-code-row">
+              <code id="responsive-width-url">—</code>
+              <button type="button" data-copy-target="responsive-width-url">Copy</button>
+            </div>
+            <div class="copy-code-row">
+              <code id="responsive-width-markup">—</code>
+              <button type="button" data-copy-target="responsive-width-markup">Copy markup</button>
+            </div>
+            <p><code>sizes</code> must match the real CSS layout. The fallback in <code>w_auto:40:&lt;width&gt;</code> prevents full-resolution delivery when the width hint is unavailable.</p>
+          </div>
+
         </article>
       </div>
     </section>
@@ -1289,7 +1685,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
           <p class="eyebrow">04 / Measured in this browser</p>
           <h2>The performance receipt.</h2>
         </div>
-        <p>These values come from each loaded image and the browser Resource Timing API—not a preset estimate. Format and byte size can vary by browser.</p>
+        <p>These values come from each loaded image and the browser Resource Timing API—not a preset estimate. File size is the encoded image body; bandwidth used is the measured network transfer including response overhead. Cached loads are identified.</p>
       </div>
 
       <div class="results-panel">
@@ -1302,49 +1698,95 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
                 <th>Delivered dimensions</th>
                 <th>Displayed dimensions</th>
                 <th>File size</th>
+                <th>Bandwidth used</th>
                 <th>vs. original</th>
-                <th>Open</th>
+                <th>Details</th>
               </tr>
             </thead>
             <tbody>
               <tr data-result-row="original">
-                <th>Original source</th>
-                <td><code>No transformations</code></td>
-                <td data-result="natural">—</td>
-                <td data-result="rendered">—</td>
-                <td data-result="bytes">—</td>
-                <td data-result="delta">Baseline</td>
-                <td><a id="result-link-original" class="result-link" href="#" target="_blank" rel="noreferrer">View ↗</a></td>
+                <th data-label="Strategy"><span class="strategy-cell">Original source<span class="receipt-badges"><span class="efficiency-badge bandwidth-badge" data-bandwidth-badge="original" hidden>Smallest transfer</span></span></span></th>
+                <td data-label="URL setting"><code>No transformations</code></td>
+                <td data-label="Delivered dimensions" data-result="natural">—</td>
+                <td data-label="Displayed dimensions" data-result="rendered">—</td>
+                <td data-label="File size" data-result="bytes">—</td>
+                <td data-label="Bandwidth used" data-result="bandwidth">—</td>
+                <td data-label="vs. original" data-result="delta">Baseline</td>
+                <td data-label="Details"><button class="receipt-detail-button" type="button" data-receipt-key="original">Inspect</button></td>
               </tr>
               <tr data-result-row="baseline">
-                <th>Fixed 1× (f_auto and q_auto applied)</th>
-                <td><code>DPR omitted</code></td>
-                <td data-result="natural">—</td>
-                <td data-result="rendered">—</td>
-                <td data-result="bytes">—</td>
-                <td data-result="delta">—</td>
-                <td><a id="result-link-baseline" class="result-link" href="#" target="_blank" rel="noreferrer">View ↗</a></td>
+                <th data-label="Strategy"><span class="strategy-cell">Fixed 1× (f_auto and q_auto applied)<span class="receipt-badges"><span class="efficiency-badge bandwidth-badge" data-bandwidth-badge="baseline" hidden>Smallest transfer</span><span class="efficiency-badge recommendation-badge" data-recommendation-badge="baseline" hidden>Recommended for device</span></span></span></th>
+                <td data-label="URL setting"><code>DPR omitted</code></td>
+                <td data-label="Delivered dimensions" data-result="natural">—</td>
+                <td data-label="Displayed dimensions" data-result="rendered">—</td>
+                <td data-label="File size" data-result="bytes">—</td>
+                <td data-label="Bandwidth used" data-result="bandwidth">—</td>
+                <td data-label="vs. original" data-result="delta">—</td>
+                <td data-label="Details"><button class="receipt-detail-button" type="button" data-receipt-key="baseline">Inspect</button></td>
               </tr>
               <tr data-result-row="fixed">
-                <th>Hard-coded 2× (f_auto and q_auto applied)</th>
-                <td><code>dpr_2.0</code></td>
-                <td data-result="natural">—</td>
-                <td data-result="rendered">—</td>
-                <td data-result="bytes">—</td>
-                <td data-result="delta">—</td>
-                <td><a id="result-link-fixed" class="result-link" href="#" target="_blank" rel="noreferrer">View ↗</a></td>
+                <th data-label="Strategy"><span class="strategy-cell">Hard-coded 2× (f_auto and q_auto applied)<span class="receipt-badges"><span class="efficiency-badge bandwidth-badge" data-bandwidth-badge="fixed" hidden>Smallest transfer</span><span class="efficiency-badge recommendation-badge" data-recommendation-badge="fixed" hidden>Recommended for device</span></span></span></th>
+                <td data-label="URL setting"><code>dpr_2.0</code></td>
+                <td data-label="Delivered dimensions" data-result="natural">—</td>
+                <td data-label="Displayed dimensions" data-result="rendered">—</td>
+                <td data-label="File size" data-result="bytes">—</td>
+                <td data-label="Bandwidth used" data-result="bandwidth">—</td>
+                <td data-label="vs. original" data-result="delta">—</td>
+                <td data-label="Details"><button class="receipt-detail-button" type="button" data-receipt-key="fixed">Inspect</button></td>
               </tr>
               <tr class="result-auto" data-result-row="auto">
-                <th>Automatic (f_auto and q_auto applied)</th>
-                <td><code>dpr_auto</code></td>
-                <td data-result="natural">—</td>
-                <td data-result="rendered">—</td>
-                <td data-result="bytes">—</td>
-                <td data-result="delta">—</td>
-                <td><a id="result-link-auto" class="result-link" href="#" target="_blank" rel="noreferrer">View ↗</a></td>
+                <th data-label="Strategy"><span class="strategy-cell">Automatic (f_auto and q_auto applied)<span class="receipt-badges"><span class="efficiency-badge bandwidth-badge" data-bandwidth-badge="auto" hidden>Smallest transfer</span><span class="efficiency-badge recommendation-badge" data-recommendation-badge="auto" hidden>Recommended for device</span><span class="efficiency-badge setup-badge" data-setup-badge="auto" hidden>Client-hint setup needed</span></span></span></th>
+                <td data-label="URL setting"><code>dpr_auto</code></td>
+                <td data-label="Delivered dimensions" data-result="natural">—</td>
+                <td data-label="Displayed dimensions" data-result="rendered">—</td>
+                <td data-label="File size" data-result="bytes">—</td>
+                <td data-label="Bandwidth used" data-result="bandwidth">—</td>
+                <td data-label="vs. original" data-result="delta">—</td>
+                <td data-label="Details"><button class="receipt-detail-button" type="button" data-receipt-key="auto">Inspect</button></td>
+              </tr>
+              <tr class="result-fluid" data-result-row="fluid">
+                <th data-label="Strategy"><span class="strategy-cell">Fluid automatic width + DPR<span class="receipt-badges"><span class="efficiency-badge fluid-layout-badge">Fluid layout recommendation</span></span></span></th>
+                <td data-label="URL setting"><code>w_auto + dpr_auto</code></td>
+                <td data-label="Delivered dimensions" data-result="natural">—</td>
+                <td data-label="Displayed dimensions" data-result="rendered">—</td>
+                <td data-label="File size" data-result="bytes">—</td>
+                <td data-label="Bandwidth used" data-result="bandwidth">—</td>
+                <td data-label="vs. original" data-result="delta">—</td>
+                <td data-label="Details"><button class="receipt-detail-button" type="button" data-receipt-key="fluid">Inspect</button></td>
               </tr>
             </tbody>
           </table>
+        </div>
+        <div class="receipt-verdicts">
+          <p id="bandwidth-verdict" class="receipt-verdict bandwidth-verdict"><strong>Smallest transfer:</strong> Calculating the lowest-bandwidth response…</p>
+          <p id="recommendation-verdict" class="receipt-verdict recommendation-verdict"><strong>Recommended for this device:</strong> Calculating the smallest response that meets this browser’s DPR target…</p>
+        </div>
+        <div class="receipt-fluid-recommendation">
+          <div class="receipt-fluid-heading">
+            <div>
+              <strong>Fluid layout recommendation</strong>
+              <p>For a slot whose CSS width changes, use <code>w_auto</code> with a fallback, <code>dpr_auto</code>, and an accurate <code>sizes</code> attribute. This is a production layout recommendation and is not ranked against the fixed 360 × 240 measurements above.</p>
+            </div>
+            <a id="receipt-fluid-link" href="#" target="_blank" rel="noreferrer">Open fluid URL ↗</a>
+          </div>
+          <div class="receipt-fluid-code">
+            <div class="copy-code-row">
+              <code id="receipt-fluid-url">Preparing fluid-width URL…</code>
+              <button type="button" data-copy-target="receipt-fluid-url">Copy URL</button>
+            </div>
+            <div class="copy-code-row">
+              <code id="receipt-fluid-markup">Preparing matching markup…</code>
+              <button type="button" data-copy-target="receipt-fluid-markup">Copy markup</button>
+            </div>
+          </div>
+          <div class="receipt-fluid-measure" aria-hidden="true">
+            <img
+              data-metric="fluid"
+              sizes="(max-width: 360px) 100vw, 360px"
+              width="360"
+              height="240"
+              alt="">
+          </div>
         </div>
         <div class="results-foot">
           <p id="timing-note"><span class="live-dot" aria-hidden="true"></span> Reading response metrics…</p>
@@ -1356,32 +1798,139 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
       <div class="implementation-grid">
         <article>
           <span class="step">1</span>
-          <h3>Enable the hint</h3>
-          <p>Delegate <code>Sec-CH-DPR</code> to your Cloudinary origin in the document head or use the equivalent HTTP headers.</p>
+          <h3>Enable the hints</h3>
+          <p>Delegate <code>Sec-CH-DPR</code> for density and <code>Sec-CH-Width</code> for responsive width to your Cloudinary origin.</p>
         </article>
         <article>
           <span class="step">2</span>
-          <h3>Request <code>dpr_auto</code></h3>
-          <p>Keep the intended logical width and height in the transformation, then add automatic DPR.</p>
+          <h3>Choose the sizing path</h3>
+          <p>Use fixed dimensions with <code>dpr_auto</code> for a known slot. For a fluid slot, use <code>w_auto</code> with a fallback width and <code>dpr_auto</code>.</p>
         </article>
         <article>
           <span class="step">3</span>
-          <h3>Lock the display size</h3>
-          <p>Add matching <code>width</code> and <code>height</code> attributes to preserve layout and aspect ratio.</p>
+          <h3>Describe the layout</h3>
+          <p>Keep <code>width</code> and <code>height</code> attributes for layout stability. Add an accurate <code>sizes</code> attribute whenever you use <code>w_auto</code>.</p>
         </article>
+      </div>
+
+      <div class="responsive-sizing-card">
+        <div class="responsive-sizing-copy">
+          <span class="inspector-kicker">Advanced responsive sizing</span>
+          <h3>For fluid layouts, automate width too.</h3>
+          <p>The fixed 360 × 240 examples above deliberately isolate DPR. In a production layout where the image width changes, <code>w_auto</code> can also match the delivered resource to the space available.</p>
+          <ul>
+            <li>Use <code>w_auto:40:360</code> so widths are rounded in 40-pixel steps and 360 pixels is available as a no-hint fallback.</li>
+            <li>Use an aspect ratio such as <code>ar_3:2</code> to establish height. Cloudinary does not support <code>h_auto</code> as an automatic-height URL transformation.</li>
+            <li>CSS <code>height: auto</code> is still useful for fluid rendering, but it is separate from the Cloudinary delivery transformation.</li>
+          </ul>
+        </div>
+        <div class="responsive-sizing-example">
+          <span>Responsive Cloudinary URL</span>
+          <div class="copy-code-row">
+            <code id="responsive-sizing-url">https://res.cloudinary.com/doxfstysv/image/upload/ar_3:2,c_fill,g_auto/c_limit,w_auto:40:360,dpr_auto/f_auto/q_auto/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg</code>
+            <button type="button" data-copy-target="responsive-sizing-url">Copy</button>
+          </div>
+          <span>Matching display markup</span>
+          <div class="copy-code-row">
+            <code id="responsive-sizing-markup">&lt;img src=".../c_limit,w_auto:40:360,dpr_auto/f_auto/q_auto/..." sizes="(max-width: 360px) 100vw, 360px" width="360" height="240" style="width:100%;max-width:360px;height:auto" alt=""&gt;</code>
+            <button type="button" data-copy-target="responsive-sizing-markup">Copy</button>
+          </div>
+          <p class="responsive-sizing-note"><strong>Adjust <code>sizes</code> to the real CSS.</strong> The example describes an image that fills the viewport up to a 360-pixel maximum. A different grid or container needs a different media condition.</p>
+        </div>
       </div>
 
       <div class="support-note">
         <div>
           <span class="support-icon" aria-hidden="true">i</span>
           <div>
-            <h3>Know the fallback</h3>
-            <p>Server-side client-hint detection currently works in Chromium-based browsers. Without an available hint, Cloudinary treats <code>dpr_auto</code> as 1×.</p>
+            <h3>Know the fallbacks</h3>
+            <p>Server-side client-hint detection currently works in Chromium-based browsers. Without a hint, <code>dpr_auto</code> becomes 1× and bare <code>w_auto</code> may deliver the original dimensions. Include a width fallback, or use native <code>srcset</code> and <code>sizes</code> when broader browser support is required.</p>
           </div>
         </div>
-        <a href="https://cloudinary.com/documentation/responsive_server_side_client_hints#automatic_pixel_density_detection" target="_blank" rel="noreferrer">Read the dpr_auto docs ↗</a>
+        <a href="https://cloudinary.com/documentation/responsive_server_side_client_hints#automatic_image_width" target="_blank" rel="noreferrer">Read the responsive docs ↗</a>
       </div>
     </section>
+
+    <dialog id="receipt-dialog" class="receipt-dialog" aria-labelledby="receipt-dialog-title">
+      <div class="receipt-dialog-header">
+        <div>
+          <span class="inspector-kicker">Performance receipt detail</span>
+          <h3 id="receipt-dialog-title">Strategy details</h3>
+        </div>
+        <button id="receipt-dialog-close" class="receipt-dialog-close" type="button" aria-label="Close strategy details">×</button>
+      </div>
+      <div class="receipt-dialog-body">
+        <div class="receipt-dialog-preview">
+          <img id="receipt-dialog-image" alt="">
+        </div>
+        <div class="receipt-dialog-details">
+          <dl class="receipt-dialog-metrics" aria-label="Measured strategy metrics">
+            <div><dt>Strategy</dt><dd id="receipt-detail-strategy">—</dd></div>
+            <div><dt>URL setting</dt><dd id="receipt-detail-setting">—</dd></div>
+            <div><dt>Delivered dimensions</dt><dd id="receipt-detail-delivered">—</dd></div>
+            <div><dt>Displayed dimensions</dt><dd id="receipt-detail-displayed">—</dd></div>
+            <div><dt>Effective DPR</dt><dd id="receipt-detail-dpr">—</dd></div>
+            <div><dt>File size</dt><dd id="receipt-detail-file-size">—</dd></div>
+            <div><dt>Bandwidth used</dt><dd id="receipt-detail-bandwidth">—</dd></div>
+            <div><dt>vs. original</dt><dd id="receipt-detail-delta">—</dd></div>
+          </dl>
+          <div id="receipt-detail-status" class="receipt-dialog-status" aria-label="Receipt recommendation status"></div>
+          <div class="receipt-dialog-verdicts" aria-label="Receipt decisions">
+            <p id="receipt-detail-bandwidth-verdict" class="receipt-verdict bandwidth-verdict">—</p>
+            <p id="receipt-detail-recommendation-verdict" class="receipt-verdict recommendation-verdict">—</p>
+          </div>
+          <div class="receipt-detail-block">
+            <div class="receipt-detail-heading">
+              <span>Current URL</span>
+              <a id="receipt-current-link" href="#" target="_blank" rel="noreferrer">Open current ↗</a>
+            </div>
+            <div class="copy-code-row">
+              <code id="receipt-current-url">—</code>
+              <button type="button" data-copy-target="receipt-current-url">Copy</button>
+            </div>
+          </div>
+          <div class="receipt-detail-block">
+            <div class="receipt-detail-heading">
+              <span>Optimal URL</span>
+              <a id="receipt-optimal-link" href="#" target="_blank" rel="noreferrer">Open optimal ↗</a>
+            </div>
+            <div class="copy-code-row">
+              <code id="receipt-optimal-url">—</code>
+              <button type="button" data-copy-target="receipt-optimal-url">Copy</button>
+            </div>
+          </div>
+          <div class="receipt-detail-block">
+            <div class="receipt-detail-heading">
+              <span>Required HTML markup</span>
+            </div>
+            <div class="copy-code-row">
+              <code id="receipt-required-markup">—</code>
+              <button type="button" data-copy-target="receipt-required-markup">Copy markup</button>
+            </div>
+          </div>
+          <div class="receipt-detail-block">
+            <div class="receipt-detail-heading">
+              <span>Fluid layout URL</span>
+              <a id="receipt-fluid-dialog-link" href="#" target="_blank" rel="noreferrer">Open fluid ↗</a>
+            </div>
+            <div class="copy-code-row">
+              <code id="receipt-fluid-dialog-url">—</code>
+              <button type="button" data-copy-target="receipt-fluid-dialog-url">Copy URL</button>
+            </div>
+          </div>
+          <div class="receipt-detail-block">
+            <div class="receipt-detail-heading">
+              <span>Fluid layout markup</span>
+            </div>
+            <div class="copy-code-row">
+              <code id="receipt-fluid-dialog-markup">—</code>
+              <button type="button" data-copy-target="receipt-fluid-dialog-markup">Copy markup</button>
+            </div>
+          </div>
+          <p class="receipt-dialog-note"><strong>Choose by layout:</strong> The optimal fixed-slot URL keeps the 360 × 240 logical size and adapts DPR. The fluid option also uses <code>w_auto</code> with an accurate <code>sizes</code> rule so Cloudinary can adapt width. Both keep <code>f_auto</code> and <code>q_auto</code> last.</p>
+        </div>
+      </div>
+    </dialog>
   </main>
 
   <footer>
@@ -1395,7 +1944,31 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
 const BASE_WIDTH = 360;
 const BASE_HEIGHT = 240;
 const DEFAULT_ASSET_URL = "https://res.cloudinary.com/doxfstysv/image/upload/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg";
+const DOMAIN_READER_ORIGIN = "https://r.jina.ai/";
+const DOMAIN_SCAN_DEFAULT_LIMIT = 5;
+const RECEIPT_LABELS = {
+  original: "Original source",
+  baseline: "Fixed 1×",
+  fixed: "Hard-coded 2×",
+  auto: "Automatic DPR",
+  fluid: "Fluid automatic width + DPR"
+};
+const RECEIPT_SETTINGS = {
+  original: "No transformations",
+  baseline: "DPR omitted",
+  fixed: "dpr_2.0",
+  auto: "dpr_auto",
+  fluid: "w_auto + dpr_auto"
+};
 const metrics = new Map();
+const receiptUrls = {};
+let domainScanController = null;
+let domainScanRun = 0;
+let domainScanCandidates = [];
+let domainScanPageUrl = null;
+let domainScanPage = 1;
+let lastReceiptTrigger = null;
+let activeScanAnalysisContext = null;
 
 const formatDimensions = (width, height) => `${Math.round(width)} × ${Math.round(height)}`;
 
@@ -1404,6 +1977,28 @@ const formatBytes = (bytes) => {
   if (bytes < 1024) return `${bytes} B`;
   return `${(bytes / 1024).toFixed(bytes >= 10240 ? 0 : 1)} KB`;
 };
+
+const formatBandwidth = (measurement) => {
+  if (!measurement) return "Unavailable";
+  if (measurement.transferBytes > 0) return formatBytes(measurement.transferBytes);
+  if (measurement.wasCached) return "0 B (cache hit)";
+  return "Unavailable";
+};
+
+const formatDelta = (bytes, originalBytes, isOriginal = false) => {
+  if (isOriginal) return "Baseline";
+  if (!bytes || !originalBytes) return "Unavailable";
+  const delta = ((bytes - originalBytes) / originalBytes) * 100;
+  return `${delta >= 0 ? "+" : ""}${Math.round(delta)}%`;
+};
+
+const getClientHintSetup = (origin) => ({
+  meta: `<meta http-equiv="delegate-ch" content="sec-ch-dpr ${origin}; sec-ch-width ${origin}; sec-ch-viewport-width ${origin};">`,
+  headers: `Permissions-Policy: ch-dpr=("${origin}"), ch-width=("${origin}"), ch-viewport-width=("${origin}")\nAccept-CH: Sec-CH-DPR, Sec-CH-Width, Sec-CH-Viewport-Width`
+});
+
+const buildFluidMarkup = (url) =>
+  `<img src="${url}" sizes="(max-width: ${BASE_WIDTH}px) 100vw, ${BASE_WIDTH}px" width="${BASE_WIDTH}" height="${BASE_HEIGHT}" style="width:100%;max-width:${BASE_WIDTH}px;height:auto" alt="">`;
 
 const imageReady = (image) => {
   if (image.complete) return Promise.resolve();
@@ -1415,17 +2010,23 @@ const imageReady = (image) => {
 
 const getResourceDetails = (url) => {
   const entries = performance.getEntriesByName(url);
-  const values = entries.flatMap((entry) => [entry.encodedBodySize, entry.transferSize]).filter((value) => value > 0);
+  const encodedBodySizes = entries.map((entry) => entry.encodedBodySize).filter((value) => value > 0);
+  const transferSizes = entries.map((entry) => entry.transferSize).filter((value) => value > 0);
   const contentInfo = entries
     .flatMap((entry) => [...(entry.serverTiming || [])])
-    .find((timing) => timing.name === "content-info" && timing.description);
+    .filter((timing) => timing.name === "content-info" && timing.description)
+    .at(-1);
   const description = contentInfo?.description || "";
   const width = Number(description.match(/(?:^|,)width=(\d+)/)?.[1]) || 0;
   const height = Number(description.match(/(?:^|,)height=(\d+)/)?.[1]) || 0;
   const responseBytes = Number(description.match(/(?:^|,)bytes=(\d+)/)?.[1]) || 0;
+  const bytes = encodedBodySizes.length ? Math.max(...encodedBodySizes) : responseBytes;
+  const transferBytes = transferSizes.length ? Math.max(...transferSizes) : 0;
 
   return {
-    bytes: values.length ? Math.max(...values) : responseBytes,
+    bytes,
+    transferBytes,
+    wasCached: entries.length > 0 && transferBytes === 0 && bytes > 0,
     width,
     height
   };
@@ -1452,6 +2053,8 @@ const measureImage = (image) => {
     rendered: formatDimensions(renderedWidth, renderedHeight),
     effective: effectiveDensity ? `${effectiveDensity.toFixed(1)}×` : "—",
     bytes,
+    transferBytes: resource.transferBytes,
+    wasCached: resource.wasCached,
     naturalWidth: deliveredWidth,
     naturalHeight: deliveredHeight,
     renderedWidth,
@@ -1470,7 +2073,7 @@ const measureImage = (image) => {
 const updateResultTable = () => {
   const originalBytes = metrics.get("original")?.bytes || 0;
 
-  ["original", "baseline", "fixed", "auto"].forEach((key) => {
+  ["original", "baseline", "fixed", "auto", "fluid"].forEach((key) => {
     const measurement = metrics.get(key);
     const row = document.querySelector(`[data-result-row="${key}"]`);
     if (!measurement || !row) return;
@@ -1478,17 +2081,212 @@ const updateResultTable = () => {
     row.querySelector('[data-result="natural"]').textContent = measurement.natural;
     row.querySelector('[data-result="rendered"]').textContent = key === "original" ? "—" : measurement.rendered;
     row.querySelector('[data-result="bytes"]').textContent = formatBytes(measurement.bytes);
+    row.querySelector('[data-result="bandwidth"]').textContent = formatBandwidth(measurement);
+    row.querySelector('[data-result="delta"]').textContent = formatDelta(measurement.bytes, originalBytes, key === "original");
+  });
+};
 
-    const deltaCell = row.querySelector('[data-result="delta"]');
-    if (key === "original") {
-      deltaCell.textContent = "Baseline";
-    } else if (originalBytes && measurement.bytes) {
-      const delta = ((measurement.bytes - originalBytes) / originalBytes) * 100;
-      deltaCell.textContent = `${delta >= 0 ? "+" : ""}${Math.round(delta)}%`;
-    } else {
-      deltaCell.textContent = "Unavailable";
+const updateEfficiencyVerdict = () => {
+  const bandwidthVerdict = document.querySelector("#bandwidth-verdict");
+  const recommendationVerdict = document.querySelector("#recommendation-verdict");
+  const targetDpr = Math.ceil(window.devicePixelRatio || 1);
+  const receiptKeys = ["original", "baseline", "fixed", "auto"];
+  const strategyKeys = ["baseline", "fixed", "auto"];
+  receiptKeys.forEach((key) => {
+    const row = document.querySelector(`[data-result-row="${key}"]`);
+    row?.classList.remove("is-smallest-transfer", "is-device-recommended", "needs-client-hint-setup");
+    const bandwidthBadge = document.querySelector(`[data-bandwidth-badge="${key}"]`);
+    const recommendationBadge = document.querySelector(`[data-recommendation-badge="${key}"]`);
+    const setupBadge = document.querySelector(`[data-setup-badge="${key}"]`);
+    if (bandwidthBadge) bandwidthBadge.hidden = true;
+    if (recommendationBadge) {
+      recommendationBadge.hidden = true;
+      recommendationBadge.textContent = "Recommended for device";
+    }
+    if (setupBadge) {
+      setupBadge.hidden = true;
+      setupBadge.textContent = "Client-hint setup needed";
     }
   });
+
+  const measuredReceipts = receiptKeys.map((key) => ({ key, measurement: metrics.get(key) }));
+  const hasCompleteNetworkTransfers = measuredReceipts.every((candidate) => candidate.measurement?.transferBytes > 0);
+  const bandwidthAvailable = measuredReceipts
+    .map(({ key, measurement }) => {
+      const comparisonBytes = hasCompleteNetworkTransfers ? measurement?.transferBytes : measurement?.bytes;
+      return comparisonBytes > 0 ? { key, measurement, comparisonBytes } : null;
+    })
+    .filter(Boolean);
+
+  if (bandwidthAvailable.length) {
+    const smallestBytes = Math.min(...bandwidthAvailable.map((candidate) => candidate.comparisonBytes));
+    const smallestTransfers = bandwidthAvailable.filter((candidate) => candidate.comparisonBytes === smallestBytes);
+    smallestTransfers.forEach((candidate) => {
+      document.querySelector(`[data-result-row="${candidate.key}"]`)?.classList.add("is-smallest-transfer");
+      const badge = document.querySelector(`[data-bandwidth-badge="${candidate.key}"]`);
+      if (badge) badge.hidden = false;
+    });
+    const labels = smallestTransfers.map((candidate) => RECEIPT_LABELS[candidate.key]).join(" / ");
+    const basis = hasCompleteNetworkTransfers
+      ? "This is the lowest measured network transfer, including response overhead and regardless of DPR suitability."
+      : "Some network transfers were cached or unavailable, so this comparison uses encoded file size instead.";
+    bandwidthVerdict.innerHTML = `<strong>Smallest transfer: ${labels}</strong> — ${formatBytes(smallestBytes)}. ${basis}`;
+  } else {
+    bandwidthVerdict.innerHTML = "<strong>Smallest transfer:</strong> Byte totals are unavailable in this browser session.";
+  }
+
+  const recommendationAvailable = strategyKeys
+    .map((key) => {
+      const measurement = metrics.get(key);
+      return measurement?.bytes > 0
+        ? { key, measurement, deliveredDpr: measurement.naturalWidth / BASE_WIDTH }
+        : null;
+    })
+    .filter(Boolean);
+
+  if (!recommendationAvailable.length) {
+    const fallbackRow = document.querySelector('[data-result-row="auto"]');
+    const fallbackBadge = document.querySelector('[data-recommendation-badge="auto"]');
+    fallbackRow?.classList.add("is-device-recommended");
+    if (fallbackBadge) fallbackBadge.hidden = false;
+    recommendationVerdict.innerHTML = "<strong>Recommended for this device: Automatic DPR</strong> — the adaptive option is preferred, but byte totals are unavailable in this browser session.";
+    return;
+  }
+
+  const qualified = recommendationAvailable.filter((candidate) => candidate.deliveredDpr + .05 >= targetDpr);
+  const pool = qualified.length ? qualified : recommendationAvailable;
+  pool.sort((first, second) => {
+    if (!qualified.length && Math.abs(first.deliveredDpr - second.deliveredDpr) > .05) {
+      return second.deliveredDpr - first.deliveredDpr;
+    }
+    if (first.measurement.bytes !== second.measurement.bytes) {
+      return first.measurement.bytes - second.measurement.bytes;
+    }
+    return first.key === "auto" ? -1 : second.key === "auto" ? 1 : 0;
+  });
+
+  const selected = pool[0];
+  const autoMeasurement = metrics.get("auto");
+  const autoDeliveredDpr = autoMeasurement?.naturalWidth ? autoMeasurement.naturalWidth / BASE_WIDTH : 0;
+  const automaticMissedTarget = targetDpr > 1 && autoDeliveredDpr > 0 && autoDeliveredDpr + .05 < targetDpr;
+  document.querySelector(`[data-result-row="${selected.key}"]`)?.classList.add("is-device-recommended");
+  const badge = document.querySelector(`[data-recommendation-badge="${selected.key}"]`);
+  if (badge) {
+    badge.hidden = false;
+    if (automaticMissedTarget) badge.textContent = "Best measured fallback";
+  }
+
+  if (automaticMissedTarget) {
+    document.querySelector('[data-result-row="auto"]')?.classList.add("needs-client-hint-setup");
+    const setupBadge = document.querySelector('[data-setup-badge="auto"]');
+    if (setupBadge) {
+      const isChromium = /Chrome|Chromium|Edg|OPR|SamsungBrowser/.test(navigator.userAgent) && !/Firefox|FxiOS/.test(navigator.userAgent);
+      setupBadge.hidden = false;
+      setupBadge.textContent = window.location.protocol === "file:"
+        ? "HTTPS page required"
+        : isChromium ? "Client-hint setup needed" : "Supported Chromium needed";
+    }
+  }
+
+  if (automaticMissedTarget) {
+    let deliveryOrigin = "the image delivery origin";
+    try { deliveryOrigin = new URL(receiptUrls.auto).origin; } catch { /* Keep the readable fallback. */ }
+    const customScrapedOrigin = activeScanAnalysisContext?.fromScan && deliveryOrigin !== "https://res.cloudinary.com";
+    const isChromium = /Chrome|Chromium|Edg|OPR|SamsungBrowser/.test(navigator.userAgent) && !/Firefox|FxiOS/.test(navigator.userAgent);
+    const cause = window.location.protocol === "file:"
+      ? "A file:// page cannot delegate the DPR client hint."
+      : !isChromium
+        ? "Automatic server-side DPR client hints currently require a supported Chromium browser."
+        : customScrapedOrigin
+        ? `This scraped custom origin was discovered after the lab loaded, so the lab cannot retroactively delegate Sec-CH-DPR to ${deliveryOrigin}.`
+        : `Verify that this HTTPS page delegates Sec-CH-DPR to ${deliveryOrigin} in a supported Chromium browser.`;
+    recommendationVerdict.innerHTML = `<strong>Best measured fallback: ${RECEIPT_LABELS[selected.key]}</strong> — ${formatBytes(selected.measurement.bytes)} file, ${formatBandwidth(selected.measurement)} bandwidth at ${selected.deliveredDpr.toFixed(1)}× delivered DPR. Automatic DPR delivered ${autoDeliveredDpr.toFixed(1)}× instead of the ${targetDpr}× target. ${cause} Keep dpr_auto as the adaptive production strategy after client-hint setup is verified.`;
+  } else {
+    const reason = qualified.length
+      ? `It is the smallest measured response that meets this browser’s rounded ${targetDpr}× DPR target.`
+      : `No measured strategy reached this browser’s rounded ${targetDpr}× DPR target, so this is the highest-density measured option with the fewest bytes.`;
+    recommendationVerdict.innerHTML = `<strong>Recommended for this device: ${RECEIPT_LABELS[selected.key]}</strong> — ${formatBytes(selected.measurement.bytes)} file, ${formatBandwidth(selected.measurement)} bandwidth at ${selected.deliveredDpr.toFixed(1)}× delivered DPR. ${reason}`;
+  }
+};
+
+const openReceiptDialog = (key, trigger) => {
+  const currentUrl = receiptUrls[key];
+  const fluidUrl = receiptUrls.fluid;
+  const isFluid = key === "fluid";
+  const optimalUrl = isFluid ? fluidUrl : receiptUrls.auto;
+  if (!currentUrl || !optimalUrl) return;
+
+  const dialog = document.querySelector("#receipt-dialog");
+  const measurement = metrics.get(key);
+  const originalBytes = metrics.get("original")?.bytes || 0;
+  const row = document.querySelector(`[data-result-row="${key}"]`);
+  lastReceiptTrigger = trigger;
+  document.querySelector("#receipt-dialog-title").textContent = `${RECEIPT_LABELS[key]} details`;
+  const image = document.querySelector("#receipt-dialog-image");
+  image.src = currentUrl;
+  image.alt = `${RECEIPT_LABELS[key]} image preview`;
+  document.querySelector("#receipt-detail-strategy").textContent = RECEIPT_LABELS[key];
+  document.querySelector("#receipt-detail-setting").textContent = RECEIPT_SETTINGS[key];
+  document.querySelector("#receipt-detail-delivered").textContent = measurement?.natural || "Unavailable";
+  document.querySelector("#receipt-detail-displayed").textContent = key === "original" ? "Not applicable" : measurement?.rendered || "Unavailable";
+  document.querySelector("#receipt-detail-dpr").textContent = key === "original" ? "Not applicable" : measurement?.effective || "Unavailable";
+  document.querySelector("#receipt-detail-file-size").textContent = formatBytes(measurement?.bytes);
+  document.querySelector("#receipt-detail-bandwidth").textContent = formatBandwidth(measurement);
+  document.querySelector("#receipt-detail-delta").textContent = formatDelta(measurement?.bytes, originalBytes, key === "original");
+
+  const status = document.querySelector("#receipt-detail-status");
+  status.replaceChildren();
+  if (row?.classList.contains("is-smallest-transfer")) {
+    const badge = document.createElement("span");
+    badge.className = "efficiency-badge bandwidth-badge";
+    badge.textContent = "Smallest transfer";
+    status.append(badge);
+  }
+  if (row?.classList.contains("is-device-recommended")) {
+    const badge = document.createElement("span");
+    badge.className = "efficiency-badge recommendation-badge";
+    badge.textContent = document.querySelector(`[data-recommendation-badge="${key}"]`)?.textContent || "Recommended for device";
+    status.append(badge);
+  }
+  if (row?.classList.contains("needs-client-hint-setup")) {
+    const badge = document.createElement("span");
+    badge.className = "efficiency-badge setup-badge";
+    badge.textContent = document.querySelector(`[data-setup-badge="${key}"]`)?.textContent || "Client-hint setup needed";
+    status.append(badge);
+  }
+  if (isFluid) {
+    const badge = document.createElement("span");
+    badge.className = "efficiency-badge fluid-layout-badge";
+    badge.textContent = "Fluid layout recommendation";
+    status.append(badge);
+  }
+  document.querySelector("#receipt-detail-bandwidth-verdict").innerHTML =
+    document.querySelector("#bandwidth-verdict").innerHTML;
+  document.querySelector("#receipt-detail-recommendation-verdict").innerHTML =
+    document.querySelector("#recommendation-verdict").innerHTML;
+  document.querySelector("#receipt-current-url").textContent = currentUrl;
+  document.querySelector("#receipt-current-link").href = currentUrl;
+  document.querySelector("#receipt-optimal-url").textContent = optimalUrl;
+  document.querySelector("#receipt-optimal-link").href = optimalUrl;
+  document.querySelector("#receipt-required-markup").textContent = isFluid
+    ? buildFluidMarkup(optimalUrl)
+    : `<img src="${optimalUrl}" width="${BASE_WIDTH}" height="${BASE_HEIGHT}" alt="">`;
+  document.querySelector("#receipt-fluid-dialog-url").textContent = fluidUrl || "Unavailable";
+  document.querySelector("#receipt-fluid-dialog-markup").textContent = fluidUrl ? buildFluidMarkup(fluidUrl) : "Unavailable";
+  document.querySelector("#receipt-fluid-dialog-link").href = fluidUrl || "#";
+
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
+};
+
+const closeReceiptDialog = () => {
+  const dialog = document.querySelector("#receipt-dialog");
+  if (typeof dialog.close === "function") dialog.close();
+  else {
+    dialog.removeAttribute("open");
+    lastReceiptTrigger?.focus();
+    lastReceiptTrigger = null;
+  }
 };
 
 const updateFileSizeSavings = () => {
@@ -1524,7 +2322,11 @@ const updateAutoVerdict = () => {
     verdict.classList.add("is-match");
     document.querySelector("#hint-status").textContent = "Active";
   } else if (deliveredDpr === 1 && requestedDpr > 1) {
-    verdict.textContent = "1× fallback: the DPR client hint was not available to Cloudinary in this browser or context.";
+    let deliveryOrigin = "the image delivery origin";
+    try { deliveryOrigin = new URL(receiptUrls.auto).origin; } catch { /* Keep the readable fallback. */ }
+    verdict.textContent = activeScanAnalysisContext?.fromScan && deliveryOrigin !== "https://res.cloudinary.com"
+      ? `1× lab fallback: ${deliveryOrigin} was discovered after this page loaded, so the lab could not delegate Sec-CH-DPR to it. Use the generated setup on the scanned page.`
+      : "1× fallback: the DPR client hint was not available to Cloudinary in this browser or context.";
     verdict.classList.add("is-fallback");
     document.querySelector("#hint-status").textContent = "1× fallback";
   } else {
@@ -1536,10 +2338,14 @@ const updateAutoVerdict = () => {
 
 const updateTimingNote = () => {
   const note = document.querySelector("#timing-note");
-  const hasBytes = ["original", "baseline", "fixed", "auto"].every((key) => metrics.get(key)?.bytes > 0);
-  note.innerHTML = hasBytes
-    ? '<span class="live-dot" aria-hidden="true"></span> Live dimensions and transferred bytes measured successfully.'
-    : '<span class="live-dot" aria-hidden="true"></span> Dimensions are live. Byte totals are hidden by cache or Resource Timing.';
+  const receiptMeasurements = ["original", "baseline", "fixed", "auto", "fluid"].map((key) => metrics.get(key));
+  const hasFileSizes = receiptMeasurements.every((measurement) => measurement?.bytes > 0);
+  const hasNetworkTransfers = receiptMeasurements.every((measurement) => measurement?.transferBytes > 0);
+  note.innerHTML = hasNetworkTransfers
+    ? '<span class="live-dot" aria-hidden="true"></span> Live dimensions, encoded file sizes, and network bandwidth measured successfully.'
+    : hasFileSizes
+      ? '<span class="live-dot" aria-hidden="true"></span> File sizes are live. Cache hits or Resource Timing restrictions may hide network bandwidth.'
+      : '<span class="live-dot" aria-hidden="true"></span> Dimensions are live. File and transfer byte totals are restricted in this browser session.';
 };
 
 const measureAll = async () => {
@@ -1548,6 +2354,7 @@ const measureAll = async () => {
   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   images.forEach(measureImage);
   updateResultTable();
+  updateEfficiencyVerdict();
   updateFileSizeSavings();
   updateAutoVerdict();
   updateTimingNote();
@@ -1637,9 +2444,339 @@ const parseCloudinaryUrl = (rawValue) => {
   };
 };
 
+const isPrivatePageHostname = (rawHostname) => {
+  const hostname = rawHostname.toLowerCase().replace(/^\[|\]$/g, "");
+  if (hostname === "localhost" || hostname.endsWith(".localhost") || hostname.endsWith(".local") || hostname.endsWith(".internal")) return true;
+  if (hostname === "::1" || hostname.startsWith("fc") || hostname.startsWith("fd") || hostname.startsWith("fe80:")) return true;
+
+  const ipv4 = hostname.split(".").map(Number);
+  if (ipv4.length !== 4 || ipv4.some((part) => !Number.isInteger(part) || part < 0 || part > 255)) return false;
+  return ipv4[0] === 0
+    || ipv4[0] === 10
+    || ipv4[0] === 127
+    || (ipv4[0] === 169 && ipv4[1] === 254)
+    || (ipv4[0] === 172 && ipv4[1] >= 16 && ipv4[1] <= 31)
+    || (ipv4[0] === 192 && ipv4[1] === 168);
+};
+
+const normalizePageUrl = (rawValue) => {
+  const trimmed = rawValue.trim();
+  if (!trimmed) throw new Error("Enter the public webpage URL you want to scan.");
+  const withProtocol = /^[a-z][a-z\d+.-]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  let pageUrl;
+  try {
+    pageUrl = new URL(withProtocol);
+  } catch {
+    throw new Error("Enter a complete webpage URL, such as https://www.example.com/page.");
+  }
+  if (!/^https?:$/.test(pageUrl.protocol)) throw new Error("Only public HTTP or HTTPS webpages can be scanned.");
+  if (pageUrl.username || pageUrl.password) throw new Error("URLs containing usernames or passwords are not accepted.");
+  if (isPrivatePageHostname(pageUrl.hostname)) throw new Error("Private and local network addresses cannot be scanned.");
+  pageUrl.hash = "";
+  return pageUrl;
+};
+
+const getCanonicalPageUrl = (readerData, fallbackUrl) => {
+  const canonicalCandidates = [
+    ...Object.keys(readerData?.external?.canonical || {}),
+    readerData?.metadata?.["og:url"]
+  ].filter(Boolean);
+
+  for (const candidate of canonicalCandidates) {
+    try {
+      return normalizePageUrl(candidate);
+    } catch {
+      // Ignore missing, malformed, or non-public canonical metadata.
+    }
+  }
+  return fallbackUrl;
+};
+
+const fetchReaderData = async (pageUrl, { metadataOnly = false, signal } = {}) => {
+  const response = await fetch(`${DOMAIN_READER_ORIGIN}${pageUrl.href}`, {
+    headers: metadataOnly
+      ? {
+          Accept: "application/json",
+          "X-No-Cache": "true",
+          "X-Engine": "curl",
+          "X-Respond-Timing": "html",
+          "X-Timeout": "8"
+        }
+      : {
+          Accept: "application/json",
+          "X-No-Cache": "true",
+          "X-Engine": "browser",
+          "X-Respond-Timing": "network-idle",
+          "X-Respond-With": "markdown+frontmatter",
+          "X-With-Images-Summary": "all",
+          "X-Timeout": "20"
+        },
+    credentials: "omit",
+    referrerPolicy: "no-referrer",
+    signal
+  });
+
+  if (!response.ok) {
+    const error = response.status === 429
+      ? new Error("The page reader rate limit was reached. Wait a minute and try again.")
+      : new Error(`The page reader returned HTTP ${response.status}. This page may block automated access.`);
+    error.status = response.status;
+    throw error;
+  }
+
+  const payload = await response.json();
+  if (!payload?.data) throw new Error("The page reader returned an incomplete browser snapshot.");
+  return payload.data;
+};
+
+const extractCloudinaryImageUrls = (content) => {
+  const normalized = content
+    .replace(/\\\//g, "/")
+    .replace(/&amp;|&#38;|&#x26;/gi, "&")
+    .replace(/&quot;|&#34;|&#x22;/gi, '"');
+  const candidates = normalized.match(/(?:https?:)?\/\/[^\s<>"'`\\]+/gi) || [];
+  const unique = new Map();
+
+  candidates.forEach((candidate) => {
+    const cleaned = candidate.replace(/[)\]}>.,;]+$/g, "");
+    const absolute = cleaned.startsWith("//") ? `https:${cleaned}` : cleaned;
+    try {
+      const url = new URL(absolute);
+      if (!/^https?:$/.test(url.protocol) || !/\/image\/upload\//.test(url.pathname)) return;
+      url.hash = "";
+      unique.set(url.href, url.href);
+    } catch {
+      // Ignore text fragments that resemble URLs but cannot be parsed.
+    }
+  });
+
+  return [...unique.values()];
+};
+
+const describeScannedCloudinaryUrl = (url, recommendation = getScannedUrlRecommendation(url)) => {
+  try {
+    const parsed = parseCloudinaryUrl(url);
+    return recommendation
+      ? `${parsed.url.hostname} · ${recommendation.dprLabel} · ${recommendation.title}`
+      : `${parsed.url.hostname} · No optimization recommendation`;
+  } catch {
+    return new URL(url).hostname;
+  }
+};
+
+const orderDomainScanCandidates = (candidates, order) => {
+  const ordered = [...candidates];
+  const byFoundOrder = (first, second) => first.foundOrder - second.foundOrder;
+  if (order === "page-desc") return ordered.sort((first, second) => second.foundOrder - first.foundOrder);
+  if (order === "page-asc") return ordered.sort(byFoundOrder);
+  if (order === "potential-asc") {
+    return ordered.sort((first, second) => first.recommendation.score - second.recommendation.score || byFoundOrder(first, second));
+  }
+  return ordered.sort((first, second) => second.recommendation.score - first.recommendation.score || byFoundOrder(first, second));
+};
+
+const setDomainScanStatus = (message, state = "") => {
+  const status = document.querySelector("#domain-scan-status");
+  status.className = "domain-scan-status";
+  if (state) status.classList.add(`is-${state}`);
+  status.textContent = message;
+};
+
+const clearDomainScanResults = ({ clearInput = false } = {}) => {
+  domainScanCandidates = [];
+  domainScanPageUrl = null;
+  domainScanPage = 1;
+  document.querySelector("#domain-scan-list").replaceChildren();
+  document.querySelector("#domain-scan-results").hidden = true;
+  document.querySelector("#domain-scan-count").textContent = "0 DPR candidates found";
+  document.querySelector("#domain-scan-pagination").hidden = true;
+  document.querySelector("#domain-scan-page-status").textContent = "Page 1 of 1";
+  setDomainScanStatus("");
+  if (clearInput) document.querySelector("#domain-url").value = "";
+};
+
+const renderDomainScanPage = () => {
+  const results = document.querySelector("#domain-scan-results");
+  const list = document.querySelector("#domain-scan-list");
+  const count = document.querySelector("#domain-scan-count");
+  const pagination = document.querySelector("#domain-scan-pagination");
+  const orderSelect = document.querySelector("#domain-scan-order");
+  const orderedCandidates = orderDomainScanCandidates(domainScanCandidates, orderSelect.value);
+  const limitValue = Number(document.querySelector("#domain-scan-limit").value);
+  const limit = [5, 10, 25, 50].includes(limitValue) ? limitValue : DOMAIN_SCAN_DEFAULT_LIMIT;
+  const totalPages = Math.max(1, Math.ceil(orderedCandidates.length / limit));
+  domainScanPage = Math.min(Math.max(1, domainScanPage), totalPages);
+  const startIndex = (domainScanPage - 1) * limit;
+  const endIndex = Math.min(startIndex + limit, orderedCandidates.length);
+  const visibleCandidates = orderedCandidates.slice(startIndex, endIndex);
+  list.replaceChildren();
+
+  visibleCandidates.forEach((candidate, visibleIndex) => {
+    const { url, recommendation } = candidate;
+    const resultIndex = startIndex + visibleIndex;
+    const item = document.createElement("li");
+    item.className = "domain-scan-result";
+
+    const number = document.createElement("span");
+    number.className = "domain-scan-index";
+    number.textContent = String(resultIndex + 1);
+
+    const copy = document.createElement("div");
+    copy.className = "domain-scan-result-copy";
+    const urlText = document.createElement("code");
+    urlText.className = "domain-scan-url";
+    urlText.textContent = url;
+    urlText.title = url;
+    const detail = document.createElement("span");
+    detail.className = "domain-scan-detail";
+    detail.textContent = describeScannedCloudinaryUrl(url, recommendation);
+    const score = document.createElement("span");
+    score.className = "domain-scan-score";
+    score.classList.toggle("is-high", recommendation.score >= 80);
+    score.classList.toggle("is-low", recommendation.score <= 30);
+    score.title = `${recommendation.errorCount} errors, ${recommendation.warningCount} warnings, and ${recommendation.opportunityCount} generated opportunities. Higher scores indicate more actionable optimization potential.`;
+    score.append("Optimization potential ");
+    const scoreValue = document.createElement("strong");
+    scoreValue.textContent = `${recommendation.score}%`;
+    score.append(scoreValue);
+    const deliveryOrigin = document.createElement("span");
+    deliveryOrigin.className = "domain-scan-origin";
+    try {
+      const origin = new URL(url).origin;
+      const customOrigin = origin !== "https://res.cloudinary.com";
+      deliveryOrigin.classList.toggle("is-custom", customOrigin);
+      deliveryOrigin.textContent = customOrigin
+        ? `Found #${candidate.foundOrder + 1} · custom delivery origin · verify Sec-CH-DPR delegation to ${origin}`
+        : `Found #${candidate.foundOrder + 1} · client-hint origin · verify Sec-CH-DPR delegation to ${origin}`;
+    } catch {
+      deliveryOrigin.textContent = "Verify client-hint delegation for this delivery origin";
+    }
+    copy.append(urlText, detail, score, deliveryOrigin);
+
+    const actions = document.createElement("div");
+    actions.className = "domain-scan-actions";
+    const analyze = document.createElement("button");
+    analyze.type = "button";
+    analyze.dataset.analyzeUrl = url;
+    analyze.dataset.sourcePageUrl = domainScanPageUrl?.href || "";
+    analyze.textContent = "Analyze";
+    analyze.setAttribute("aria-label", `Analyze Cloudinary image ${resultIndex + 1}`);
+    const open = document.createElement("a");
+    open.href = url;
+    open.target = "_blank";
+    open.rel = "noreferrer";
+    open.textContent = "Open ↗";
+    open.setAttribute("aria-label", `Open Cloudinary image ${resultIndex + 1} in a new tab`);
+    actions.append(analyze, open);
+
+    item.append(number, copy, actions);
+    list.append(item);
+  });
+
+  const hostname = domainScanPageUrl?.hostname || "this page";
+  const orderLabel = orderSelect.selectedOptions[0]?.textContent || "Most potential optimizations";
+  count.textContent = domainScanCandidates.length
+    ? `Showing ${startIndex + 1}–${endIndex} of ${domainScanCandidates.length} DPR candidates found on ${hostname} · ${orderLabel}`
+    : `0 DPR optimization candidates found on ${hostname}`;
+  pagination.hidden = totalPages <= 1;
+  document.querySelector("#domain-scan-page-status").textContent = `Page ${domainScanPage} of ${totalPages}`;
+  document.querySelector("#domain-scan-previous").disabled = domainScanPage <= 1;
+  document.querySelector("#domain-scan-next").disabled = domainScanPage >= totalPages;
+  results.hidden = false;
+};
+
+const renderDomainScanResults = (candidates, pageUrl) => {
+  domainScanCandidates = [...candidates];
+  domainScanPageUrl = pageUrl;
+  domainScanPage = 1;
+  renderDomainScanPage();
+};
+
+const scanPageForCloudinaryUrls = async (rawValue) => {
+  const run = ++domainScanRun;
+  const button = document.querySelector("#domain-scan-button");
+  domainScanController?.abort();
+  domainScanController = null;
+  button.disabled = false;
+  button.textContent = "Scan page";
+
+  const pageUrl = normalizePageUrl(rawValue);
+  const input = document.querySelector("#domain-url");
+  input.value = pageUrl.href;
+  const controller = new AbortController();
+  domainScanController = controller;
+  const timeout = window.setTimeout(() => controller.abort(), 55000);
+
+  clearDomainScanResults();
+  button.disabled = true;
+  button.textContent = "Scanning…";
+  setDomainScanStatus(`Checking ${pageUrl.href} for redirects and canonical page metadata…`, "loading");
+
+  try {
+    let canonicalPageUrl = pageUrl;
+    try {
+      const metadata = await fetchReaderData(pageUrl, { metadataOnly: true, signal: controller.signal });
+      if (run !== domainScanRun) return;
+      canonicalPageUrl = getCanonicalPageUrl(metadata, pageUrl);
+      input.value = canonicalPageUrl.href;
+      setDomainScanStatus(
+        canonicalPageUrl.href !== pageUrl.href
+          ? `Canonical redirect found: ${pageUrl.href} → ${canonicalPageUrl.href}. Rendering the canonical page and waiting for lazy-loaded images; this can take up to 20 seconds…`
+          : `No canonical redirect found. Rendering ${canonicalPageUrl.href} and waiting for lazy-loaded images; this can take up to 20 seconds…`,
+        "loading"
+      );
+    } catch (error) {
+      if (error.name === "AbortError" || error.status === 429) throw error;
+      setDomainScanStatus(
+        `The quick redirect check was unavailable. Rendering ${pageUrl.href} directly and waiting for lazy-loaded images; this can take up to 20 seconds…`,
+        "loading"
+      );
+    }
+
+    const readerData = await fetchReaderData(canonicalPageUrl, { signal: controller.signal });
+    const content = readerData?.content;
+    if (typeof content !== "string") throw new Error("The page reader returned an incomplete browser snapshot.");
+    if (run !== domainScanRun) return;
+    canonicalPageUrl = getCanonicalPageUrl(readerData, canonicalPageUrl);
+    input.value = canonicalPageUrl.href;
+    const candidates = extractCloudinaryImageUrls(content)
+      .map((url) => ({ url, recommendation: getScannedUrlRecommendation(url) }))
+      .filter((candidate) => candidate.recommendation)
+      .map((candidate, foundOrder) => ({ ...candidate, foundOrder }));
+    renderDomainScanResults(candidates, canonicalPageUrl);
+    const canonicalNote = canonicalPageUrl.href !== pageUrl.href
+      ? ` Canonical page: ${canonicalPageUrl.href}`
+      : "";
+    setDomainScanStatus(
+      candidates.length
+        ? `Scan complete.${canonicalNote} Choose any result to load it into the optimizer.`
+        : `Scan complete.${canonicalNote} No Cloudinary URLs with DPR recommendations were found on this page.`,
+      candidates.length ? "success" : ""
+    );
+  } catch (error) {
+    if (run !== domainScanRun) return;
+    const message = error.name === "AbortError"
+      ? "The page scan timed out. Try again or scan a more specific public page."
+      : error.message || "The page could not be scanned.";
+    clearDomainScanResults();
+    setDomainScanStatus(message, "error");
+  } finally {
+    window.clearTimeout(timeout);
+    if (run === domainScanRun) {
+      button.disabled = false;
+      button.textContent = "Scan page";
+      domainScanController = null;
+    }
+  }
+};
+
 const isFormatAuto = (token) => /^f_auto(?:$|:)/.test(token);
 const isQualityAuto = (token) => /^q_auto(?:$|:)/.test(token);
 const isDprToken = (token) => /^dpr_/.test(token);
+const isWidthAutoToken = (token) => /^w_auto(?:$|:)/.test(token);
+const isHeightAutoToken = (token) => /^h_auto(?:$|:)/.test(token);
+const isNumericWidthToken = (token) => /^w_\d+(?:\.\d+)?$/.test(token);
+const isNumericHeightToken = (token) => /^h_\d+(?:\.\d+)?$/.test(token);
 
 const normalizeOptimizationOrder = (segments) => {
   const cleaned = segments
@@ -1664,19 +2801,25 @@ const updateDemoAssets = (parsed) => {
     original: buildDeliveryUrl(parsed, []),
     baseline: buildDeliveryUrl(parsed, [logicalTransform, "f_auto", "q_auto"]),
     fixed: buildDeliveryUrl(parsed, [`${logicalTransform},dpr_2.0`, "f_auto", "q_auto"]),
-    auto: buildDeliveryUrl(parsed, [`${logicalTransform},dpr_auto`, "f_auto", "q_auto"])
+    auto: buildDeliveryUrl(parsed, [`${logicalTransform},dpr_auto`, "f_auto", "q_auto"]),
+    fluid: buildDeliveryUrl(parsed, ["ar_3:2,c_fill,g_auto", `c_limit,w_auto:40:${BASE_WIDTH},dpr_auto`, "f_auto", "q_auto"])
   };
 
   document.querySelector('[data-metric="original"]').src = sourceUrls.original;
   document.querySelector('[data-metric="baseline"]').src = sourceUrls.baseline;
   document.querySelector('[data-metric="fixed"]').src = sourceUrls.fixed;
   document.querySelector('[data-metric="auto"]').src = sourceUrls.auto;
+  document.querySelector('[data-metric="fluid"]').src = sourceUrls.fluid;
   document.querySelector('[data-metric="wrong"]').src = sourceUrls.fixed;
   document.querySelector('[data-metric="correct"]').src = sourceUrls.fixed;
-  Object.entries(sourceUrls).forEach(([key, url]) => {
-    const link = document.querySelector(`#result-link-${key}`);
-    if (link) link.href = url;
-  });
+  Object.assign(receiptUrls, sourceUrls);
+
+  const fluidMarkup = buildFluidMarkup(sourceUrls.fluid);
+  document.querySelector("#receipt-fluid-url").textContent = sourceUrls.fluid;
+  document.querySelector("#receipt-fluid-markup").textContent = fluidMarkup;
+  document.querySelector("#receipt-fluid-link").href = sourceUrls.fluid;
+  document.querySelector("#responsive-sizing-url").textContent = sourceUrls.fluid;
+  document.querySelector("#responsive-sizing-markup").textContent = fluidMarkup;
 
   const assetName = decodeURIComponent(parsed.assetSegments.at(-1) || "selected asset");
   document.querySelector("#demo-source-note").textContent =
@@ -1684,10 +2827,23 @@ const updateDemoAssets = (parsed) => {
 };
 
 const getNumericToken = (tokens, key) => {
-  const token = [...tokens].reverse().find((candidate) => candidate.startsWith(`${key}_`));
+  const numericToken = new RegExp(`^${key}_\\d+(?:\\.\\d+)?$`);
+  const token = [...tokens].reverse().find((candidate) => numericToken.test(candidate));
   const value = token?.slice(key.length + 1);
   const number = Number(value);
   return Number.isFinite(number) ? number : 0;
+};
+
+const getAutoWidthInfo = (tokens) => {
+  const token = [...tokens].reverse().find(isWidthAutoToken) || "";
+  if (!token) return { token: "", fallback: 0 };
+  const parameters = token.split(":").slice(1);
+  const usesBreakpoints = parameters[0]?.startsWith("breakpoints");
+  const fallbackCandidate = usesBreakpoints
+    ? parameters.length > 1 ? parameters.at(-1) : ""
+    : parameters.length > 1 ? parameters[1] : "";
+  const fallback = Number(fallbackCandidate);
+  return { token, fallback: Number.isFinite(fallback) ? fallback : 0 };
 };
 
 const getDprInfo = (tokens) => {
@@ -1709,6 +2865,58 @@ const getFilenameDimensions = (assetSegments) => {
   const filename = assetSegments.at(-1) || "";
   const match = filename.match(/_(\d+)x(\d+)(?=\.[^./]+$)/i);
   return match ? { width: Number(match[1]), height: Number(match[2]) } : null;
+};
+
+const greatestCommonDivisor = (first, second) => {
+  let a = Math.abs(Math.round(first));
+  let b = Math.abs(Math.round(second));
+  while (b) [a, b] = [b, a % b];
+  return a || 1;
+};
+
+const buildResponsiveWidthSegments = (segments, tokens, width, height) => {
+  const numericWidths = tokens.filter(isNumericWidthToken);
+  const numericHeights = tokens.filter(isNumericHeightToken);
+  const hasLayers = tokens.some((token) => /^[lu]_/.test(token) || token === "fl_layer_apply");
+  const alreadyAutomatic = tokens.some(isWidthAutoToken);
+  const hasInvalidAutoHeight = tokens.some(isHeightAutoToken);
+  if (!width || numericWidths.length !== 1 || numericHeights.length > 1 || hasLayers || alreadyAutomatic || hasInvalidAutoHeight) return [];
+
+  const sizingComponentIndex = segments.findIndex((segment) => {
+    const componentTokens = segment.split(",");
+    return componentTokens.some(isNumericWidthToken) || componentTokens.some(isNumericHeightToken);
+  });
+  if (sizingComponentIndex < 0) return [];
+
+  const sizingTokens = segments[sizingComponentIndex].split(",");
+  const resizeToken = sizingTokens.find((token) => /^c_/.test(token));
+  const fillToken = sizingTokens.find((token) => token === "c_fill");
+  if (height && !fillToken) return [];
+  if (!height && resizeToken && !/^c_(?:scale|fit|limit)$/.test(resizeToken)) return [];
+
+  const divisor = height ? greatestCommonDivisor(width, height) : 1;
+  const aspectRatio = height ? `ar_${Math.round(width / divisor)}:${Math.round(height / divisor)}` : "";
+  const cleaned = segments
+    .slice(0, -2)
+    .map((segment, index) => {
+      let componentTokens = segment
+        .split(",")
+        .filter((token) => !isNumericWidthToken(token) && !isNumericHeightToken(token) && !isDprToken(token));
+
+      if (index === sizingComponentIndex) {
+        if (aspectRatio) {
+          componentTokens.push(aspectRatio);
+        } else {
+          componentTokens = componentTokens.filter((token) =>
+            !/^c_(?:scale|fit|limit)$/.test(token) && !/^g_/.test(token)
+          );
+        }
+      }
+      return componentTokens.join(",");
+    })
+    .filter(Boolean);
+
+  return [...cleaned, `c_limit,w_auto:40:${Math.round(width)},dpr_auto`, "f_auto", "q_auto"];
 };
 
 const renderTransformationList = (segments) => {
@@ -1769,7 +2977,7 @@ const setAuditVerdict = (issues) => {
   document.querySelector("#audit-title").textContent = `${errors + warnings} actionable ${errors + warnings === 1 ? "finding" : "findings"}`;
 };
 
-const buildAudit = (parsed) => {
+const buildAudit = (parsed, scanContext = null) => {
   const issues = [];
   const { transformationSegments: segments, tokens } = parsed;
   const hasFormatAuto = tokens.some(isFormatAuto);
@@ -1779,6 +2987,9 @@ const buildAudit = (parsed) => {
     && segments.at(-1) === "q_auto";
   const width = getNumericToken(tokens, "w");
   const height = getNumericToken(tokens, "h");
+  const autoWidth = getAutoWidthInfo(tokens);
+  const hasHeightAuto = tokens.some(isHeightAutoToken);
+  const hasDeliveryDimension = Boolean(width || height || autoWidth.token);
   const dpr = getDprInfo(tokens);
   const filenameDimensions = getFilenameDimensions(parsed.assetSegments);
   const hasSignature = segments.some((segment) => /^s--.+--$/.test(segment));
@@ -1807,19 +3018,48 @@ const buildAudit = (parsed) => {
     });
   }
 
-  if (!width && !height) {
+  if (hasHeightAuto) {
     issues.push({
-      severity: "warning",
-      title: "No delivery dimensions are set",
-      text: "Without w_ or h_, the URL can deliver the full-size original. Add the intended logical display dimensions before choosing DPR."
+      severity: "error",
+      title: "h_auto is not a supported delivery transformation",
+      text: "Use w_auto for responsive delivery width and establish height with the source aspect ratio or an ar_ crop. CSS height: auto controls browser layout, not the Cloudinary transformation."
     });
   }
 
-  if (dpr.token && !width && !height) {
+  if (!hasDeliveryDimension) {
+    issues.push({
+      severity: "warning",
+      title: "No delivery dimensions are set",
+      text: "Without w_, h_, or w_auto, the URL can deliver the full-size original. Add the intended logical display dimensions before choosing DPR."
+    });
+  }
+
+  if (dpr.token && !hasDeliveryDimension) {
     issues.push({
       severity: "error",
       title: "DPR has no resize dimension",
       text: "A DPR transformation must be paired with a width or height transformation."
+    });
+  }
+
+  if (autoWidth.token) {
+    issues.push({
+      severity: "info",
+      title: "Automatic width requires accurate sizes markup",
+      text: "Add a sizes attribute that matches the image’s real CSS layout so the browser can send Sec-CH-Width. Keep width and height attributes to reserve the correct aspect ratio."
+    });
+    if (!autoWidth.fallback) {
+      issues.push({
+        severity: "warning",
+        title: "Automatic width has no fallback",
+        text: "Without a width hint, bare w_auto can deliver the original dimensions. Add a rounding step and fallback such as w_auto:40:360."
+      });
+    }
+  } else if (width && !hasHeightAuto) {
+    issues.push({
+      severity: "info",
+      title: "A fluid slot can use automatic width",
+      text: `If this image changes width with the layout, consider c_limit,w_auto:40:${Math.round(width)},dpr_auto plus an accurate sizes attribute. Keep w_${width} when the slot is always fixed.`
     });
   }
 
@@ -1845,6 +3085,23 @@ const buildAudit = (parsed) => {
       severity: "info",
       title: "DPR is omitted",
       text: "This forces 1× delivery. That is efficient on standard-density screens but can look soft on high-density displays."
+    });
+  }
+
+  if (scanContext?.fromScan && (dpr.isExplicit || dpr.isAuto)) {
+    const origin = parsed.url.origin;
+    const sourcePage = scanContext.sourcePageUrl || "the scanned page";
+    const setup = getClientHintSetup(origin);
+    const isDelegatedByLab = origin === "https://res.cloudinary.com";
+    issues.push({
+      severity: isDelegatedByLab ? "info" : "warning",
+      title: isDelegatedByLab
+        ? "Verify DPR delegation on the scanned page"
+        : "Scraped custom delivery host needs explicit DPR delegation",
+      text: isDelegatedByLab
+        ? `${sourcePage} must delegate Sec-CH-DPR to ${origin} for dpr_auto to match the device.`
+        : `This asset uses ${origin}, which was discovered after this lab document loaded. The lab cannot retroactively delegate client hints to it, so its dpr_auto measurement can fall back to 1×. Configure the scanned page to delegate Sec-CH-DPR to this exact origin.`,
+      suggestion: setup.meta
     });
   }
 
@@ -1874,19 +3131,63 @@ const buildAudit = (parsed) => {
   const responsiveSegments = dpr.isExplicit
     ? replaceTransformationToken(correctedSegments, /^dpr_/, "dpr_auto")
     : [];
+  const responsiveWidthSegments = buildResponsiveWidthSegments(correctedSegments, tokens, width, height);
 
   return {
     issues,
     width,
     height,
+    autoWidth,
     dpr,
     correctedUrl,
-    responsiveUrl: responsiveSegments.length ? buildDeliveryUrl(parsed, responsiveSegments) : ""
+    responsiveUrl: responsiveSegments.length ? buildDeliveryUrl(parsed, responsiveSegments) : "",
+    responsiveWidthUrl: responsiveWidthSegments.length ? buildDeliveryUrl(parsed, responsiveWidthSegments) : ""
   };
 };
 
+const getScannedUrlRecommendation = (url) => {
+  try {
+    const parsed = parseCloudinaryUrl(url);
+    if (!parsed.tokens.some(isDprToken)) return null;
+    const audit = buildAudit(parsed);
+    const errorCount = audit.issues.filter((issue) => issue.severity === "error").length;
+    const warningCount = audit.issues.filter((issue) => issue.severity === "warning").length;
+    const actionableIssue = audit.issues.find((issue) => issue.severity === "error")
+      || audit.issues.find((issue) => issue.severity === "warning");
+    const customOriginSetup = audit.dpr.isAuto && parsed.url.origin !== "https://res.cloudinary.com";
+    const title = actionableIssue?.title
+      || (audit.responsiveUrl ? "Automatic DPR alternative available" : "")
+      || (audit.responsiveWidthUrl ? "Responsive-width alternative available" : "")
+      || (customOriginSetup ? "Verify client-hint delegation for custom origin" : "");
+    if (!title) return null;
+
+    const score = Math.min(100, Math.max(10,
+      errorCount * 30
+      + warningCount * 20
+      + (audit.responsiveUrl ? 10 : 0)
+      + (audit.responsiveWidthUrl ? 10 : 0)
+      + (customOriginSetup ? 10 : 0)
+    ));
+    const opportunityCount = Number(Boolean(audit.responsiveUrl))
+      + Number(Boolean(audit.responsiveWidthUrl))
+      + Number(customOriginSetup);
+
+    return {
+      title,
+      dprLabel: audit.dpr.label,
+      score,
+      errorCount,
+      warningCount,
+      opportunityCount
+    };
+  } catch {
+    return null;
+  }
+};
+
 const updateInspectorMarkup = (audit, deliveredWidth, deliveredHeight) => {
-  let logicalWidth = audit.width;
+  const fixedSizeUrl = audit.responsiveUrl || audit.correctedUrl;
+  let logicalWidth = audit.width || audit.autoWidth.fallback;
   let logicalHeight = audit.height;
   const ratio = deliveredWidth && deliveredHeight ? deliveredHeight / deliveredWidth : 0;
 
@@ -1897,8 +3198,47 @@ const updateInspectorMarkup = (audit, deliveredWidth, deliveredHeight) => {
     logicalWidth ? `width="${Math.round(logicalWidth)}"` : "",
     logicalHeight ? `height="${Math.round(logicalHeight)}"` : ""
   ].filter(Boolean).join(" ");
+  const sizes = audit.autoWidth.token
+    ? logicalWidth ? ` sizes="(max-width: ${Math.round(logicalWidth)}px) 100vw, ${Math.round(logicalWidth)}px"` : ' sizes="100vw"'
+    : "";
   document.querySelector("#suggested-markup").textContent =
-    `<img src="${audit.correctedUrl}"${dimensions ? ` ${dimensions}` : ""} alt="">`;
+    `<img src="${fixedSizeUrl}"${sizes}${dimensions ? ` ${dimensions}` : ""} alt="">`;
+};
+
+const updateResponsiveWidthMarkup = (audit, deliveredWidth, deliveredHeight) => {
+  const output = document.querySelector("#responsive-width-markup");
+  if (!audit.responsiveWidthUrl) {
+    output.textContent = "—";
+    return;
+  }
+
+  const logicalWidth = Math.round(audit.width);
+  const ratio = deliveredWidth && deliveredHeight ? deliveredHeight / deliveredWidth : 0;
+  const logicalHeight = audit.height || (ratio ? Math.round(logicalWidth * ratio) : 0);
+  const dimensions = [
+    `width="${logicalWidth}"`,
+    logicalHeight ? `height="${Math.round(logicalHeight)}"` : ""
+  ].filter(Boolean).join(" ");
+  const sizes = `(max-width: ${logicalWidth}px) 100vw, ${logicalWidth}px`;
+  output.textContent =
+    `<img src="${audit.responsiveWidthUrl}" sizes="${sizes}" ${dimensions} style="width:100%;max-width:${logicalWidth}px;height:auto" alt="">`;
+};
+
+const updateClientHintOption = (parsed, scanContext) => {
+  const option = document.querySelector("#client-hint-option");
+  option.hidden = !scanContext?.fromScan;
+  if (option.hidden) return;
+
+  const origin = parsed.url.origin;
+  const setup = getClientHintSetup(origin);
+  const sourcePage = scanContext.sourcePageUrl || "the scanned page";
+  const isDelegatedByLab = origin === "https://res.cloudinary.com";
+  document.querySelector("#client-hint-title").textContent = `Delegate DPR to ${parsed.url.hostname}`;
+  document.querySelector("#client-hint-meta").textContent = setup.meta;
+  document.querySelector("#client-hint-headers").textContent = setup.headers;
+  document.querySelector("#client-hint-note").textContent = isDelegatedByLab
+    ? `Apply one option to ${sourcePage}. Place delegate-ch before links, styles, scripts, and image requests, or send the HTTP headers with the HTML response.`
+    : `Apply one option to ${sourcePage}. This custom delivery origin was discovered after the lab loaded, so the lab may measure dpr_auto as a 1× fallback even though the production page will adapt correctly after this setup.`;
 };
 
 let inspectorRun = 0;
@@ -1919,6 +3259,7 @@ const analyzeAssetUrl = async () => {
   document.querySelector("#inspector-original-file").textContent = "—";
   document.querySelector("#inspector-derived-file").textContent = "—";
   document.querySelector("#output-explanation").textContent = "Waiting for the asset response.";
+  document.querySelector("#client-hint-option").hidden = true;
 
   let parsed;
   try {
@@ -1934,15 +3275,18 @@ const analyzeAssetUrl = async () => {
     document.querySelector("#corrected-url").textContent = "—";
     document.querySelector("#suggested-markup").textContent = "—";
     document.querySelector("#responsive-option").hidden = true;
+    document.querySelector("#responsive-width-option").hidden = true;
+    document.querySelector("#responsive-width-markup").textContent = "—";
     return;
   }
 
-  const audit = buildAudit(parsed);
+  const audit = buildAudit(parsed, activeScanAnalysisContext);
   updateDemoAssets(parsed);
   measureAll();
   renderTransformationList(parsed.transformationSegments);
   renderIssues(audit.issues);
   setAuditVerdict(audit.issues);
+  updateClientHintOption(parsed, activeScanAnalysisContext);
 
   document.querySelector("#current-asset-link").href = parsed.raw;
   document.querySelector("#corrected-url").textContent = audit.correctedUrl;
@@ -1956,7 +3300,15 @@ const analyzeAssetUrl = async () => {
     document.querySelector("#responsive-asset-link").href = audit.responsiveUrl;
   }
 
+  const responsiveWidthOption = document.querySelector("#responsive-width-option");
+  responsiveWidthOption.hidden = !audit.responsiveWidthUrl;
+  if (audit.responsiveWidthUrl) {
+    document.querySelector("#responsive-width-url").textContent = audit.responsiveWidthUrl;
+    document.querySelector("#responsive-width-asset-link").href = audit.responsiveWidthUrl;
+  }
+
   updateInspectorMarkup(audit, 0, 0);
+  updateResponsiveWidthMarkup(audit, 0, 0);
   image.src = parsed.raw;
   await imageReady(image);
   if (run !== inspectorRun) return;
@@ -1978,14 +3330,19 @@ const analyzeAssetUrl = async () => {
   document.querySelector("#inspector-bytes").textContent = formatBytes(resource.bytes);
   document.querySelector("#inspector-derived-file").textContent = formatBytes(resource.bytes);
   updateInspectorMarkup(audit, deliveredWidth, deliveredHeight);
+  updateResponsiveWidthMarkup(audit, deliveredWidth, deliveredHeight);
 
   if (audit.dpr.isExplicit && audit.width) {
     const predictedWidth = Math.round(audit.width * audit.dpr.value);
     document.querySelector("#output-explanation").textContent =
       `w_${audit.width} × DPR ${audit.dpr.value} requests ${predictedWidth} physical pixels wide. This response delivered ${formatDimensions(deliveredWidth, deliveredHeight)}.`;
   } else if (audit.dpr.isAuto) {
-    document.querySelector("#output-explanation").textContent =
-      `Cloudinary selected this ${formatDimensions(deliveredWidth, deliveredHeight)} response from the DPR client hint available in this browser context.`;
+    const logicalWidth = audit.width || audit.autoWidth.fallback;
+    const deliveredDpr = logicalWidth ? deliveredWidth / logicalWidth : 0;
+    const targetDpr = Math.ceil(window.devicePixelRatio || 1);
+    document.querySelector("#output-explanation").textContent = deliveredDpr && deliveredDpr + .05 < targetDpr
+      ? `dpr_auto delivered ${deliveredDpr.toFixed(1)}× instead of this browser’s ${targetDpr}× target. The DPR client hint did not reach this delivery request; use the generated delegation setup for the exact image origin.`
+      : `Cloudinary selected this ${formatDimensions(deliveredWidth, deliveredHeight)} response from the DPR client hint available in this browser context.`;
   } else {
     document.querySelector("#output-explanation").textContent =
       `The current URL delivered ${formatDimensions(deliveredWidth, deliveredHeight)} without a high-density DPR multiplier.`;
@@ -2019,12 +3376,86 @@ document.querySelectorAll("[data-copy-target]").forEach((button) => {
   });
 });
 
+document.querySelectorAll("[data-receipt-key]").forEach((button) => {
+  button.addEventListener("click", () => openReceiptDialog(button.dataset.receiptKey, button));
+});
+
+document.querySelector("#receipt-dialog-close").addEventListener("click", closeReceiptDialog);
+document.querySelector("#receipt-dialog").addEventListener("close", () => {
+  lastReceiptTrigger?.focus();
+  lastReceiptTrigger = null;
+});
+
+document.querySelector("#domain-scan-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  try {
+    await scanPageForCloudinaryUrls(document.querySelector("#domain-url").value);
+  } catch (error) {
+    setDomainScanStatus(error.message || "Enter a valid public webpage URL.", "error");
+  }
+});
+
+document.querySelector("#clear-domain-scan").addEventListener("click", () => {
+  domainScanRun += 1;
+  domainScanController?.abort();
+  domainScanController = null;
+  const button = document.querySelector("#domain-scan-button");
+  button.disabled = false;
+  button.textContent = "Scan page";
+  clearDomainScanResults({ clearInput: true });
+  document.querySelector("#domain-url").focus();
+});
+
+document.querySelector("#domain-scan-limit").addEventListener("change", () => {
+  if (!domainScanPageUrl) return;
+  domainScanPage = 1;
+  renderDomainScanPage();
+});
+
+document.querySelector("#domain-scan-order").addEventListener("change", () => {
+  if (!domainScanPageUrl) return;
+  domainScanPage = 1;
+  renderDomainScanPage();
+});
+
+document.querySelector("#domain-scan-previous").addEventListener("click", () => {
+  if (domainScanPage <= 1) return;
+  domainScanPage -= 1;
+  renderDomainScanPage();
+});
+
+document.querySelector("#domain-scan-next").addEventListener("click", () => {
+  const limit = Number(document.querySelector("#domain-scan-limit").value) || DOMAIN_SCAN_DEFAULT_LIMIT;
+  const totalPages = Math.max(1, Math.ceil(domainScanCandidates.length / limit));
+  if (domainScanPage >= totalPages) return;
+  domainScanPage += 1;
+  renderDomainScanPage();
+});
+
+document.querySelector("#domain-scan-list").addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-analyze-url]");
+  if (!button) return;
+  activeScanAnalysisContext = {
+    fromScan: true,
+    sourcePageUrl: button.dataset.sourcePageUrl || domainScanPageUrl?.href || ""
+  };
+  document.querySelector("#asset-url").value = button.dataset.analyzeUrl;
+  analyzeAssetUrl();
+  setDomainScanStatus("The selected image is loaded in the optimizer below.", "success");
+  document.querySelector("#url-inspector-form").scrollIntoView({
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    block: "start"
+  });
+});
+
 document.querySelector("#url-inspector-form").addEventListener("submit", (event) => {
   event.preventDefault();
+  activeScanAnalysisContext = null;
   analyzeAssetUrl();
 });
 
 document.querySelector("#use-default-asset").addEventListener("click", () => {
+  activeScanAnalysisContext = null;
   document.querySelector("#asset-url").value = DEFAULT_ASSET_URL;
   analyzeAssetUrl();
 });
