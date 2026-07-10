@@ -1028,7 +1028,9 @@ tbody tr.needs-client-hint-setup td { box-shadow: inset 0 -2px #e0b84e; }
 .file-size-savings strong { color: var(--ink); }
 
 .receipt-dialog {
-  width: min(960px, calc(100vw - 32px));
+  width: min(1120px, calc(100vw - 32px));
+  height: min(860px, calc(100vh - 32px));
+  height: min(860px, calc(100dvh - 32px));
   max-height: min(860px, calc(100vh - 32px));
   padding: 0;
   border: 0;
@@ -1039,15 +1041,38 @@ tbody tr.needs-client-hint-setup td { box-shadow: inset 0 -2px #e0b84e; }
   overflow: hidden;
 }
 
+.receipt-dialog[open] { display: flex; flex-direction: column; }
 .receipt-dialog::backdrop { background: rgba(8, 15, 28, .72); backdrop-filter: blur(5px); }
-.receipt-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding: 23px 26px 19px; border-bottom: 1px solid #e1e5ed; }
+.receipt-dialog-header { display: flex; flex: 0 0 auto; align-items: flex-start; justify-content: space-between; gap: 24px; padding: 23px 26px 19px; border-bottom: 1px solid #e1e5ed; }
 .receipt-dialog-header h3 { margin: 0; font-size: 23px; letter-spacing: -.035em; }
 .receipt-dialog-close { display: grid; flex: 0 0 auto; width: 32px; height: 32px; padding: 0; place-items: center; border: 1px solid #dce1e9; border-radius: 50%; color: #5d697b; background: white; font-size: 18px; cursor: pointer; }
 .receipt-dialog-close:hover { border-color: #aeb6c3; color: var(--ink); }
-.receipt-dialog-body { display: grid; grid-template-columns: minmax(280px, .78fr) minmax(0, 1.22fr); max-height: calc(100vh - 126px); overflow-y: auto; }
-.receipt-dialog-preview { display: grid; min-height: 440px; padding: 28px; place-items: center; background: #101724; }
-.receipt-dialog-preview img { max-width: 100%; max-height: 520px; border-radius: 8px; box-shadow: 0 18px 45px rgba(0,0,0,.32); }
-.receipt-dialog-details { display: grid; align-content: start; gap: 18px; min-width: 0; padding: 26px; }
+.receipt-dialog-body { display: grid; min-height: 0; flex: 1; grid-template-columns: minmax(330px, .82fr) minmax(0, 1.18fr); overflow: hidden; }
+.receipt-dialog-preview { display: flex; min-width: 0; min-height: 0; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px; overflow: hidden; background: #101724; }
+.receipt-preview-frame { position: relative; display: grid; max-width: 100%; min-width: 0; place-items: center; }
+.receipt-preview-frame img { display: block; max-width: 100%; max-height: 500px; border-radius: 8px; object-fit: contain; box-shadow: 0 18px 45px rgba(0,0,0,.32); }
+.receipt-preview-frame.is-fluid { flex: 0 1 auto; min-width: 120px; max-width: 100%; }
+.receipt-preview-frame.is-fluid img { width: 100%; height: auto; max-height: 340px; aspect-ratio: 3 / 2; object-fit: cover; }
+.receipt-fluid-resize-handle { position: absolute; top: 50%; right: -12px; display: grid; width: 24px; height: 52px; padding: 0; place-items: center; border: 1px solid #75859d; border-radius: 99px; color: white; background: #26344a; box-shadow: 0 8px 22px rgba(0,0,0,.28); cursor: ew-resize; touch-action: none; transform: translateY(-50%); }
+.receipt-fluid-resize-handle[hidden] { display: none; }
+.receipt-fluid-resize-handle span,
+.receipt-fluid-resize-handle span::before,
+.receipt-fluid-resize-handle span::after { width: 2px; height: 14px; border-radius: 2px; content: ""; background: #b9c7d9; }
+.receipt-fluid-resize-handle span { position: relative; }
+.receipt-fluid-resize-handle span::before { position: absolute; left: -5px; }
+.receipt-fluid-resize-handle span::after { position: absolute; left: 5px; }
+.receipt-fluid-controls { width: min(100%, 360px); padding: 12px; border: 1px solid #2f4059; border-radius: 10px; color: #c5d1e1; background: #172236; }
+.receipt-fluid-controls[hidden] { display: none; }
+.receipt-fluid-controls > label { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #d8e2ef; font-size: 9px; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+.receipt-fluid-controls output { color: #7ee5ff; font-size: 10px; }
+.receipt-fluid-controls input[type="range"] { width: 100%; margin: 9px 0 10px; accent-color: var(--cyan); }
+.receipt-fluid-live-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin: 0; }
+.receipt-fluid-live-metrics div { min-width: 0; padding: 7px 8px; border-radius: 6px; background: #202e44; }
+.receipt-fluid-live-metrics .receipt-fluid-actual { grid-column: 1 / -1; }
+.receipt-fluid-live-metrics dt { margin-bottom: 3px; color: #8190a5; font-size: 7px; font-weight: 850; letter-spacing: .07em; text-transform: uppercase; }
+.receipt-fluid-live-metrics dd { margin: 0; color: white; font-size: 9px; font-weight: 800; overflow-wrap: anywhere; }
+.receipt-fluid-controls > p { margin: 9px 1px 0; color: #8190a5; font-size: 8px; line-height: 1.45; }
+.receipt-dialog-details { display: grid; min-width: 0; min-height: 0; align-content: start; gap: 18px; padding: 26px 26px max(42px, env(safe-area-inset-bottom)); overflow-y: auto; overscroll-behavior: contain; scroll-padding-bottom: 42px; }
 .receipt-detail-block { min-width: 0; }
 .receipt-detail-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 8px; }
 .receipt-detail-heading span { color: #798599; font-size: 9px; font-weight: 850; letter-spacing: .09em; text-transform: uppercase; }
@@ -1062,6 +1087,8 @@ tbody tr.needs-client-hint-setup td { box-shadow: inset 0 -2px #e0b84e; }
   user-select: all;
 }
 .receipt-dialog-details .copy-code-row button { margin-top: 1px; }
+.receipt-fluid-resolved-note { margin: 8px 2px 0; color: #7a8597; font-size: 9px; line-height: 1.5; }
+.receipt-fluid-resolved-note code { color: var(--blue-dark); }
 .receipt-dialog-metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1177,8 +1204,14 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
   .receipt-verdicts { grid-template-columns: 1fr; }
   .receipt-verdict + .receipt-verdict { border-top: 1px solid var(--line); border-left: 0; }
   .receipt-fluid-code { grid-template-columns: 1fr; }
-  .receipt-dialog-body { grid-template-columns: 1fr; }
-  .receipt-dialog-preview { min-height: 300px; }
+  .receipt-dialog-body { grid-template-columns: 1fr; grid-template-rows: minmax(260px, 44%) minmax(0, 1fr); }
+  .receipt-dialog-preview { min-height: 0; padding: 14px 18px; gap: 10px; }
+  .receipt-preview-frame img { max-height: 210px; }
+  .receipt-preview-frame.is-fluid img { max-height: 150px; }
+  .receipt-fluid-controls { padding: 9px 10px; }
+  .receipt-fluid-controls input[type="range"] { margin-block: 6px 7px; }
+  .receipt-fluid-live-metrics div { padding: 5px 7px; }
+  .receipt-fluid-controls > p { display: none; }
   .support-note { align-items: flex-start; flex-direction: column; }
 }
 
@@ -1219,7 +1252,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
   .recommendation-heading { flex-direction: column; gap: 2px; }
   .responsive-sizing-card { margin-inline: -4px; padding: 24px 20px; }
   .receipt-fluid-heading { flex-direction: column; gap: 8px; }
-  .receipt-dialog { width: calc(100vw - 16px); max-height: calc(100vh - 16px); }
+  .receipt-dialog { width: calc(100vw - 16px); height: calc(100vh - 16px); height: calc(100dvh - 16px); max-height: calc(100vh - 16px); }
   .receipt-dialog-header { padding: 19px 20px 16px; }
   .receipt-dialog-details { padding: 20px; }
   tbody tr { grid-template-columns: 1fr; }
@@ -1240,6 +1273,16 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
   .results-foot { align-items: flex-start; flex-direction: column; }
   footer { align-items: flex-start; flex-direction: column; gap: 22px; padding-inline: 20px; }
   footer div { flex-direction: column; gap: 12px; }
+}
+
+@media (max-height: 700px) and (min-width: 781px) {
+  .receipt-dialog-preview { gap: 10px; padding: 16px; }
+  .receipt-preview-frame img { max-height: 300px; }
+  .receipt-preview-frame.is-fluid img { max-height: 180px; }
+  .receipt-fluid-controls { padding: 9px 10px; }
+  .receipt-fluid-controls input[type="range"] { margin-block: 6px 7px; }
+  .receipt-fluid-live-metrics div { padding: 5px 7px; }
+  .receipt-fluid-controls > p { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1861,7 +1904,25 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
       </div>
       <div class="receipt-dialog-body">
         <div class="receipt-dialog-preview">
-          <img id="receipt-dialog-image" alt="">
+          <div id="receipt-preview-frame" class="receipt-preview-frame is-static">
+            <img id="receipt-dialog-image" alt="">
+            <button id="receipt-fluid-resize-handle" class="receipt-fluid-resize-handle" type="button" aria-label="Drag or use arrow keys to resize the fluid image slot" hidden><span aria-hidden="true"></span></button>
+          </div>
+          <div id="receipt-fluid-controls" class="receipt-fluid-controls" hidden>
+            <label for="receipt-fluid-width-range">
+              Resize CSS slot
+              <output id="receipt-fluid-width-output" for="receipt-fluid-width-range">360 px</output>
+            </label>
+            <input id="receipt-fluid-width-range" type="range" min="120" max="360" step="1" value="360">
+            <dl class="receipt-fluid-live-metrics">
+              <div><dt>CSS width</dt><dd id="receipt-fluid-css-width">360 px</dd></div>
+              <div><dt>w_auto selects</dt><dd id="receipt-fluid-auto-width">360 px</dd></div>
+              <div><dt>dpr_auto selects</dt><dd id="receipt-fluid-auto-dpr">1×</dd></div>
+              <div><dt>Pixel target</dt><dd id="receipt-fluid-target-pixels">360 × 240</dd></div>
+              <div class="receipt-fluid-actual"><dt>Actual response</dt><dd id="receipt-fluid-actual-output">Waiting…</dd></div>
+            </dl>
+            <p>Drag the image handle or use the slider. Width rounds up in 40-pixel steps; DPR follows this browser’s current device density.</p>
+          </div>
         </div>
         <div class="receipt-dialog-details">
           <dl class="receipt-dialog-metrics" aria-label="Measured strategy metrics">
@@ -1878,6 +1939,17 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
           <div class="receipt-dialog-verdicts" aria-label="Receipt decisions">
             <p id="receipt-detail-bandwidth-verdict" class="receipt-verdict bandwidth-verdict">—</p>
             <p id="receipt-detail-recommendation-verdict" class="receipt-verdict recommendation-verdict">—</p>
+          </div>
+          <div id="receipt-fluid-live-block" class="receipt-detail-block" hidden>
+            <div class="receipt-detail-heading">
+              <span>Live resolved preview URL</span>
+              <a id="receipt-fluid-resolved-link" href="#" target="_blank" rel="noreferrer">Open preview ↗</a>
+            </div>
+            <div class="copy-code-row">
+              <code id="receipt-fluid-resolved-url">—</code>
+              <button type="button" data-copy-target="receipt-fluid-resolved-url">Copy URL</button>
+            </div>
+            <p class="receipt-fluid-resolved-note">This diagnostic URL replaces <code>w_auto</code> and <code>dpr_auto</code> with the live values shown in the preview. Keep the automatic URL in production.</p>
           </div>
           <div class="receipt-detail-block">
             <div class="receipt-detail-heading">
@@ -1969,6 +2041,9 @@ let domainScanPageUrl = null;
 let domainScanPage = 1;
 let lastReceiptTrigger = null;
 let activeScanAnalysisContext = null;
+let activeReceiptKey = null;
+let fluidPreviewWidth = BASE_WIDTH;
+let fluidResizeStart = null;
 
 const formatDimensions = (width, height) => `${Math.round(width)} × ${Math.round(height)}`;
 
@@ -1999,6 +2074,75 @@ const getClientHintSetup = (origin) => ({
 
 const buildFluidMarkup = (url) =>
   `<img src="${url}" sizes="(max-width: ${BASE_WIDTH}px) 100vw, ${BASE_WIDTH}px" width="${BASE_WIDTH}" height="${BASE_HEIGHT}" style="width:100%;max-width:${BASE_WIDTH}px;height:auto" alt="">`;
+
+const roundFluidWidth = (width) => Math.max(40, Math.ceil(width / 40) * 40);
+
+const buildResolvedFluidPreviewUrl = (url, width, dpr) => {
+  const parsed = parseCloudinaryUrl(url);
+  let segments = replaceTransformationToken(parsed.transformationSegments, /^w_auto(?:$|:)/, `w_${width}`);
+  segments = replaceTransformationToken(segments, /^dpr_auto$/, `dpr_${dpr.toFixed(1)}`);
+  return buildDeliveryUrl(parsed, segments);
+};
+
+const getFluidPreviewMaxWidth = () => {
+  const preview = document.querySelector(".receipt-dialog-preview");
+  const styles = getComputedStyle(preview);
+  const available = preview.clientWidth
+    - (Number.parseFloat(styles.paddingLeft) || 0)
+    - (Number.parseFloat(styles.paddingRight) || 0)
+    - 18;
+  return Math.max(120, Math.min(BASE_WIDTH, Math.floor(available)));
+};
+
+const updateFluidActualOutput = () => {
+  if (activeReceiptKey !== "fluid") return;
+  const image = document.querySelector("#receipt-dialog-image");
+  if (!image.naturalWidth) {
+    document.querySelector("#receipt-fluid-actual-output").textContent = "Could not load preview";
+    return;
+  }
+  const resource = getResourceDetails(image.currentSrc || image.src);
+  const width = resource.width || image.naturalWidth;
+  const height = resource.height || image.naturalHeight;
+  const bytes = formatBytes(resource.bytes);
+  document.querySelector("#receipt-fluid-actual-output").textContent =
+    `${formatDimensions(width, height)}${bytes === "Unavailable" ? "" : ` · ${bytes}`}`;
+};
+
+const updateFluidPreview = (requestedWidth = fluidPreviewWidth) => {
+  if (activeReceiptKey !== "fluid" || !receiptUrls.fluid) return;
+  const frame = document.querySelector("#receipt-preview-frame");
+  const range = document.querySelector("#receipt-fluid-width-range");
+  const maxWidth = getFluidPreviewMaxWidth();
+  const cssWidth = Math.round(Math.min(maxWidth, Math.max(120, requestedWidth)));
+  const automaticWidth = roundFluidWidth(cssWidth);
+  const deviceDpr = window.devicePixelRatio || 1;
+  const automaticDpr = Math.max(1, Math.ceil(deviceDpr));
+  const physicalWidth = automaticWidth * automaticDpr;
+  const physicalHeight = Math.round(physicalWidth * BASE_HEIGHT / BASE_WIDTH);
+  const resolvedUrl = buildResolvedFluidPreviewUrl(receiptUrls.fluid, automaticWidth, automaticDpr);
+
+  fluidPreviewWidth = cssWidth;
+  frame.style.width = `${cssWidth}px`;
+  range.max = String(maxWidth);
+  range.value = String(cssWidth);
+  document.querySelector("#receipt-fluid-width-output").textContent = `${cssWidth} px`;
+  document.querySelector("#receipt-fluid-css-width").textContent = `${cssWidth} px`;
+  document.querySelector("#receipt-fluid-auto-width").textContent = `${automaticWidth} px`;
+  document.querySelector("#receipt-fluid-auto-dpr").textContent = `${automaticDpr}× (device ${deviceDpr.toFixed(2)}×)`;
+  document.querySelector("#receipt-fluid-target-pixels").textContent = formatDimensions(physicalWidth, physicalHeight);
+  document.querySelector("#receipt-fluid-resolved-url").textContent = resolvedUrl;
+  document.querySelector("#receipt-fluid-resolved-link").href = resolvedUrl;
+
+  const image = document.querySelector("#receipt-dialog-image");
+  if (image.dataset.previewUrl !== resolvedUrl) {
+    image.dataset.previewUrl = resolvedUrl;
+    document.querySelector("#receipt-fluid-actual-output").textContent = "Loading…";
+    image.src = resolvedUrl;
+  } else {
+    updateFluidActualOutput();
+  }
+};
 
 const imageReady = (image) => {
   if (image.complete) return Promise.resolve();
@@ -2220,11 +2364,23 @@ const openReceiptDialog = (key, trigger) => {
   const measurement = metrics.get(key);
   const originalBytes = metrics.get("original")?.bytes || 0;
   const row = document.querySelector(`[data-result-row="${key}"]`);
+  const frame = document.querySelector("#receipt-preview-frame");
+  const controls = document.querySelector("#receipt-fluid-controls");
+  const resizeHandle = document.querySelector("#receipt-fluid-resize-handle");
+  const liveBlock = document.querySelector("#receipt-fluid-live-block");
+  activeReceiptKey = key;
   lastReceiptTrigger = trigger;
   document.querySelector("#receipt-dialog-title").textContent = `${RECEIPT_LABELS[key]} details`;
   const image = document.querySelector("#receipt-dialog-image");
+  image.dataset.previewUrl = "";
   image.src = currentUrl;
   image.alt = `${RECEIPT_LABELS[key]} image preview`;
+  frame.classList.toggle("is-fluid", isFluid);
+  frame.classList.toggle("is-static", !isFluid);
+  if (!isFluid) frame.style.removeProperty("width");
+  controls.hidden = !isFluid;
+  resizeHandle.hidden = !isFluid;
+  liveBlock.hidden = !isFluid;
   document.querySelector("#receipt-detail-strategy").textContent = RECEIPT_LABELS[key];
   document.querySelector("#receipt-detail-setting").textContent = RECEIPT_SETTINGS[key];
   document.querySelector("#receipt-detail-delivered").textContent = measurement?.natural || "Unavailable";
@@ -2274,9 +2430,11 @@ const openReceiptDialog = (key, trigger) => {
   document.querySelector("#receipt-fluid-dialog-url").textContent = fluidUrl || "Unavailable";
   document.querySelector("#receipt-fluid-dialog-markup").textContent = fluidUrl ? buildFluidMarkup(fluidUrl) : "Unavailable";
   document.querySelector("#receipt-fluid-dialog-link").href = fluidUrl || "#";
+  document.querySelector(".receipt-dialog-details").scrollTop = 0;
 
   if (typeof dialog.showModal === "function") dialog.showModal();
   else dialog.setAttribute("open", "");
+  if (isFluid) requestAnimationFrame(() => updateFluidPreview(fluidPreviewWidth));
 };
 
 const closeReceiptDialog = () => {
@@ -2284,6 +2442,8 @@ const closeReceiptDialog = () => {
   if (typeof dialog.close === "function") dialog.close();
   else {
     dialog.removeAttribute("open");
+    activeReceiptKey = null;
+    fluidResizeStart = null;
     lastReceiptTrigger?.focus();
     lastReceiptTrigger = null;
   }
@@ -3382,8 +3542,48 @@ document.querySelectorAll("[data-receipt-key]").forEach((button) => {
 
 document.querySelector("#receipt-dialog-close").addEventListener("click", closeReceiptDialog);
 document.querySelector("#receipt-dialog").addEventListener("close", () => {
+  activeReceiptKey = null;
+  fluidResizeStart = null;
   lastReceiptTrigger?.focus();
   lastReceiptTrigger = null;
+});
+
+document.querySelector("#receipt-dialog-image").addEventListener("load", updateFluidActualOutput);
+document.querySelector("#receipt-dialog-image").addEventListener("error", () => {
+  if (activeReceiptKey === "fluid") document.querySelector("#receipt-fluid-actual-output").textContent = "Could not load preview";
+});
+
+document.querySelector("#receipt-fluid-width-range").addEventListener("input", (event) => {
+  updateFluidPreview(Number(event.target.value));
+});
+
+const fluidResizeHandle = document.querySelector("#receipt-fluid-resize-handle");
+fluidResizeHandle.addEventListener("pointerdown", (event) => {
+  event.preventDefault();
+  fluidResizeStart = { x: event.clientX, width: fluidPreviewWidth };
+  fluidResizeHandle.setPointerCapture(event.pointerId);
+});
+fluidResizeHandle.addEventListener("pointermove", (event) => {
+  if (!fluidResizeStart || !fluidResizeHandle.hasPointerCapture(event.pointerId)) return;
+  updateFluidPreview(fluidResizeStart.width + event.clientX - fluidResizeStart.x);
+});
+fluidResizeHandle.addEventListener("pointerup", (event) => {
+  if (fluidResizeHandle.hasPointerCapture(event.pointerId)) fluidResizeHandle.releasePointerCapture(event.pointerId);
+  fluidResizeStart = null;
+});
+fluidResizeHandle.addEventListener("pointercancel", () => { fluidResizeStart = null; });
+fluidResizeHandle.addEventListener("keydown", (event) => {
+  const increments = { ArrowLeft: -10, ArrowDown: -10, ArrowRight: 10, ArrowUp: 10 };
+  if (event.key in increments) {
+    event.preventDefault();
+    updateFluidPreview(fluidPreviewWidth + increments[event.key]);
+  } else if (event.key === "Home") {
+    event.preventDefault();
+    updateFluidPreview(120);
+  } else if (event.key === "End") {
+    event.preventDefault();
+    updateFluidPreview(getFluidPreviewMaxWidth());
+  }
 });
 
 document.querySelector("#domain-scan-form").addEventListener("submit", async (event) => {
@@ -3464,7 +3664,10 @@ document.querySelector("#refresh-metrics").addEventListener("click", measureAll)
 window.addEventListener("resize", () => {
   updateDeviceReadout();
   window.clearTimeout(window.__dprResizeTimer);
-  window.__dprResizeTimer = window.setTimeout(measureAll, 120);
+  window.__dprResizeTimer = window.setTimeout(() => {
+    measureAll();
+    if (activeReceiptKey === "fluid") updateFluidPreview(fluidPreviewWidth);
+  }, 120);
 });
 
 updateDeviceReadout();

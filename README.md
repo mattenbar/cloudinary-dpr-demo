@@ -46,6 +46,8 @@ The receipt separates two decisions. **Smallest transfer** identifies the lowest
 
 The receipt includes a full fluid-layout strategy row using `w_auto:40:360`, `dpr_auto`, and matching `sizes`, width, height, and fluid CSS markup. It reports the same delivered dimensions, displayed dimensions, file size, bandwidth, comparison, and **Inspect** action as every other strategy. It is clearly badged as production layout guidance and excluded from smallest-transfer/device ranking because its responsive-width request is not directly comparable with the fixed 360 × 240 benchmark. Its popup uses the fluid URL as the optimal URL and repeats the complete fluid markup.
 
+The fluid popup includes a draggable resize handle and an accessible width slider. It shows the live CSS slot, the 40-pixel `w_auto` selection, the browser's rounded `dpr_auto` value, target physical pixels, actual response dimensions and bytes, and a concrete diagnostic URL representing those automatic choices. The production recommendation remains the automatic URL. Popup details scroll independently from the fixed preview pane, with safe bottom padding on desktop and mobile so the image stays in place and the final content is fully reachable.
+
 ## What the demo proves
 
 - A `w_360,h_240,dpr_2.0` URL produces a 720 × 480 resource.
