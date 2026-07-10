@@ -430,6 +430,8 @@ h1 em {
 .domain-scan-score.is-low { color: #9fb0c6; background: #202c40; }
 .domain-scan-origin { display: block; margin-top: 4px; color: #a7b6ca; font-size: 9px; }
 .domain-scan-origin.is-custom { color: #ffd979; }
+.domain-scan-layout { display: block; margin-top: 5px; color: #b7c4d6; font-size: 9px; line-height: 1.45; }
+.domain-scan-layout strong { color: #e3e9f2; }
 .domain-scan-simulation { display: block; margin-top: 5px; color: #8fd8eb; font-size: 9px; line-height: 1.45; }
 .domain-scan-simulation strong { color: #c8f3ff; }
 .domain-scan-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
@@ -999,18 +1001,22 @@ tbody th { font-size: 13px; }
 tbody td { color: #586577; }
 tbody td[data-result] { white-space: nowrap; }
 tbody code { display: inline-flex; width: max-content; padding: 5px 7px; border-radius: 99px; color: #2747a0; background: #e1e7ff; font-family: inherit; font-size: 8px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+.result-auto-expected td code { width: 100%; max-width: 100%; justify-content: center; text-align: center; white-space: normal; }
 .strategy-cell { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.strategy-context { display: block; margin-top: 4px; color: #778398; font-size: 8px; font-weight: 600; line-height: 1.4; }
 .receipt-badges { display: inline-flex; align-items: center; gap: 5px; }
 .receipt-badges:has(> .efficiency-badge:not([hidden]) ~ .efficiency-badge:not([hidden])) { flex-direction: column; align-items: flex-start; gap: 3px; }
 .efficiency-badge { padding: 5px 7px; border-radius: 99px; font-size: 8px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
 .bandwidth-badge { width: max-content; color: #2747a0; background: #e1e7ff; }
 .recommendation-badge { color: #07583d; background: #d8f8e9; }
 .setup-badge { color: #6f4d00; background: #fff0bd; }
+.expected-output-badge { width: max-content; color: #155568; background: #d9f4fa; }
 .fluid-layout-badge { width: max-content; color: #155568; background: #d9f4fa; }
 .receipt-detail-button { padding: 7px 10px; border: 1px solid #cdd3ff; border-radius: 6px; color: var(--blue); background: #f2f4ff; font-size: 9px; font-weight: 850; cursor: pointer; }
 .receipt-detail-button:hover { border-color: var(--blue); background: var(--blue-pale); }
 tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
 .result-auto { background: #f7f8ff; }
+.result-auto-expected { background: #f2fbfd; }
 .result-fluid { background: #f2fbfd; }
 tbody tr.is-smallest-transfer th,
 tbody tr.is-smallest-transfer td { background: #f5f7ff; }
@@ -1026,6 +1032,7 @@ tbody tr.needs-client-hint-setup td { box-shadow: inset 0 -2px #e0b84e; }
 .recommendation-verdict { color: #356b58; background: #f7fcf9; }
 .recommendation-verdict strong { color: #174d3a; }
 .receipt-fluid-recommendation { padding: 18px 22px; border-top: 1px solid var(--line); background: #f2fbfd; }
+.receipt-fixed-measure { position: fixed; z-index: -1; top: 0; left: -10000px; width: 360px; height: 240px; opacity: 0; pointer-events: none; }
 .receipt-fluid-measure { position: fixed; z-index: -1; top: 0; left: -10000px; width: min(360px, 100vw); opacity: 0; pointer-events: none; }
 .receipt-fluid-measure img { width: 100%; height: auto; }
 .receipt-fluid-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 22px; margin-bottom: 12px; }
@@ -1107,6 +1114,7 @@ tbody tr.needs-client-hint-setup td { box-shadow: inset 0 -2px #e0b84e; }
   user-select: all;
 }
 .receipt-dialog-details .copy-code-row button { margin-top: 1px; }
+.receipt-detail-block .copy-code-row + .copy-code-row { margin-top: 8px; }
 .receipt-fluid-resolved-note { margin: 8px 2px 0; color: #7a8597; font-size: 9px; line-height: 1.5; }
 .receipt-fluid-resolved-note code { color: var(--blue-dark); }
 .receipt-dialog-metrics {
@@ -1408,7 +1416,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
               aria-describedby="domain-scan-disclosure domain-scan-status">
             <button id="domain-scan-button" class="scan-button" type="submit">Scan page</button>
           </div>
-          <p id="domain-scan-disclosure" class="domain-scanner-disclosure">Public page content is retrieved as a fresh browser-rendered snapshot through <a href="https://github.com/jina-ai/reader" target="_blank" rel="noreferrer">Jina Reader</a> because browsers block most direct cross-domain scraping. Redirects are followed and canonical page metadata is reported. Each candidate projects this browser’s rounded automatic DPR without relying on the source page’s client-hint setup; Analyze loads a deterministic preview. Optimization-potential percentages weight actionable errors, warnings, DPR alternatives, fluid-width opportunities, and custom-origin setup. Private and local network addresses are not accepted.</p>
+          <p id="domain-scan-disclosure" class="domain-scanner-disclosure">Public page content is retrieved as a fresh browser-rendered snapshot through <a href="https://github.com/jina-ai/reader" target="_blank" rel="noreferrer">Jina Reader</a> because browsers block most direct cross-domain scraping. A parallel HTML pass matches assets to declared dimensions, <code>sizes</code>, inline sizing, and responsive layout classes; every result identifies whether its slot was declared, inferred, or URL-derived. Each candidate projects this browser’s rounded automatic DPR without relying on the source page’s live client-hint request. Private and local network addresses are not accepted.</p>
         </form>
         <p id="domain-scan-status" class="domain-scan-status" role="status" aria-live="polite"></p>
         <div id="domain-scan-results" class="domain-scan-results" hidden>
@@ -1708,6 +1716,13 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
           data-metric="original"
           src="https://res.cloudinary.com/doxfstysv/image/upload/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg"
           alt="">
+        <img
+          id="image-auto-expected"
+          class="receipt-fixed-measure"
+          data-metric="autoExpected"
+          width="360"
+          height="240"
+          alt="">
         <article class="strategy-card">
           <div class="strategy-number">A</div>
           <div class="strategy-image">
@@ -1790,7 +1805,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
           <p class="eyebrow">04 / Measured in this browser</p>
           <h2>The performance receipt.</h2>
         </div>
-        <p>These values come from each loaded image and the browser Resource Timing API—not a preset estimate. File size is the encoded image body; bandwidth used is the measured network transfer including response overhead. Cached loads are identified.</p>
+        <p>These values come from loaded images and the browser Resource Timing API. The standard strategy rows retain the 360 × 240 comparison benchmark. The “Expected with setup” row is a separate measured preview: for scraped assets it uses the page’s declared or inferred slot dimensions and layout, then resolves this device’s rounded DPR without relying on the failed live client-hint request.</p>
       </div>
 
       <div class="results-panel">
@@ -1840,7 +1855,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
                 <td data-label="Details"><button class="receipt-detail-button" type="button" data-receipt-key="fixed">Inspect</button></td>
               </tr>
               <tr class="result-auto" data-result-row="auto">
-                <th data-label="Strategy"><span class="strategy-cell">Automatic (f_auto and q_auto applied)<span class="receipt-badges"><span class="efficiency-badge bandwidth-badge" data-bandwidth-badge="auto" hidden>Smallest transfer</span><span class="efficiency-badge recommendation-badge" data-recommendation-badge="auto" hidden>Recommended for device</span><span class="efficiency-badge setup-badge" data-setup-badge="auto" hidden>Client-hint setup needed</span></span></span></th>
+                <th data-label="Strategy"><span class="strategy-cell">Automatic (f_auto and q_auto applied)<span class="receipt-badges"><span class="efficiency-badge bandwidth-badge" data-bandwidth-badge="auto" hidden>Smallest transfer</span><span class="efficiency-badge recommendation-badge" data-recommendation-badge="auto" hidden>Recommended for device</span><span class="efficiency-badge setup-badge" data-setup-badge="auto" hidden>Live dpr_auto needs setup</span></span></span></th>
                 <td data-label="URL setting"><code>dpr_auto</code></td>
                 <td data-label="Delivered dimensions" data-result="natural">—</td>
                 <td data-label="Displayed dimensions" data-result="rendered">—</td>
@@ -1848,6 +1863,21 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
                 <td data-label="Bandwidth used" data-result="bandwidth">—</td>
                 <td data-label="vs. original" data-result="delta">—</td>
                 <td data-label="Details"><button class="receipt-detail-button" type="button" data-receipt-key="auto">Inspect</button></td>
+              </tr>
+              <tr class="result-auto-expected" data-result-row="autoExpected">
+                <th data-label="Strategy">
+                  <span class="strategy-cell">
+                    <span><span id="auto-expected-label">Expected automatic output</span><small id="auto-expected-context" class="strategy-context">Resolving this device’s DPR and the analyzed layout…</small></span>
+                    <span class="receipt-badges"><span id="auto-expected-badge" class="efficiency-badge expected-output-badge">Expected with setup</span></span>
+                  </span>
+                </th>
+                <td data-label="URL setting"><code id="auto-expected-setting">Resolved DPR diagnostic</code></td>
+                <td data-label="Delivered dimensions" data-result="natural">—</td>
+                <td data-label="Displayed dimensions" data-result="rendered">—</td>
+                <td data-label="File size" data-result="bytes">—</td>
+                <td data-label="Bandwidth used" data-result="bandwidth">—</td>
+                <td data-label="vs. original" data-result="delta">—</td>
+                <td data-label="Details"><button class="receipt-detail-button" type="button" data-receipt-key="autoExpected">Inspect</button></td>
               </tr>
               <tr class="result-fluid" data-result-row="fluid">
                 <th data-label="Strategy"><span class="strategy-cell">Fluid automatic width + DPR<span class="receipt-badges"><span class="efficiency-badge fluid-layout-badge">Fluid layout recommendation</span></span></span></th>
@@ -2015,7 +2045,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
           </div>
           <div class="receipt-detail-block">
             <div class="receipt-detail-heading">
-              <span>Current URL</span>
+              <span id="receipt-current-heading">Current URL</span>
               <a id="receipt-current-link" href="#" target="_blank" rel="noreferrer">Open current ↗</a>
             </div>
             <div class="copy-code-row">
@@ -2025,7 +2055,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
           </div>
           <div class="receipt-detail-block">
             <div class="receipt-detail-heading">
-              <span>Optimal URL</span>
+              <span id="receipt-optimal-heading">Optimal URL</span>
               <a id="receipt-optimal-link" href="#" target="_blank" rel="noreferrer">Open optimal ↗</a>
             </div>
             <div class="copy-code-row">
@@ -2041,6 +2071,21 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
               <code id="receipt-required-markup">—</code>
               <button type="button" data-copy-target="receipt-required-markup">Copy markup</button>
             </div>
+          </div>
+          <div id="receipt-client-hint-block" class="receipt-detail-block" hidden>
+            <div class="receipt-detail-heading">
+              <span>Required client-hint setup</span>
+              <a href="https://cloudinary.com/documentation/responsive_server_side_client_hints#automatic_pixel_density_detection" target="_blank" rel="noreferrer">Setup guide ↗</a>
+            </div>
+            <div class="copy-code-row">
+              <code id="receipt-client-hint-meta">—</code>
+              <button type="button" data-copy-target="receipt-client-hint-meta">Copy meta</button>
+            </div>
+            <div class="copy-code-row">
+              <code id="receipt-client-hint-headers">—</code>
+              <button type="button" data-copy-target="receipt-client-hint-headers">Copy headers</button>
+            </div>
+            <p class="receipt-fluid-resolved-note">Use either the early <code>delegate-ch</code> meta tag or the HTTP response headers on the page that requests the image. This enables the production <code>dpr_auto</code> URL; the deterministic preview does not require the hint.</p>
           </div>
           <div class="receipt-detail-block">
             <div class="receipt-detail-heading">
@@ -2061,7 +2106,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
               <button type="button" data-copy-target="receipt-fluid-dialog-markup">Copy markup</button>
             </div>
           </div>
-          <p class="receipt-dialog-note"><strong>Choose by layout:</strong> The optimal fixed-slot URL keeps the 360 × 240 logical size and adapts DPR. The fluid option also uses <code>w_auto</code> with an accurate <code>sizes</code> rule so Cloudinary can adapt width. Both keep <code>f_auto</code> and <code>q_auto</code> last.</p>
+          <p id="receipt-dialog-note" class="receipt-dialog-note"><strong>Choose by layout:</strong> The optimal fixed-slot URL keeps the logical size and adapts DPR. The fluid option also uses <code>w_auto</code> with an accurate <code>sizes</code> rule so Cloudinary can adapt width. Both keep <code>f_auto</code> and <code>q_auto</code> last.</p>
         </div>
       </div>
     </dialog>
@@ -2085,6 +2130,7 @@ const RECEIPT_LABELS = {
   baseline: "Fixed 1×",
   fixed: "Hard-coded 2×",
   auto: "Automatic DPR",
+  autoExpected: "Expected automatic output",
   fluid: "Fluid automatic width + DPR"
 };
 const RECEIPT_SETTINGS = {
@@ -2092,10 +2138,12 @@ const RECEIPT_SETTINGS = {
   baseline: "DPR omitted",
   fixed: "dpr_2.0",
   auto: "dpr_auto",
+  autoExpected: "Resolved device DPR diagnostic",
   fluid: "w_auto + dpr_auto"
 };
 const metrics = new Map();
 const receiptUrls = {};
+let measurementRun = 0;
 let domainScanController = null;
 let domainScanRun = 0;
 let domainScanCandidates = [];
@@ -2104,6 +2152,9 @@ let domainScanPage = 1;
 let lastReceiptTrigger = null;
 let activeScanAnalysisContext = null;
 let activeReceiptKey = null;
+let activeExpectedSimulation = null;
+let activeAssetParsed = null;
+let expectedDprTarget = 0;
 let fluidPreviewWidth = BASE_WIDTH;
 let fluidResizeStart = null;
 
@@ -2137,6 +2188,17 @@ const getClientHintSetup = (origin) => ({
 
 const buildFluidMarkup = (url) =>
   `<img src="${url}" sizes="(max-width: ${BASE_WIDTH}px) 100vw, ${BASE_WIDTH}px" width="${BASE_WIDTH}" height="${BASE_HEIGHT}" style="width:100%;max-width:${BASE_WIDTH}px;height:auto" alt="">`;
+
+const buildExpectedMarkup = (simulation, url) => {
+  const measurement = metrics.get("autoExpected");
+  const width = simulation?.logicalWidth || Math.round(measurement?.renderedWidth || BASE_WIDTH);
+  const height = simulation?.logicalHeight || Math.round(measurement?.renderedHeight || BASE_HEIGHT);
+  const fluid = simulation?.layoutContext?.fluid;
+  const sizes = simulation?.layoutContext?.sizes
+    || simulation?.layoutContext?.suggestedSizes
+    || (fluid ? `(max-width: ${width}px) 100vw, ${width}px` : "");
+  return `<img src="${url}"${sizes ? ` sizes="${sizes}"` : ""} width="${width}" height="${height}"${fluid ? ` style="width:100%;max-width:${width}px;height:auto"` : ""} alt="">`;
+};
 
 const roundFluidWidth = (width) => Math.max(40, Math.ceil(width / 40) * 40);
 
@@ -2280,7 +2342,7 @@ const measureImage = (image) => {
 const updateResultTable = () => {
   const originalBytes = metrics.get("original")?.bytes || 0;
 
-  ["original", "baseline", "fixed", "auto", "fluid"].forEach((key) => {
+  ["original", "baseline", "fixed", "auto", "autoExpected", "fluid"].forEach((key) => {
     const measurement = metrics.get(key);
     const row = document.querySelector(`[data-result-row="${key}"]`);
     if (!measurement || !row) return;
@@ -2296,7 +2358,7 @@ const updateResultTable = () => {
 const updateEfficiencyVerdict = () => {
   const bandwidthVerdict = document.querySelector("#bandwidth-verdict");
   const recommendationVerdict = document.querySelector("#recommendation-verdict");
-  const targetDpr = Math.ceil(window.devicePixelRatio || 1);
+  const targetDpr = getRoundedDeviceDpr();
   const receiptKeys = ["original", "baseline", "fixed", "auto"];
   const strategyKeys = ["baseline", "fixed", "auto"];
   receiptKeys.forEach((key) => {
@@ -2312,7 +2374,7 @@ const updateEfficiencyVerdict = () => {
     }
     if (setupBadge) {
       setupBadge.hidden = true;
-      setupBadge.textContent = "Client-hint setup needed";
+      setupBadge.textContent = "Live dpr_auto needs setup";
     }
   });
 
@@ -2390,8 +2452,8 @@ const updateEfficiencyVerdict = () => {
       const isChromium = /Chrome|Chromium|Edg|OPR|SamsungBrowser/.test(navigator.userAgent) && !/Firefox|FxiOS/.test(navigator.userAgent);
       setupBadge.hidden = false;
       setupBadge.textContent = window.location.protocol === "file:"
-        ? "HTTPS page required"
-        : isChromium ? "Client-hint setup needed" : "Supported Chromium needed";
+        ? "Live preview requires HTTPS"
+        : isChromium ? "Live dpr_auto needs setup" : "Live preview needs Chromium";
     }
   }
 
@@ -2407,7 +2469,11 @@ const updateEfficiencyVerdict = () => {
         : customScrapedOrigin
         ? `This scraped custom origin was discovered after the lab loaded, so the lab cannot retroactively delegate Sec-CH-DPR to ${deliveryOrigin}.`
         : `Verify that this HTTPS page delegates Sec-CH-DPR to ${deliveryOrigin} in a supported Chromium browser.`;
-    recommendationVerdict.innerHTML = `<strong>Best measured fallback: ${RECEIPT_LABELS[selected.key]}</strong> — ${formatBytes(selected.measurement.bytes)} file, ${formatBandwidth(selected.measurement)} bandwidth at ${selected.deliveredDpr.toFixed(1)}× delivered DPR. Automatic DPR delivered ${autoDeliveredDpr.toFixed(1)}× instead of the ${targetDpr}× target. ${cause} Keep dpr_auto as the adaptive production strategy after client-hint setup is verified.`;
+    const expectedMeasurement = metrics.get("autoExpected");
+    const expectedResult = expectedMeasurement?.naturalWidth
+      ? ` The page-layout-based “Expected with setup” preview resolves the target deterministically and delivered ${expectedMeasurement.natural}, ${formatBytes(expectedMeasurement.bytes)} file size, and ${formatBandwidth(expectedMeasurement)} bandwidth.`
+      : " The page-layout-based expected preview is unavailable because reliable sizing metadata could not be resolved.";
+    recommendationVerdict.innerHTML = `<strong>Best live 360 × 240 benchmark fallback: ${RECEIPT_LABELS[selected.key]}</strong> — ${formatBytes(selected.measurement.bytes)} file, ${formatBandwidth(selected.measurement)} bandwidth at ${selected.deliveredDpr.toFixed(1)}× delivered DPR. Live dpr_auto delivered ${autoDeliveredDpr.toFixed(1)}× instead of the ${targetDpr}× target. ${cause}${expectedResult} The benchmark and scraped-page row use different layout sizes, so compare their bytes only within the displayed dimensions shown. Keep dpr_auto as the adaptive production strategy after client-hint setup is verified.`;
   } else {
     const reason = qualified.length
       ? `It is the smallest measured response that meets this browser’s rounded ${targetDpr}× DPR target.`
@@ -2420,7 +2486,10 @@ const openReceiptDialog = (key, trigger) => {
   const currentUrl = receiptUrls[key];
   const fluidUrl = receiptUrls.fluid;
   const isFluid = key === "fluid";
-  const optimalUrl = isFluid ? fluidUrl : receiptUrls.auto;
+  const isExpected = key === "autoExpected";
+  const optimalUrl = isFluid
+    ? fluidUrl
+    : isExpected ? activeExpectedSimulation?.productionUrl : receiptUrls.auto;
   if (!currentUrl || !optimalUrl) return;
 
   const dialog = document.querySelector("#receipt-dialog");
@@ -2447,7 +2516,9 @@ const openReceiptDialog = (key, trigger) => {
   resizeHandle.hidden = !isFluid;
   liveBlock.hidden = !isFluid;
   document.querySelector("#receipt-detail-strategy").textContent = RECEIPT_LABELS[key];
-  document.querySelector("#receipt-detail-setting").textContent = RECEIPT_SETTINGS[key];
+  document.querySelector("#receipt-detail-setting").textContent = isExpected
+    ? document.querySelector("#auto-expected-setting").textContent
+    : RECEIPT_SETTINGS[key];
   document.querySelector("#receipt-detail-delivered").textContent = measurement?.natural || "Unavailable";
   document.querySelector("#receipt-detail-displayed").textContent = key === "original" ? "Not applicable" : measurement?.rendered || "Unavailable";
   document.querySelector("#receipt-detail-dpr").textContent = key === "original" ? "Not applicable" : measurement?.effective || "Unavailable";
@@ -2481,6 +2552,12 @@ const openReceiptDialog = (key, trigger) => {
     badge.textContent = "Fluid layout recommendation";
     status.append(badge);
   }
+  if (isExpected) {
+    const badge = document.createElement("span");
+    badge.className = "efficiency-badge expected-output-badge";
+    badge.textContent = `Expected with setup · ${activeExpectedSimulation?.targetDpr || getRoundedDeviceDpr()}×`;
+    status.append(badge);
+  }
   document.querySelector("#receipt-detail-bandwidth-verdict").innerHTML =
     document.querySelector("#bandwidth-verdict").innerHTML;
   document.querySelector("#receipt-detail-recommendation-verdict").innerHTML =
@@ -2489,17 +2566,37 @@ const openReceiptDialog = (key, trigger) => {
   document.querySelector("#receipt-current-link").href = currentUrl;
   document.querySelector("#receipt-optimal-url").textContent = optimalUrl;
   document.querySelector("#receipt-optimal-link").href = optimalUrl;
+  document.querySelector("#receipt-current-heading").textContent = isExpected ? "Deterministic preview URL" : "Current URL";
+  document.querySelector("#receipt-optimal-heading").textContent = isExpected ? "Production dpr_auto URL" : "Optimal URL";
+  document.querySelector("#receipt-current-link").textContent = isExpected ? "Open preview ↗" : "Open current ↗";
+  document.querySelector("#receipt-optimal-link").textContent = isExpected ? "Open production ↗" : "Open optimal ↗";
   document.querySelector("#receipt-required-markup").textContent = isFluid
     ? buildFluidMarkup(optimalUrl)
-    : `<img src="${optimalUrl}" width="${BASE_WIDTH}" height="${BASE_HEIGHT}" alt="">`;
+    : isExpected
+      ? buildExpectedMarkup(activeExpectedSimulation, optimalUrl)
+      : `<img src="${optimalUrl}" width="${BASE_WIDTH}" height="${BASE_HEIGHT}" alt="">`;
+  const clientHintBlock = document.querySelector("#receipt-client-hint-block");
+  const showClientHintSetup = key === "auto" || isExpected || isFluid;
+  clientHintBlock.hidden = !showClientHintSetup;
+  if (showClientHintSetup) {
+    const setup = getClientHintSetup(new URL(optimalUrl).origin);
+    document.querySelector("#receipt-client-hint-meta").textContent = setup.meta;
+    document.querySelector("#receipt-client-hint-headers").textContent = setup.headers;
+  }
   document.querySelector("#receipt-fluid-dialog-url").textContent = fluidUrl || "Unavailable";
   document.querySelector("#receipt-fluid-dialog-markup").textContent = fluidUrl ? buildFluidMarkup(fluidUrl) : "Unavailable";
   document.querySelector("#receipt-fluid-dialog-link").href = fluidUrl || "#";
-  document.querySelector(".receipt-dialog-details").scrollTop = 0;
+  document.querySelector("#receipt-dialog-note").innerHTML = isExpected
+    ? `<strong>Expected after setup:</strong> This preview resolves <code>dpr_auto</code> to ${activeExpectedSimulation?.targetDpr || getRoundedDeviceDpr()}× and uses ${activeExpectedSimulation?.sizingBasis || "the analyzed layout"}. It bypasses client hints only for diagnosis. Use the production URL and markup above after enabling DPR delegation.`
+    : "<strong>Choose by layout:</strong> The optimal fixed-slot URL keeps the logical size and adapts DPR. The fluid option also uses <code>w_auto</code> with an accurate <code>sizes</code> rule so Cloudinary can adapt width. Both keep <code>f_auto</code> and <code>q_auto</code> last.";
+  const dialogDetails = document.querySelector(".receipt-dialog-details");
 
   if (typeof dialog.showModal === "function") dialog.showModal();
   else dialog.setAttribute("open", "");
-  if (isFluid) requestAnimationFrame(() => updateFluidPreview(fluidPreviewWidth));
+  requestAnimationFrame(() => {
+    dialogDetails.scrollTop = 0;
+    if (isFluid) updateFluidPreview(fluidPreviewWidth);
+  });
 };
 
 const closeReceiptDialog = () => {
@@ -2533,13 +2630,13 @@ const updateAutoVerdict = () => {
   const verdict = document.querySelector("#auto-verdict");
   if (!auto || !verdict) return;
 
-  const requestedDpr = Math.ceil(window.devicePixelRatio || 1);
+  const requestedDpr = getRoundedDeviceDpr();
   const deliveredDpr = Math.round((auto.naturalWidth / BASE_WIDTH) * 10) / 10;
   const localFileMode = window.location.protocol === "file:";
   verdict.classList.remove("is-match", "is-fallback");
 
   if (localFileMode) {
-    verdict.textContent = "Expected local-file fallback: file:// pages cannot delegate the DPR client hint, so Cloudinary returned 1×.";
+    verdict.textContent = "Live 1× fallback: file:// pages cannot delegate the DPR client hint. See “Expected with setup” in the receipt for the deterministic device result.";
     verdict.classList.add("is-fallback");
     document.querySelector("#hint-status").textContent = "Local 1× fallback";
   } else if (Math.abs(deliveredDpr - requestedDpr) < 0.1) {
@@ -2550,8 +2647,8 @@ const updateAutoVerdict = () => {
     let deliveryOrigin = "the image delivery origin";
     try { deliveryOrigin = new URL(receiptUrls.auto).origin; } catch { /* Keep the readable fallback. */ }
     verdict.textContent = activeScanAnalysisContext?.fromScan && deliveryOrigin !== "https://res.cloudinary.com"
-      ? `1× lab fallback: ${deliveryOrigin} was discovered after this page loaded, so the lab could not delegate Sec-CH-DPR to it. Use the generated setup on the scanned page.`
-      : "1× fallback: the DPR client hint was not available to Cloudinary in this browser or context.";
+      ? `Live 1× fallback: ${deliveryOrigin} was discovered after this page loaded. The receipt’s “Expected with setup” row uses the scraped page layout to show the ${requestedDpr}× result.`
+      : `Live 1× fallback: the DPR hint was unavailable. The receipt’s “Expected with setup” row shows the deterministic ${requestedDpr}× result.`;
     verdict.classList.add("is-fallback");
     document.querySelector("#hint-status").textContent = "1× fallback";
   } else {
@@ -2563,7 +2660,9 @@ const updateAutoVerdict = () => {
 
 const updateTimingNote = () => {
   const note = document.querySelector("#timing-note");
-  const receiptMeasurements = ["original", "baseline", "fixed", "auto", "fluid"].map((key) => metrics.get(key));
+  const measurementKeys = ["original", "baseline", "fixed", "auto", "fluid"];
+  if (receiptUrls.autoExpected) measurementKeys.push("autoExpected");
+  const receiptMeasurements = measurementKeys.map((key) => metrics.get(key));
   const hasFileSizes = receiptMeasurements.every((measurement) => measurement?.bytes > 0);
   const hasNetworkTransfers = receiptMeasurements.every((measurement) => measurement?.transferBytes > 0);
   note.innerHTML = hasNetworkTransfers
@@ -2574,15 +2673,55 @@ const updateTimingNote = () => {
 };
 
 const measureAll = async () => {
-  const images = [...document.querySelectorAll("img[data-metric]")];
+  const run = ++measurementRun;
+  const images = [...document.querySelectorAll("img[data-metric]")]
+    .filter((image) => image.hasAttribute("src"));
   await Promise.all(images.map(imageReady));
   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  if (run !== measurementRun) return;
   images.forEach(measureImage);
   updateResultTable();
   updateEfficiencyVerdict();
   updateFileSizeSavings();
   updateAutoVerdict();
   updateTimingNote();
+};
+
+const refreshExpectedAssetForDevice = () => {
+  const targetDpr = getRoundedDeviceDpr();
+  if (targetDpr === expectedDprTarget) return false;
+  if (activeAssetParsed) {
+    const audit = buildAudit(activeAssetParsed, activeScanAnalysisContext);
+    updateDemoAssets(activeAssetParsed, activeScanAnalysisContext, audit);
+  } else {
+    expectedDprTarget = targetDpr;
+  }
+  if (domainScanCandidates.length && domainScanPageUrl) {
+    domainScanCandidates = domainScanCandidates.map((candidate) => ({
+      ...candidate,
+      recommendation: getScannedUrlRecommendation(candidate.url, candidate.layout) || candidate.recommendation
+    }));
+    renderDomainScanPage();
+  }
+  return true;
+};
+
+let deviceDprMediaQuery = null;
+let deviceDprListener = null;
+const watchDeviceDprChanges = () => {
+  const listener = () => {
+    refreshExpectedAssetForDevice();
+    measureAll();
+    watchDeviceDprChanges();
+  };
+  if (deviceDprMediaQuery && deviceDprListener) {
+    if (typeof deviceDprMediaQuery.removeEventListener === "function") deviceDprMediaQuery.removeEventListener("change", deviceDprListener);
+    else deviceDprMediaQuery.removeListener?.(deviceDprListener);
+  }
+  deviceDprMediaQuery = window.matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
+  deviceDprListener = listener;
+  if (typeof deviceDprMediaQuery.addEventListener === "function") deviceDprMediaQuery.addEventListener("change", listener);
+  else deviceDprMediaQuery.addListener?.(listener);
 };
 
 const updateDeviceReadout = () => {
@@ -2754,6 +2893,24 @@ const fetchReaderData = async (pageUrl, { metadataOnly = false, signal } = {}) =
   return payload.data;
 };
 
+const fetchReaderHtml = async (pageUrl, { signal } = {}) => {
+  const response = await fetch(`${DOMAIN_READER_ORIGIN}${pageUrl.href}`, {
+    headers: {
+      Accept: "application/json",
+      "X-No-Cache": "true",
+      "X-Engine": "curl",
+      "X-Respond-With": "html",
+      "X-Timeout": "8"
+    },
+    credentials: "omit",
+    referrerPolicy: "no-referrer",
+    signal
+  });
+  if (!response.ok) return "";
+  const payload = await response.json();
+  return payload?.data?.html || payload?.data?.content || "";
+};
+
 const extractCloudinaryImageUrls = (content) => {
   const normalized = content
     .replace(/\\\//g, "/")
@@ -2776,6 +2933,83 @@ const extractCloudinaryImageUrls = (content) => {
   });
 
   return [...unique.values()];
+};
+
+const normalizeScrapedAssetUrl = (rawUrl, pageUrl) => {
+  try {
+    const url = new URL(rawUrl, pageUrl);
+    url.hash = "";
+    return url.href;
+  } catch {
+    return rawUrl;
+  }
+};
+
+const extractSrcsetUrls = (srcset) => {
+  const urls = [];
+  const matcher = /((?:https?:)?\/\/\S+?)(?=\s+\d+(?:\.\d+)?[wx](?:\s*,|$))/gi;
+  let match;
+  while ((match = matcher.exec(srcset))) urls.push(match[1]);
+  return urls;
+};
+
+const extractScrapedImageElements = (html, pageUrl) => {
+  const elements = new Map();
+  if (!html || typeof DOMParser === "undefined") return elements;
+  const documentSnapshot = new DOMParser().parseFromString(html, "text/html");
+
+  documentSnapshot.querySelectorAll("img").forEach((image, pageIndex) => {
+    const sources = [
+      image.getAttribute("src"),
+      image.getAttribute("data-src"),
+      image.getAttribute("data-lazy-src"),
+      image.getAttribute("data-original"),
+      ...extractSrcsetUrls(image.getAttribute("srcset") || ""),
+      ...[...(image.closest("picture")?.querySelectorAll("source[srcset]") || [])]
+        .flatMap((source) => extractSrcsetUrls(source.getAttribute("srcset") || ""))
+    ].filter(Boolean);
+    const ancestorClasses = [];
+    let layoutColumnCount = 0;
+    let layoutBreakpoint = "";
+    let ancestor = image.parentElement;
+    for (let depth = 0; ancestor && depth < 4; depth += 1, ancestor = ancestor.parentElement) {
+      if (ancestor.className && typeof ancestor.className === "string") {
+        ancestorClasses.push(ancestor.className);
+        if (!layoutColumnCount) {
+          const flexMatch = ancestor.className.match(/(?:^|\s)(?:(sm|md|lg|xl|2xl):)?flex-row(?:\s|$)/);
+          const gridMatch = ancestor.className.match(/(?:^|\s)(?:(sm|md|lg|xl|2xl):)?grid-cols-(\d+)(?:\s|$)/);
+          if (flexMatch && ancestor.children.length > 1) {
+            layoutColumnCount = ancestor.children.length;
+            layoutBreakpoint = flexMatch[1] || "";
+          } else if (gridMatch) {
+            layoutColumnCount = Number(gridMatch[2]);
+            layoutBreakpoint = gridMatch[1] || "";
+          }
+        }
+      }
+    }
+    const context = {
+      pageIndex,
+      widthAttribute: image.getAttribute("width") || "",
+      heightAttribute: image.getAttribute("height") || "",
+      sizes: image.getAttribute("sizes") || "",
+      styleWidth: image.style.width || "",
+      styleHeight: image.style.height || "",
+      styleMaxWidth: image.style.maxWidth || "",
+      styleAspectRatio: image.style.aspectRatio || "",
+      className: typeof image.className === "string" ? image.className : "",
+      ancestorClasses: ancestorClasses.join(" "),
+      layoutColumnCount,
+      layoutBreakpoint
+    };
+
+    sources.forEach((source) => {
+      const normalized = normalizeScrapedAssetUrl(source, pageUrl);
+      if (/\/image\/upload\//.test(normalized) && !elements.has(normalized)) elements.set(normalized, context);
+    });
+  });
+
+  return elements;
 };
 
 const describeScannedCloudinaryUrl = (url, recommendation = getScannedUrlRecommendation(url)) => {
@@ -2837,7 +3071,7 @@ const renderDomainScanPage = () => {
   list.replaceChildren();
 
   visibleCandidates.forEach((candidate, visibleIndex) => {
-    const { url, recommendation } = candidate;
+    const { url, recommendation, layout } = candidate;
     const resultIndex = startIndex + visibleIndex;
     const item = document.createElement("li");
     item.className = "domain-scan-result";
@@ -2877,6 +3111,11 @@ const renderDomainScanPage = () => {
       deliveryOrigin.textContent = "Verify client-hint delegation for this delivery origin";
     }
     const simulation = recommendation.automaticSimulation;
+    const layoutSummary = document.createElement("span");
+    layoutSummary.className = "domain-scan-layout";
+    const layoutTitle = document.createElement("strong");
+    layoutTitle.textContent = "Scraped page layout: ";
+    layoutSummary.append(layoutTitle, layout?.description || "No reliable page dimensions were found");
     const simulationSummary = document.createElement("span");
     simulationSummary.className = "domain-scan-simulation";
     if (simulation) {
@@ -2886,7 +3125,7 @@ const renderDomainScanPage = () => {
     } else {
       simulationSummary.textContent = "Automatic DPR projection is unavailable for this transformation.";
     }
-    copy.append(urlText, detail, score, deliveryOrigin, simulationSummary);
+    copy.append(urlText, detail, score, deliveryOrigin, layoutSummary, simulationSummary);
 
     const actions = document.createElement("div");
     actions.className = "domain-scan-actions";
@@ -2978,14 +3217,22 @@ const scanPageForCloudinaryUrls = async (rawValue) => {
       );
     }
 
-    const readerData = await fetchReaderData(canonicalPageUrl, { signal: controller.signal });
+    const [readerData, pageHtml] = await Promise.all([
+      fetchReaderData(canonicalPageUrl, { signal: controller.signal }),
+      fetchReaderHtml(canonicalPageUrl, { signal: controller.signal }).catch(() => "")
+    ]);
     const content = readerData?.content;
     if (typeof content !== "string") throw new Error("The page reader returned an incomplete browser snapshot.");
     if (run !== domainScanRun) return;
     canonicalPageUrl = getCanonicalPageUrl(readerData, canonicalPageUrl);
     input.value = canonicalPageUrl.href;
+    const pageImageElements = extractScrapedImageElements(pageHtml, canonicalPageUrl);
     const candidates = extractCloudinaryImageUrls(content)
-      .map((url) => ({ url, recommendation: getScannedUrlRecommendation(url) }))
+      .map((url) => {
+        const elementContext = pageImageElements.get(normalizeScrapedAssetUrl(url));
+        const layout = buildScrapedLayoutContext(url, elementContext);
+        return { url, layout, recommendation: getScannedUrlRecommendation(url, layout) };
+      })
       .filter((candidate) => candidate.recommendation)
       .map((candidate, foundOrder) => ({ ...candidate, foundOrder }));
     renderDomainScanResults(candidates, canonicalPageUrl);
@@ -3037,27 +3284,95 @@ const replaceTransformationToken = (segments, matcher, replacement) => segments.
   segment.split(",").map((token) => matcher.test(token) ? replacement : token).join(",")
 );
 
+const replaceLastTransformationToken = (segments, predicate, replacement) => {
+  const updated = [...segments];
+  for (let segmentIndex = updated.length - 1; segmentIndex >= 0; segmentIndex -= 1) {
+    const tokens = updated[segmentIndex].split(",");
+    for (let tokenIndex = tokens.length - 1; tokenIndex >= 0; tokenIndex -= 1) {
+      if (!predicate(tokens[tokenIndex])) continue;
+      tokens[tokenIndex] = replacement;
+      updated[segmentIndex] = tokens.filter(Boolean).join(",");
+      return updated.filter(Boolean);
+    }
+  }
+  return updated;
+};
+
 const buildDeliveryUrl = (parsed, segments) =>
   `${parsed.base}${[...segments, ...parsed.assetSegments].join("/")}${parsed.suffix}`;
 
-const updateDemoAssets = (parsed) => {
+const updateDemoAssets = (parsed, scanContext = null, audit = buildAudit(parsed, scanContext)) => {
   const logicalTransform = "c_fill,g_auto,w_360,h_240";
+  const targetDpr = getRoundedDeviceDpr();
+  const expectedFallbackTransform = targetDpr > 1
+    ? `${logicalTransform},dpr_${targetDpr.toFixed(1)}`
+    : logicalTransform;
+  const layoutSimulation = scanContext?.fromScan
+    ? buildAutomaticDprSimulation(parsed, audit, scanContext.layout)
+    : null;
+  const expectedSimulation = layoutSimulation || {
+    targetDpr,
+    deviceDpr: window.devicePixelRatio || 1,
+    url: buildDeliveryUrl(parsed, [expectedFallbackTransform, "f_auto", "q_auto"]),
+    productionUrl: buildDeliveryUrl(parsed, [`${logicalTransform},dpr_auto`, "f_auto", "q_auto"]),
+    projectedLabel: formatDimensions(BASE_WIDTH * targetDpr, BASE_HEIGHT * targetDpr),
+    sizingBasis: `${formatDimensions(BASE_WIDTH, BASE_HEIGHT)} · lab comparison slot`,
+    logicalWidth: BASE_WIDTH,
+    logicalHeight: BASE_HEIGHT,
+    layoutContext: null,
+    canPreview: true,
+    isSigned: false,
+    usedWidthFallback: false,
+    usedPageLayout: false
+  };
   const sourceUrls = {
     original: buildDeliveryUrl(parsed, []),
     baseline: buildDeliveryUrl(parsed, [logicalTransform, "f_auto", "q_auto"]),
     fixed: buildDeliveryUrl(parsed, [`${logicalTransform},dpr_2.0`, "f_auto", "q_auto"]),
     auto: buildDeliveryUrl(parsed, [`${logicalTransform},dpr_auto`, "f_auto", "q_auto"]),
+    autoExpected: expectedSimulation.canPreview ? expectedSimulation.url : "",
     fluid: buildDeliveryUrl(parsed, ["ar_3:2,c_fill,g_auto", `c_limit,w_auto:40:${BASE_WIDTH},dpr_auto`, "f_auto", "q_auto"])
   };
+
+  activeAssetParsed = parsed;
+  activeExpectedSimulation = expectedSimulation;
+  expectedDprTarget = targetDpr;
 
   document.querySelector('[data-metric="original"]').src = sourceUrls.original;
   document.querySelector('[data-metric="baseline"]').src = sourceUrls.baseline;
   document.querySelector('[data-metric="fixed"]').src = sourceUrls.fixed;
   document.querySelector('[data-metric="auto"]').src = sourceUrls.auto;
+  const expectedImage = document.querySelector('[data-metric="autoExpected"]');
+  if (sourceUrls.autoExpected) {
+    expectedImage.src = sourceUrls.autoExpected;
+    expectedImage.style.width = expectedSimulation.logicalWidth ? `${expectedSimulation.logicalWidth}px` : "auto";
+    expectedImage.style.height = expectedSimulation.logicalHeight ? `${expectedSimulation.logicalHeight}px` : "auto";
+    if (expectedSimulation.logicalWidth) expectedImage.width = expectedSimulation.logicalWidth;
+    else expectedImage.removeAttribute("width");
+    if (expectedSimulation.logicalHeight) expectedImage.height = expectedSimulation.logicalHeight;
+    else expectedImage.removeAttribute("height");
+  } else {
+    expectedImage.removeAttribute("src");
+    metrics.delete("autoExpected");
+    const expectedRow = document.querySelector('[data-result-row="autoExpected"]');
+    expectedRow.querySelectorAll("[data-result]").forEach((cell) => { cell.textContent = "Unavailable"; });
+  }
   document.querySelector('[data-metric="fluid"]').src = sourceUrls.fluid;
   document.querySelector('[data-metric="wrong"]').src = sourceUrls.fixed;
   document.querySelector('[data-metric="correct"]').src = sourceUrls.fixed;
   Object.assign(receiptUrls, sourceUrls);
+
+  const expectedContext = expectedSimulation.usedPageLayout && scanContext?.layout
+    ? scanContext.layout.description
+    : `Lab comparison slot · ${formatDimensions(expectedSimulation.logicalWidth, expectedSimulation.logicalHeight)}`;
+  document.querySelector("#auto-expected-label").textContent = expectedSimulation.usedPageLayout
+    ? "Expected automatic output for scraped page"
+    : "Expected automatic output for analyzed slot";
+  document.querySelector("#auto-expected-context").textContent = expectedContext;
+  document.querySelector("#auto-expected-badge").textContent = `Expected with setup · ${targetDpr}×`;
+  document.querySelector("#auto-expected-setting").textContent = targetDpr === 1
+    ? "DPR omitted · 1× diagnostic"
+    : `dpr_${targetDpr.toFixed(1)} diagnostic`;
 
   const fluidMarkup = buildFluidMarkup(sourceUrls.fluid);
   document.querySelector("#receipt-fluid-url").textContent = sourceUrls.fluid;
@@ -3122,6 +3437,145 @@ const getFilenameDimensions = (assetSegments) => {
   const filename = assetSegments.at(-1) || "";
   const match = filename.match(/_(\d+)x(\d+)(?=\.[^./]+$)/i);
   return match ? { width: Number(match[1]), height: Number(match[2]) } : null;
+};
+
+const parsePositivePixelValue = (rawValue) => {
+  const match = String(rawValue || "").trim().match(/^(\d+(?:\.\d+)?)(?:px)?$/i);
+  const value = Number(match?.[1]);
+  return Number.isFinite(value) && value > 0 ? value : 0;
+};
+
+const getSizesPixelFallback = (sizes) => {
+  const matches = [...String(sizes || "").matchAll(/(?:^|[\s,])(\d+(?:\.\d+)?)px(?=\s*(?:,|$))/gi)];
+  const value = Number(matches.at(-1)?.[1]);
+  return Number.isFinite(value) && value > 0 ? value : 0;
+};
+
+const buildScrapedLayoutContext = (url, elementContext = null) => {
+  try {
+    const parsed = parseCloudinaryUrl(url);
+    const width = getNumericToken(parsed.tokens, "w");
+    const height = getNumericToken(parsed.tokens, "h");
+    const autoWidth = getAutoWidthInfo(parsed.tokens);
+    const dpr = getDprInfo(parsed.tokens);
+    const filenameDimensions = getFilenameDimensions(parsed.assetSegments);
+    const widthAttribute = parsePositivePixelValue(elementContext?.widthAttribute);
+    const heightAttribute = parsePositivePixelValue(elementContext?.heightAttribute);
+    const styleWidth = parsePositivePixelValue(elementContext?.styleWidth);
+    const styleHeight = parsePositivePixelValue(elementContext?.styleHeight);
+    const styleMaxWidth = parsePositivePixelValue(elementContext?.styleMaxWidth);
+    const sizesWidth = getSizesPixelFallback(elementContext?.sizes);
+    const filenameMatchesDpr = filenameDimensions && width && dpr.isExplicit && dpr.value > 1
+      && Math.abs(width - filenameDimensions.width * dpr.value) < .01;
+    let displayWidth = 0;
+    let displayHeight = 0;
+    let source = "";
+    let confidence = "inferred";
+
+    if (widthAttribute || heightAttribute) {
+      displayWidth = widthAttribute;
+      displayHeight = heightAttribute;
+      source = "HTML width/height attributes";
+      confidence = "declared";
+    } else if (styleWidth || styleHeight || styleMaxWidth) {
+      displayWidth = styleWidth || styleMaxWidth;
+      displayHeight = styleHeight;
+      source = "inline page CSS";
+      confidence = "declared";
+    } else if (sizesWidth) {
+      displayWidth = sizesWidth;
+      source = "HTML sizes fallback";
+      confidence = "declared";
+    } else if (filenameMatchesDpr) {
+      displayWidth = filenameDimensions.width;
+      displayHeight = filenameDimensions.height;
+      source = "asset dimensions matched to the page’s DPR transform";
+    } else if (autoWidth.fallback) {
+      displayWidth = autoWidth.fallback;
+      source = "w_auto fallback in the page URL";
+      confidence = "URL-derived";
+    } else if (width || height) {
+      displayWidth = width;
+      displayHeight = height;
+      source = "Cloudinary sizing transform used by the page";
+      confidence = "URL-derived";
+    } else if (filenameDimensions) {
+      displayWidth = filenameDimensions.width;
+      displayHeight = filenameDimensions.height;
+      source = "asset filename dimensions";
+    }
+
+    const styleAspectRatio = String(elementContext?.styleAspectRatio || "").replace(/\s*\/\s*/, ":");
+    const inlineAspectRatio = styleAspectRatio
+      ? getAspectRatioValue([`ar_${styleAspectRatio}`])
+      : 0;
+    const aspectRatio = displayWidth && displayHeight
+      ? displayWidth / displayHeight
+      : inlineAspectRatio
+        || getAspectRatioValue(parsed.tokens)
+        || (filenameDimensions ? filenameDimensions.width / filenameDimensions.height : 0)
+        || (width && height ? width / height : 0);
+    if (!displayHeight && displayWidth && aspectRatio) displayHeight = displayWidth / aspectRatio;
+    if (!displayWidth && displayHeight && aspectRatio) displayWidth = displayHeight * aspectRatio;
+
+    const layoutSignals = [
+      elementContext?.sizes,
+      elementContext?.styleWidth,
+      elementContext?.styleMaxWidth,
+      elementContext?.className,
+      elementContext?.ancestorClasses
+    ].filter(Boolean).join(" ");
+    const fluid = /(?:^|[\s:;])(w-full|max-w-full|h-auto|flex-1|grid|flex-row|col-span)|100%|\d+vw|calc\(/i.test(layoutSignals);
+    const dimensions = displayWidth && displayHeight
+      ? formatDimensions(displayWidth, displayHeight)
+      : displayWidth
+        ? `${Math.round(displayWidth)} px wide`
+        : displayHeight
+          ? `${Math.round(displayHeight)} px high`
+          : "Dimensions unavailable";
+    const columnCount = Number(elementContext?.layoutColumnCount) || 0;
+    const breakpointPixels = { sm: 640, md: 768, lg: 1024, xl: 1280, "2xl": 1536 };
+    const breakpoint = elementContext?.layoutBreakpoint || "";
+    const layoutKind = fluid
+      ? columnCount > 1 ? `Fluid/responsive ${columnCount}-column page slot` : "Fluid/responsive page slot"
+      : "Fixed page slot";
+    const suggestedSizes = elementContext?.sizes
+      || (fluid && displayWidth
+        ? breakpoint && breakpointPixels[breakpoint]
+          ? `(max-width: ${breakpointPixels[breakpoint] - 1}px) 100vw, ${Math.round(displayWidth)}px`
+          : `(max-width: ${Math.round(displayWidth)}px) 100vw, ${Math.round(displayWidth)}px`
+        : "");
+
+    return {
+      displayWidth: displayWidth ? Math.round(displayWidth) : 0,
+      displayHeight: displayHeight ? Math.round(displayHeight) : 0,
+      fluid,
+      layoutKind,
+      source: source || "No page sizing metadata found",
+      confidence,
+      sizes: elementContext?.sizes || "",
+      suggestedSizes,
+      columnCount,
+      breakpoint,
+      pageIndex: elementContext?.pageIndex ?? -1,
+      description: `${layoutKind} · ${dimensions} · ${confidence}: ${source || "no reliable sizing metadata"}`
+    };
+  } catch {
+    return {
+      displayWidth: 0,
+      displayHeight: 0,
+      fluid: false,
+      layoutKind: "Page layout unavailable",
+      source: "The page sizing metadata could not be parsed",
+      confidence: "unavailable",
+      sizes: "",
+      suggestedSizes: "",
+      columnCount: 0,
+      breakpoint: "",
+      pageIndex: elementContext?.pageIndex ?? -1,
+      description: "Page layout unavailable · dimensions could not be inferred"
+    };
+  }
 };
 
 const greatestCommonDivisor = (first, second) => {
@@ -3402,7 +3856,7 @@ const buildAudit = (parsed, scanContext = null) => {
   };
 };
 
-const buildAutomaticDprSimulation = (parsed, audit) => {
+const buildAutomaticDprSimulation = (parsed, audit, layoutContext = null) => {
   const automaticUrl = audit.dpr.isExplicit
     ? audit.responsiveUrl
     : audit.dpr.isAuto ? audit.correctedUrl : "";
@@ -3411,15 +3865,33 @@ const buildAutomaticDprSimulation = (parsed, audit) => {
   const targetDpr = getRoundedDeviceDpr();
   const automaticParsed = parseCloudinaryUrl(automaticUrl);
   const automaticWidth = Boolean(audit.autoWidth.token);
-  let logicalWidth = automaticWidth ? audit.autoWidth.fallback : audit.width;
-  let logicalHeight = audit.height;
+  const pageWidth = layoutContext?.displayWidth || 0;
+  const pageHeight = layoutContext?.displayHeight || 0;
+  let logicalWidth = pageWidth || (automaticWidth ? audit.autoWidth.fallback : audit.width);
+  let logicalHeight = pageHeight || audit.height;
   const aspectRatio = getAspectRatioValue(automaticParsed.tokens);
 
   if (!automaticWidth && !logicalWidth && logicalHeight && aspectRatio) logicalWidth = logicalHeight * aspectRatio;
   if (!logicalHeight && logicalWidth && aspectRatio) logicalHeight = logicalWidth / aspectRatio;
 
+  let productionSegments = [...automaticParsed.transformationSegments];
+  if (pageWidth && !automaticWidth) {
+    productionSegments = replaceLastTransformationToken(
+      productionSegments,
+      isNumericWidthToken,
+      `w_${Math.round(pageWidth)}`
+    );
+  }
+  if (pageHeight && audit.height) {
+    productionSegments = replaceLastTransformationToken(
+      productionSegments,
+      isNumericHeightToken,
+      `h_${Math.round(pageHeight)}`
+    );
+  }
+
   let foundDpr = false;
-  const resolvedSegments = automaticParsed.transformationSegments
+  const resolvedSegments = productionSegments
     .map((segment) => segment
       .split(",")
       .map((token) => {
@@ -3445,15 +3917,24 @@ const buildAutomaticDprSimulation = (parsed, audit) => {
       : projectedHeight
         ? `${Math.round(projectedHeight)} px high`
         : "Depends on the page’s CSS slot";
-  const sizingBasis = automaticWidth
-    ? logicalWidth ? `${Math.round(logicalWidth)} px w_auto fallback` : "CSS slot width unavailable"
-    : logicalWidth && logicalHeight
-      ? formatDimensions(logicalWidth, logicalHeight)
-      : logicalWidth
-        ? `${Math.round(logicalWidth)} px logical width`
-        : logicalHeight
-          ? `${Math.round(logicalHeight)} px logical height`
-          : "No delivery dimensions";
+  const layoutDimensions = logicalWidth && logicalHeight
+    ? formatDimensions(logicalWidth, logicalHeight)
+    : logicalWidth
+      ? `${Math.round(logicalWidth)} px wide`
+      : logicalHeight
+        ? `${Math.round(logicalHeight)} px high`
+        : "Dimensions unavailable";
+  const sizingBasis = layoutContext?.source && (pageWidth || pageHeight)
+    ? `${layoutDimensions} · ${layoutContext.source}`
+    : automaticWidth
+      ? logicalWidth ? `${Math.round(logicalWidth)} px w_auto fallback` : "CSS slot width unavailable"
+      : logicalWidth && logicalHeight
+        ? formatDimensions(logicalWidth, logicalHeight)
+        : logicalWidth
+          ? `${Math.round(logicalWidth)} px logical width`
+          : logicalHeight
+            ? `${Math.round(logicalHeight)} px logical height`
+            : "No delivery dimensions";
   const isSigned = parsed.transformationSegments.some((segment) => /^s--.+--$/.test(segment));
   const hasSizingBasis = Boolean(logicalWidth || logicalHeight);
 
@@ -3461,15 +3942,20 @@ const buildAutomaticDprSimulation = (parsed, audit) => {
     targetDpr,
     deviceDpr: window.devicePixelRatio || 1,
     url: buildDeliveryUrl(automaticParsed, resolvedSegments),
+    productionUrl: buildDeliveryUrl(automaticParsed, productionSegments),
     projectedLabel,
     sizingBasis,
+    logicalWidth: logicalWidth ? Math.round(logicalWidth) : 0,
+    logicalHeight: logicalHeight ? Math.round(logicalHeight) : 0,
+    layoutContext,
     canPreview: hasSizingBasis && !isSigned,
     isSigned,
-    usedWidthFallback: automaticWidth && Boolean(logicalWidth)
+    usedWidthFallback: automaticWidth && !pageWidth && Boolean(logicalWidth),
+    usedPageLayout: Boolean((pageWidth || pageHeight) && layoutContext)
   };
 };
 
-const getScannedUrlRecommendation = (url) => {
+const getScannedUrlRecommendation = (url, layoutContext = null) => {
   try {
     const parsed = parseCloudinaryUrl(url);
     if (!parsed.tokens.some(isDprToken)) return null;
@@ -3479,7 +3965,7 @@ const getScannedUrlRecommendation = (url) => {
     const actionableIssue = audit.issues.find((issue) => issue.severity === "error")
       || audit.issues.find((issue) => issue.severity === "warning");
     const customOriginSetup = audit.dpr.isAuto && parsed.url.origin !== "https://res.cloudinary.com";
-    const automaticSimulation = buildAutomaticDprSimulation(parsed, audit);
+    const automaticSimulation = buildAutomaticDprSimulation(parsed, audit, layoutContext);
     const title = actionableIssue?.title
       || (audit.responsiveUrl ? "Automatic DPR alternative available" : "")
       || (audit.responsiveWidthUrl ? "Responsive-width alternative available" : "")
@@ -3569,7 +4055,9 @@ const updateClientHintOption = (parsed, scanContext) => {
 
 const configureAutomaticDprSimulationOption = (parsed, audit, scanContext) => {
   const option = document.querySelector("#simulated-auto-option");
-  const simulation = scanContext?.fromScan ? buildAutomaticDprSimulation(parsed, audit) : null;
+  const simulation = scanContext?.fromScan
+    ? buildAutomaticDprSimulation(parsed, audit, scanContext.layout)
+    : null;
   option.hidden = !simulation;
   if (!simulation) return null;
 
@@ -3603,9 +4091,11 @@ const configureAutomaticDprSimulationOption = (parsed, audit, scanContext) => {
 
   link.href = simulation.url;
   document.querySelector("#simulated-auto-url").textContent = simulation.url;
-  document.querySelector("#simulated-auto-note").innerHTML = simulation.usedWidthFallback
-    ? `This deterministic diagnostic resolves <code>dpr_auto</code> to ${simulation.targetDpr}× and uses the URL’s <code>w_auto</code> fallback width. It does not depend on the scanned page’s client-hint setup. Keep <code>w_auto</code> and <code>dpr_auto</code> in production with accurate <code>sizes</code> and delegation.`
-    : `This deterministic diagnostic resolves <code>dpr_auto</code> to ${simulation.targetDpr}×, so it does not depend on the scanned page’s client-hint setup. Keep <code>dpr_auto</code> in production and apply the delegation setup above.`;
+  document.querySelector("#simulated-auto-note").innerHTML = simulation.usedPageLayout
+    ? `This deterministic diagnostic resolves <code>dpr_auto</code> to ${simulation.targetDpr}× using the scraped page slot: ${simulation.sizingBasis}. It does not depend on the scanned page’s live client-hint request. Keep <code>dpr_auto</code> in production and apply the delegation setup above.`
+    : simulation.usedWidthFallback
+      ? `This deterministic diagnostic resolves <code>dpr_auto</code> to ${simulation.targetDpr}× and uses the URL’s <code>w_auto</code> fallback width. It does not depend on the scanned page’s client-hint setup. Keep <code>w_auto</code> and <code>dpr_auto</code> in production with accurate <code>sizes</code> and delegation.`
+      : `This deterministic diagnostic resolves <code>dpr_auto</code> to ${simulation.targetDpr}×, so it does not depend on the scanned page’s client-hint setup. Keep <code>dpr_auto</code> in production and apply the delegation setup above.`;
   preview.classList.add("is-loading");
   preview.classList.remove("is-error");
   state.textContent = "Loading deterministic preview…";
@@ -3677,7 +4167,7 @@ const analyzeAssetUrl = async () => {
   }
 
   const audit = buildAudit(parsed, scanContext);
-  updateDemoAssets(parsed);
+  updateDemoAssets(parsed, scanContext, audit);
   measureAll();
   renderTransformationList(parsed.transformationSegments);
   renderIssues(audit.issues);
@@ -3879,9 +4369,11 @@ document.querySelector("#domain-scan-next").addEventListener("click", () => {
 document.querySelector("#domain-scan-list").addEventListener("click", (event) => {
   const button = event.target.closest("button[data-analyze-url]");
   if (!button) return;
+  const candidate = domainScanCandidates.find((item) => item.url === button.dataset.analyzeUrl);
   activeScanAnalysisContext = {
     fromScan: true,
-    sourcePageUrl: button.dataset.sourcePageUrl || domainScanPageUrl?.href || ""
+    sourcePageUrl: button.dataset.sourcePageUrl || domainScanPageUrl?.href || "",
+    layout: candidate?.layout || null
   };
   document.querySelector("#asset-url").value = button.dataset.analyzeUrl;
   analyzeAssetUrl();
@@ -3904,16 +4396,21 @@ document.querySelector("#use-default-asset").addEventListener("click", () => {
   analyzeAssetUrl();
 });
 
-document.querySelector("#refresh-metrics").addEventListener("click", measureAll);
+document.querySelector("#refresh-metrics").addEventListener("click", () => {
+  refreshExpectedAssetForDevice();
+  measureAll();
+});
 window.addEventListener("resize", () => {
   updateDeviceReadout();
   window.clearTimeout(window.__dprResizeTimer);
   window.__dprResizeTimer = window.setTimeout(() => {
+    refreshExpectedAssetForDevice();
     measureAll();
     if (activeReceiptKey === "fluid") updateFluidPreview(fluidPreviewWidth);
   }, 120);
 });
 
+watchDeviceDprChanges();
 updateDeviceReadout();
 analyzeAssetUrl();
   </script>
