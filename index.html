@@ -507,6 +507,35 @@ h1 em {
   white-space: nowrap;
 }
 
+.file-size-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 18px 24px 0;
+}
+
+.file-size-compare div {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid #e2e5ee;
+  border-radius: 8px;
+  background: #f8f9fc;
+}
+
+.file-size-compare span,
+.file-size-compare small {
+  color: #7e899b;
+  font-size: 9px;
+}
+
+.file-size-compare strong {
+  color: #263247;
+  font-size: 13px;
+}
+
+.file-size-compare small { font-size: 8px; }
+
 .output-explanation {
   margin: 0;
   padding: 18px 24px 22px;
@@ -811,6 +840,7 @@ thead th { color: #7a8595; background: #f8f9fb; font-size: 9px; letter-spacing: 
 tbody th { font-size: 13px; }
 tbody td { color: #586577; }
 tbody code { padding: 5px 7px; border-radius: 5px; color: #4452c7; background: var(--blue-pale); font-size: 10px; }
+.result-link { color: var(--blue); font-size: 10px; font-weight: 800; text-decoration-color: #bbc2ff; text-underline-offset: 4px; }
 tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
 .result-auto { background: #f7f8ff; }
 .results-foot { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 22px; border-top: 1px solid var(--line); background: #fafbfc; }
@@ -893,6 +923,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
   .output-metrics { grid-template-columns: 1fr; gap: 15px; }
   .output-metrics div { display: flex; align-items: center; justify-content: space-between; }
   .output-metrics dt { margin: 0; }
+  .file-size-compare { grid-template-columns: 1fr; margin-inline: 20px; }
   .inspector-card-header { padding: 20px; }
   .transform-readout, .issue-list { padding-inline: 20px; }
   .recommendation-block, .markup-block { margin-inline: 20px; }
@@ -1013,10 +1044,14 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
             <span id="preview-state">Loading output…</span>
           </div>
           <dl class="output-metrics">
-            <div><dt>Delivered pixels</dt><dd id="inspector-delivered">—</dd></div>
-            <div><dt>Transfer</dt><dd id="inspector-bytes">—</dd></div>
+            <div><dt>Delivered dimensions</dt><dd id="inspector-delivered">—</dd></div>
+            <div><dt>Derived file size</dt><dd id="inspector-bytes">—</dd></div>
             <div><dt>DPR setting</dt><dd id="inspector-dpr">—</dd></div>
           </dl>
+          <div class="file-size-compare">
+            <div><span>Original file</span><strong id="inspector-original-file">—</strong><small>no transformations</small></div>
+            <div><span>Derived file</span><strong id="inspector-derived-file">—</strong><small>current URL transformations</small></div>
+          </div>
           <p id="output-explanation" class="output-explanation">Waiting for the asset response.</p>
         </article>
 
@@ -1105,9 +1140,9 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
             <h3>The browser uses the natural size</h3>
             <p>Cloudinary returns 720 × 480 pixels. With no HTML width and height, the browser displays all 720 × 480 CSS pixels—twice the intended dimensions.</p>
             <div class="metric-chips" aria-label="Live image measurements">
-              <span>Delivered <b data-for="wrong" data-value="natural">—</b></span>
-              <span>Displayed <b data-for="wrong" data-value="rendered">—</b></span>
-              <span>Effective <b data-for="wrong" data-value="effective">—</b></span>
+              <span>Delivered dimensions <b data-for="wrong" data-value="natural">—</b></span>
+              <span>Displayed dimensions <b data-for="wrong" data-value="rendered">—</b></span>
+              <span>Effective DPR <b data-for="wrong" data-value="effective">—</b></span>
             </div>
             <div class="code-row">
               <code>&lt;img src=".../w_360,h_240,dpr_2.0/f_auto/q_auto/..."&gt;</code>
@@ -1134,9 +1169,9 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
             <h3>2× pixels, displayed at 1× size</h3>
             <p>The same 720 × 480 output is constrained to 360 × 240 CSS pixels. On a 2× screen, each CSS pixel gets four image pixels for a crisp result.</p>
             <div class="metric-chips" aria-label="Live image measurements">
-              <span>Delivered <b data-for="correct" data-value="natural">—</b></span>
-              <span>Displayed <b data-for="correct" data-value="rendered">—</b></span>
-              <span>Effective <b data-for="correct" data-value="effective">—</b></span>
+              <span>Delivered dimensions <b data-for="correct" data-value="natural">—</b></span>
+              <span>Displayed dimensions <b data-for="correct" data-value="rendered">—</b></span>
+              <span>Effective DPR <b data-for="correct" data-value="effective">—</b></span>
             </div>
             <div class="code-row">
               <code>&lt;img src=".../dpr_2.0/f_auto/q_auto/..." width="360" height="240"&gt;</code>
@@ -1186,9 +1221,9 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
             <code>.../w_360,h_240/f_auto/q_auto/...</code>
           </div>
           <dl class="strategy-metrics">
-            <div><dt>Output</dt><dd data-for="baseline" data-value="natural">—</dd></div>
-            <div><dt>Transfer</dt><dd data-for="baseline" data-value="bytes">—</dd></div>
-            <div><dt>Density</dt><dd data-for="baseline" data-value="effective">—</dd></div>
+            <div><dt>Output dimensions</dt><dd data-for="baseline" data-value="natural">—</dd></div>
+            <div><dt>File size</dt><dd data-for="baseline" data-value="bytes">—</dd></div>
+            <div><dt>Effective DPR</dt><dd data-for="baseline" data-value="effective">—</dd></div>
           </dl>
         </article>
 
@@ -1210,9 +1245,9 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
             <code>.../w_360,h_240,dpr_2.0/f_auto/q_auto/...</code>
           </div>
           <dl class="strategy-metrics">
-            <div><dt>Output</dt><dd data-for="fixed" data-value="natural">—</dd></div>
-            <div><dt>Transfer</dt><dd data-for="fixed" data-value="bytes">—</dd></div>
-            <div><dt>Density</dt><dd data-for="fixed" data-value="effective">—</dd></div>
+            <div><dt>Output dimensions</dt><dd data-for="fixed" data-value="natural">—</dd></div>
+            <div><dt>File size</dt><dd data-for="fixed" data-value="bytes">—</dd></div>
+            <div><dt>Effective DPR</dt><dd data-for="fixed" data-value="effective">—</dd></div>
           </dl>
         </article>
 
@@ -1235,9 +1270,9 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
             <code>.../w_360,h_240,dpr_auto/f_auto/q_auto/...</code>
           </div>
           <dl class="strategy-metrics">
-            <div><dt>Output</dt><dd data-for="auto" data-value="natural">—</dd></div>
-            <div><dt>Transfer</dt><dd data-for="auto" data-value="bytes">—</dd></div>
-            <div><dt>Density</dt><dd data-for="auto" data-value="effective">—</dd></div>
+            <div><dt>Output dimensions</dt><dd data-for="auto" data-value="natural">—</dd></div>
+            <div><dt>File size</dt><dd data-for="auto" data-value="bytes">—</dd></div>
+            <div><dt>Effective DPR</dt><dd data-for="auto" data-value="effective">—</dd></div>
           </dl>
           <p id="auto-verdict" class="auto-verdict">Waiting for image response…</p>
         </article>
@@ -1260,10 +1295,11 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
               <tr>
                 <th>Strategy</th>
                 <th>URL setting</th>
-                <th>Delivered</th>
-                <th>Displayed</th>
-                <th>Transfer</th>
+                <th>Delivered dimensions</th>
+                <th>Displayed dimensions</th>
+                <th>File size</th>
                 <th>vs. original</th>
+                <th>Open</th>
               </tr>
             </thead>
             <tbody>
@@ -1274,6 +1310,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
                 <td data-result="rendered">—</td>
                 <td data-result="bytes">—</td>
                 <td data-result="delta">Baseline</td>
+                <td><a id="result-link-original" class="result-link" href="#" target="_blank" rel="noreferrer">View ↗</a></td>
               </tr>
               <tr data-result-row="baseline">
                 <th>Fixed 1×</th>
@@ -1282,6 +1319,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
                 <td data-result="rendered">—</td>
                 <td data-result="bytes">—</td>
                 <td data-result="delta">—</td>
+                <td><a id="result-link-baseline" class="result-link" href="#" target="_blank" rel="noreferrer">View ↗</a></td>
               </tr>
               <tr data-result-row="fixed">
                 <th>Hard-coded 2×</th>
@@ -1290,6 +1328,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
                 <td data-result="rendered">—</td>
                 <td data-result="bytes">—</td>
                 <td data-result="delta">—</td>
+                <td><a id="result-link-fixed" class="result-link" href="#" target="_blank" rel="noreferrer">View ↗</a></td>
               </tr>
               <tr class="result-auto" data-result-row="auto">
                 <th>Automatic</th>
@@ -1298,6 +1337,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
                 <td data-result="rendered">—</td>
                 <td data-result="bytes">—</td>
                 <td data-result="delta">—</td>
+                <td><a id="result-link-auto" class="result-link" href="#" target="_blank" rel="noreferrer">View ↗</a></td>
               </tr>
             </tbody>
           </table>
@@ -1451,12 +1491,14 @@ const updateFileSizeSavings = () => {
   const original = metrics.get("original")?.bytes || 0;
   const optimized = metrics.get("baseline")?.bytes || 0;
   const note = document.querySelector("#file-size-savings");
+  const originalFile = document.querySelector("#inspector-original-file");
+  if (originalFile && original) originalFile.textContent = formatBytes(original);
   if (!note || !original || !optimized) {
     if (note) note.textContent = "Original-to-optimized byte savings will appear when Resource Timing exposes both responses.";
     return;
   }
   const reduction = Math.max(0, Math.round((1 - optimized / original) * 100));
-  note.innerHTML = "<strong>SpaceX original:</strong> " + formatBytes(original) + " &nbsp;→&nbsp; <strong>correctly optimized:</strong> " + formatBytes(optimized) + " &nbsp;·&nbsp; " + reduction + "% fewer bytes";
+  note.innerHTML = "<strong>Original source:</strong> " + formatBytes(original) + " &nbsp;→&nbsp; <strong>correctly optimized:</strong> " + formatBytes(optimized) + " &nbsp;·&nbsp; " + reduction + "% fewer bytes";
 };
 
 const updateAutoVerdict = () => {
@@ -1627,6 +1669,10 @@ const updateDemoAssets = (parsed) => {
   document.querySelector('[data-metric="auto"]').src = sourceUrls.auto;
   document.querySelector('[data-metric="wrong"]').src = sourceUrls.fixed;
   document.querySelector('[data-metric="correct"]').src = sourceUrls.fixed;
+  Object.entries(sourceUrls).forEach(([key, url]) => {
+    const link = document.querySelector(`#result-link-${key}`);
+    if (link) link.href = url;
+  });
 
   const assetName = decodeURIComponent(parsed.assetSegments.at(-1) || "selected asset");
   document.querySelector("#demo-source-note").textContent =
@@ -1866,6 +1912,8 @@ const analyzeAssetUrl = async () => {
   previewState.textContent = "Loading output…";
   document.querySelector("#inspector-delivered").textContent = "—";
   document.querySelector("#inspector-bytes").textContent = "—";
+  document.querySelector("#inspector-original-file").textContent = "—";
+  document.querySelector("#inspector-derived-file").textContent = "—";
   document.querySelector("#output-explanation").textContent = "Waiting for the asset response.";
 
   let parsed;
@@ -1924,6 +1972,7 @@ const analyzeAssetUrl = async () => {
   preview.classList.remove("is-loading", "is-error");
   document.querySelector("#inspector-delivered").textContent = formatDimensions(deliveredWidth, deliveredHeight);
   document.querySelector("#inspector-bytes").textContent = formatBytes(resource.bytes);
+  document.querySelector("#inspector-derived-file").textContent = formatBytes(resource.bytes);
   updateInspectorMarkup(audit, deliveredWidth, deliveredHeight);
 
   if (audit.dpr.isExplicit && audit.width) {
