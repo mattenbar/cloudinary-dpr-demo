@@ -783,6 +783,7 @@ h1 em {
 .strategy-card-featured { border-color: #6473ff; box-shadow: 0 0 0 1px rgba(100,115,255,.3), 0 20px 50px rgba(0,0,0,.25); }
 .strategy-number { display: grid; width: 30px; height: 30px; margin-bottom: 14px; place-items: center; border: 1px solid #394457; border-radius: 50%; color: #94a0b3; font-size: 11px; font-weight: 800; }
 .recommended { position: absolute; z-index: 2; top: 20px; right: 20px; padding: 6px 9px; border-radius: 99px; color: #08131e; background: var(--cyan); font-size: 9px; font-weight: 900; letter-spacing: .07em; text-transform: uppercase; }
+.measurement-only { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
 .strategy-image { position: relative; width: min(100%, 360px); aspect-ratio: 3 / 2; margin-inline: auto; border-radius: 10px; background: #202a38; overflow: hidden; }
 .strategy-image img { width: 100%; height: 100%; object-fit: cover; }
@@ -817,6 +818,8 @@ tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
 .results-foot .live-dot { width: 7px; height: 7px; }
 .secondary-button { padding: 8px 12px; border: 1px solid #d5dae2; border-radius: 7px; color: #435064; background: white; font-size: 10px; font-weight: 750; cursor: pointer; }
 .secondary-button:hover { border-color: var(--blue); color: var(--blue); }
+.file-size-savings { margin: 16px 0 0; color: #667286; font-size: 12px; line-height: 1.6; text-align: center; }
+.file-size-savings strong { color: var(--ink); }
 
 .implementation-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 55px; }
 .implementation-grid article { position: relative; padding: 29px; border-top: 1px solid #bdc4cf; }
@@ -986,7 +989,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
             type="url"
             spellcheck="false"
             autocomplete="off"
-            value="https://cdn.10xgenomics.com/image/upload/f_auto,q_auto,w_1148,dpr_2.0/v1756256224/home-page-2025-08/aoi_T_cells_attacking_cancer_574x450.jpg"
+            value="https://res.cloudinary.com/doxfstysv/image/upload/f_auto,q_auto,w_1148,dpr_2.0/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg"
             aria-describedby="asset-url-help">
           <button class="analyze-button" type="submit">Analyze URL</button>
         </div>
@@ -1159,6 +1162,12 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
       </div>
 
       <div class="strategy-grid">
+        <img
+          id="image-original"
+          class="measurement-only"
+          data-metric="original"
+          src="https://res.cloudinary.com/doxfstysv/image/upload/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg"
+          alt="">
         <article class="strategy-card">
           <div class="strategy-number">A</div>
           <div class="strategy-image">
@@ -1254,10 +1263,18 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
                 <th>Delivered</th>
                 <th>Displayed</th>
                 <th>Transfer</th>
-                <th>vs. 1×</th>
+                <th>vs. original</th>
               </tr>
             </thead>
             <tbody>
+              <tr data-result-row="original">
+                <th>Original source</th>
+                <td><code>No transformations</code></td>
+                <td data-result="natural">—</td>
+                <td data-result="rendered">—</td>
+                <td data-result="bytes">—</td>
+                <td data-result="delta">Baseline</td>
+              </tr>
               <tr data-result-row="baseline">
                 <th>Fixed 1×</th>
                 <td><code>DPR omitted</code></td>
@@ -1290,6 +1307,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
           <button id="refresh-metrics" class="secondary-button" type="button">Refresh measurements</button>
         </div>
       </div>
+      <p id="file-size-savings" class="file-size-savings">Calculating original-to-optimized savings…</p>
 
       <div class="implementation-grid">
         <article>
@@ -1406,27 +1424,39 @@ const measureImage = (image) => {
 };
 
 const updateResultTable = () => {
-  const baselineBytes = metrics.get("baseline")?.bytes || 0;
+  const originalBytes = metrics.get("original")?.bytes || 0;
 
-  ["baseline", "fixed", "auto"].forEach((key) => {
+  ["original", "baseline", "fixed", "auto"].forEach((key) => {
     const measurement = metrics.get(key);
     const row = document.querySelector(`[data-result-row="${key}"]`);
     if (!measurement || !row) return;
 
     row.querySelector('[data-result="natural"]').textContent = measurement.natural;
-    row.querySelector('[data-result="rendered"]').textContent = measurement.rendered;
+    row.querySelector('[data-result="rendered"]').textContent = key === "original" ? "—" : measurement.rendered;
     row.querySelector('[data-result="bytes"]').textContent = formatBytes(measurement.bytes);
 
     const deltaCell = row.querySelector('[data-result="delta"]');
-    if (key === "baseline") {
+    if (key === "original") {
       deltaCell.textContent = "Baseline";
-    } else if (baselineBytes && measurement.bytes) {
-      const delta = ((measurement.bytes - baselineBytes) / baselineBytes) * 100;
+    } else if (originalBytes && measurement.bytes) {
+      const delta = ((measurement.bytes - originalBytes) / originalBytes) * 100;
       deltaCell.textContent = `${delta >= 0 ? "+" : ""}${Math.round(delta)}%`;
     } else {
       deltaCell.textContent = "Unavailable";
     }
   });
+};
+
+const updateFileSizeSavings = () => {
+  const original = metrics.get("original")?.bytes || 0;
+  const optimized = metrics.get("baseline")?.bytes || 0;
+  const note = document.querySelector("#file-size-savings");
+  if (!note || !original || !optimized) {
+    if (note) note.textContent = "Original-to-optimized byte savings will appear when Resource Timing exposes both responses.";
+    return;
+  }
+  const reduction = Math.max(0, Math.round((1 - optimized / original) * 100));
+  note.innerHTML = "<strong>SpaceX original:</strong> " + formatBytes(original) + " &nbsp;→&nbsp; <strong>correctly optimized:</strong> " + formatBytes(optimized) + " &nbsp;·&nbsp; " + reduction + "% fewer bytes";
 };
 
 const updateAutoVerdict = () => {
@@ -1460,7 +1490,7 @@ const updateAutoVerdict = () => {
 
 const updateTimingNote = () => {
   const note = document.querySelector("#timing-note");
-  const hasBytes = ["baseline", "fixed", "auto"].every((key) => metrics.get(key)?.bytes > 0);
+  const hasBytes = ["original", "baseline", "fixed", "auto"].every((key) => metrics.get(key)?.bytes > 0);
   note.innerHTML = hasBytes
     ? '<span class="live-dot" aria-hidden="true"></span> Live dimensions and transferred bytes measured successfully.'
     : '<span class="live-dot" aria-hidden="true"></span> Dimensions are live. Byte totals are hidden by cache or Resource Timing.';
@@ -1472,6 +1502,7 @@ const measureAll = async () => {
   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   images.forEach(measureImage);
   updateResultTable();
+  updateFileSizeSavings();
   updateAutoVerdict();
   updateTimingNote();
 };
