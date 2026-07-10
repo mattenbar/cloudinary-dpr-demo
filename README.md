@@ -18,6 +18,8 @@ Because browsers normally block direct cross-origin page scraping, the page cont
 
 Every scraped candidate identifies its exact image delivery origin. Custom delivery hostnames are flagged because `Sec-CH-DPR` must be delegated to that origin for `dpr_auto` to match the device. Selecting **Analyze** carries the scanned page context into the audit and generates copyable `delegate-ch`, `Permissions-Policy`, and `Accept-CH` setup. A newly discovered custom origin cannot be added retroactively to the already-loaded lab document, so its live `dpr_auto` comparison may show the 1× fallback even though the production page will adapt correctly after the generated setup is applied.
 
+Scanner results also show the expected automatic DPR for the current device and project the resulting dimensions from the URL’s logical or `w_auto` fallback size. This projection does not rely on the scanned page’s client-hint setup. Selecting **Analyze** loads a deterministic equivalent that resolves `dpr_auto` to the browser’s rounded DPR, then reports the actual response dimensions and derived file size. This explicit URL is diagnostic only; production markup should retain `dpr_auto` and use the generated client-hint delegation.
+
 ## URL inspector
 
 Paste a standard Cloudinary `/image/upload/` delivery URL into the inspector to:
@@ -46,7 +48,7 @@ The receipt separates two decisions. **Smallest transfer** identifies the lowest
 
 The receipt includes a full fluid-layout strategy row using `w_auto:40:360`, `dpr_auto`, and matching `sizes`, width, height, and fluid CSS markup. It reports the same delivered dimensions, displayed dimensions, file size, bandwidth, comparison, and **Inspect** action as every other strategy. It is clearly badged as production layout guidance and excluded from smallest-transfer/device ranking because its responsive-width request is not directly comparable with the fixed 360 × 240 benchmark. Its popup uses the fluid URL as the optimal URL and repeats the complete fluid markup.
 
-The fluid popup includes a draggable resize handle and an accessible width slider. It shows the live CSS slot, the 40-pixel `w_auto` selection, the browser's rounded `dpr_auto` value, target physical pixels, actual response dimensions and bytes, and a concrete diagnostic URL representing those automatic choices. The production recommendation remains the automatic URL. Popup details scroll independently from the fixed preview pane, with safe bottom padding on desktop and mobile so the image stays in place and the final content is fully reachable.
+The fluid popup includes a draggable resize handle and an accessible width slider. It shows the live CSS slot, the 40-pixel `w_auto` selection, the browser's rounded `dpr_auto` value, target physical pixels, actual response dimensions and bytes, and a concrete diagnostic URL representing those automatic choices. The production recommendation remains the automatic URL. The full-width preview sits above the information panel so the slot has maximum horizontal room; the lower details panel scrolls independently, with safe bottom padding on desktop and mobile so the preview stays in place and the final content is fully reachable.
 
 ## What the demo proves
 

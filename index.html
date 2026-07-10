@@ -430,7 +430,9 @@ h1 em {
 .domain-scan-score.is-low { color: #9fb0c6; background: #202c40; }
 .domain-scan-origin { display: block; margin-top: 4px; color: #a7b6ca; font-size: 9px; }
 .domain-scan-origin.is-custom { color: #ffd979; }
-.domain-scan-actions { display: flex; align-items: center; gap: 8px; }
+.domain-scan-simulation { display: block; margin-top: 5px; color: #8fd8eb; font-size: 9px; line-height: 1.45; }
+.domain-scan-simulation strong { color: #c8f3ff; }
+.domain-scan-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
 .domain-scan-actions button,
 .domain-scan-actions a { padding: 7px 10px; border-radius: 6px; font-size: 9px; font-weight: 850; text-decoration: none; }
 .domain-scan-actions button { border: 0; color: #101724; background: var(--cyan); cursor: pointer; }
@@ -761,6 +763,7 @@ h1 em {
 .responsive-option { border-color: #cbd1ff; background: #f4f5ff; }
 .responsive-width-option { border-color: #a9dce9; background: #f0fbfd; }
 .client-hint-option { border-color: #ead7a0; background: #fffaf0; }
+.simulated-auto-option { border-color: #a9dce9; background: #f3fbfd; }
 .responsive-option .copy-code-row + .copy-code-row,
 .responsive-width-option .copy-code-row + .copy-code-row,
 .client-hint-option .copy-code-row + .copy-code-row { margin-top: 10px; }
@@ -820,6 +823,19 @@ h1 em {
 }
 
 .recommendation-block > p code { color: var(--blue-dark); }
+
+.simulated-auto-grid { display: grid; grid-template-columns: minmax(150px, .72fr) minmax(0, 1.28fr); gap: 12px; margin-bottom: 12px; }
+.simulated-auto-preview { position: relative; display: grid; min-height: 150px; padding: 10px; place-items: center; border-radius: 8px; color: #91a0b5; background: #101724; overflow: hidden; }
+.simulated-auto-preview img { z-index: 1; max-width: 100%; max-height: 190px; border-radius: 5px; object-fit: contain; }
+.simulated-auto-preview span { position: absolute; z-index: 0; padding: 12px; font-size: 9px; line-height: 1.45; text-align: center; }
+.simulated-auto-preview.is-loading img,
+.simulated-auto-preview.is-error img { visibility: hidden; }
+.simulated-auto-preview:not(.is-loading):not(.is-error) span { display: none; }
+.simulated-auto-preview.is-error span { color: #ffb5af; }
+.simulated-auto-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin: 0; }
+.simulated-auto-metrics div { min-width: 0; padding: 10px; border: 1px solid #d9e7eb; border-radius: 7px; background: rgba(255,255,255,.72); }
+.simulated-auto-metrics dt { margin-bottom: 4px; color: #77889a; font-size: 8px; font-weight: 850; letter-spacing: .07em; text-transform: uppercase; }
+.simulated-auto-metrics dd { margin: 0; color: #2e4052; font-size: 10px; font-weight: 800; line-height: 1.45; overflow-wrap: anywhere; }
 
 .rule-section { background: white; }
 .rule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
@@ -1049,6 +1065,10 @@ tbody tr.needs-client-hint-setup td { box-shadow: inset 0 -2px #e0b84e; }
 .receipt-dialog-close:hover { border-color: #aeb6c3; color: var(--ink); }
 .receipt-dialog-body { display: grid; min-height: 0; flex: 1; grid-template-columns: minmax(330px, .82fr) minmax(0, 1.18fr); overflow: hidden; }
 .receipt-dialog-preview { display: flex; min-width: 0; min-height: 0; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px; overflow: hidden; background: #101724; }
+.receipt-dialog-body.is-fluid-layout { grid-template-columns: 1fr; grid-template-rows: minmax(310px, 43%) minmax(0, 1fr); }
+.receipt-dialog-body.is-fluid-layout .receipt-dialog-preview { height: auto; flex-direction: row; gap: 30px; padding: 20px 32px; }
+.receipt-dialog-body.is-fluid-layout .receipt-preview-frame.is-fluid { flex: 0 1 auto; }
+.receipt-dialog-body.is-fluid-layout .receipt-fluid-controls { flex: 0 1 360px; }
 .receipt-preview-frame { position: relative; display: grid; max-width: 100%; min-width: 0; place-items: center; }
 .receipt-preview-frame img { display: block; max-width: 100%; max-height: 500px; border-radius: 8px; object-fit: contain; box-shadow: 0 18px 45px rgba(0,0,0,.32); }
 .receipt-preview-frame.is-fluid { flex: 0 1 auto; min-width: 120px; max-width: 100%; }
@@ -1186,6 +1206,16 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
   tbody tr.is-device-recommended th, tbody tr.is-device-recommended td { background: inherit; }
 }
 
+@media (max-width: 900px) {
+  .receipt-dialog-body.is-fluid-layout { grid-template-rows: minmax(360px, 49%) minmax(0, 1fr); }
+  .receipt-dialog-body.is-fluid-layout .receipt-dialog-preview { flex-direction: column; gap: 10px; padding: 12px 18px; }
+  .receipt-dialog-body.is-fluid-layout .receipt-preview-frame.is-fluid img { max-height: 150px; }
+  .receipt-dialog-body.is-fluid-layout .receipt-fluid-controls { padding: 9px 10px; }
+  .receipt-dialog-body.is-fluid-layout .receipt-fluid-controls input[type="range"] { margin-block: 6px 7px; }
+  .receipt-dialog-body.is-fluid-layout .receipt-fluid-live-metrics div { padding: 5px 7px; }
+  .receipt-dialog-body.is-fluid-layout .receipt-fluid-controls > p { display: none; }
+}
+
 @media (max-width: 780px) {
   .site-header nav { display: none; }
   .hero { grid-template-columns: 1fr; min-height: 0; padding-top: 68px; padding-bottom: 68px; }
@@ -1206,12 +1236,15 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
   .receipt-fluid-code { grid-template-columns: 1fr; }
   .receipt-dialog-body { grid-template-columns: 1fr; grid-template-rows: minmax(260px, 44%) minmax(0, 1fr); }
   .receipt-dialog-preview { min-height: 0; padding: 14px 18px; gap: 10px; }
+  .receipt-dialog-body.is-fluid-layout { grid-template-rows: minmax(330px, 48%) minmax(0, 1fr); }
+  .receipt-dialog-body.is-fluid-layout .receipt-dialog-preview { flex-direction: column; gap: 10px; padding: 12px 18px; }
   .receipt-preview-frame img { max-height: 210px; }
   .receipt-preview-frame.is-fluid img { max-height: 150px; }
   .receipt-fluid-controls { padding: 9px 10px; }
   .receipt-fluid-controls input[type="range"] { margin-block: 6px 7px; }
   .receipt-fluid-live-metrics div { padding: 5px 7px; }
   .receipt-fluid-controls > p { display: none; }
+  .simulated-auto-grid { grid-template-columns: 1fr; }
   .support-note { align-items: flex-start; flex-direction: column; }
 }
 
@@ -1375,7 +1408,7 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
               aria-describedby="domain-scan-disclosure domain-scan-status">
             <button id="domain-scan-button" class="scan-button" type="submit">Scan page</button>
           </div>
-          <p id="domain-scan-disclosure" class="domain-scanner-disclosure">Public page content is retrieved as a fresh browser-rendered snapshot through <a href="https://github.com/jina-ai/reader" target="_blank" rel="noreferrer">Jina Reader</a> because browsers block most direct cross-domain scraping. Redirects are followed and canonical page metadata is reported. Optimization-potential percentages weight actionable errors, warnings, DPR alternatives, fluid-width opportunities, and custom-origin setup; a higher percentage means more potential improvement. Private and local network addresses are not accepted.</p>
+          <p id="domain-scan-disclosure" class="domain-scanner-disclosure">Public page content is retrieved as a fresh browser-rendered snapshot through <a href="https://github.com/jina-ai/reader" target="_blank" rel="noreferrer">Jina Reader</a> because browsers block most direct cross-domain scraping. Redirects are followed and canonical page metadata is reported. Each candidate projects this browser’s rounded automatic DPR without relying on the source page’s client-hint setup; Analyze loads a deterministic preview. Optimization-potential percentages weight actionable errors, warnings, DPR alternatives, fluid-width opportunities, and custom-origin setup. Private and local network addresses are not accepted.</p>
         </form>
         <p id="domain-scan-status" class="domain-scan-status" role="status" aria-live="polite"></p>
         <div id="domain-scan-results" class="domain-scan-results" hidden>
@@ -1525,6 +1558,35 @@ footer a { text-decoration-color: #3d4755; text-underline-offset: 4px; }
               <button type="button" data-copy-target="client-hint-headers">Copy headers</button>
             </div>
             <p id="client-hint-note">Apply one of these options to the page that requests the image.</p>
+          </div>
+
+          <div id="simulated-auto-option" class="recommendation-block simulated-auto-option" hidden>
+            <div class="recommendation-heading">
+              <div>
+                <span class="inspector-kicker">Scraped-asset simulation</span>
+                <h4>Expected automatic DPR on this device</h4>
+              </div>
+              <a id="simulated-auto-link" href="#" target="_blank" rel="noreferrer">Open simulation ↗</a>
+            </div>
+            <div class="simulated-auto-grid">
+              <div id="simulated-auto-preview" class="simulated-auto-preview is-loading">
+                <img id="simulated-auto-image" alt="Simulated automatic DPR output for the selected scraped asset">
+                <span id="simulated-auto-state">Loading deterministic preview…</span>
+              </div>
+              <dl class="simulated-auto-metrics">
+                <div><dt>Device DPR</dt><dd id="simulated-auto-device-dpr">—</dd></div>
+                <div><dt>Auto selects</dt><dd id="simulated-auto-target-dpr">—</dd></div>
+                <div><dt>Sizing basis</dt><dd id="simulated-auto-width-basis">—</dd></div>
+                <div><dt>Projected output</dt><dd id="simulated-auto-projected">—</dd></div>
+                <div><dt>Actual response</dt><dd id="simulated-auto-actual">—</dd></div>
+                <div><dt>Derived file size</dt><dd id="simulated-auto-bytes">—</dd></div>
+              </dl>
+            </div>
+            <div class="copy-code-row">
+              <code id="simulated-auto-url">—</code>
+              <button type="button" data-copy-target="simulated-auto-url">Copy URL</button>
+            </div>
+            <p id="simulated-auto-note">This diagnostic resolves <code>dpr_auto</code> to this browser’s rounded DPR so the preview does not depend on the scanned page’s client-hint setup. Keep <code>dpr_auto</code> in production and apply the setup above.</p>
           </div>
 
           <div id="responsive-width-option" class="recommendation-block responsive-width-option" hidden>
@@ -2046,6 +2108,7 @@ let fluidPreviewWidth = BASE_WIDTH;
 let fluidResizeStart = null;
 
 const formatDimensions = (width, height) => `${Math.round(width)} × ${Math.round(height)}`;
+const getRoundedDeviceDpr = () => Math.max(1, Math.ceil(window.devicePixelRatio || 1));
 
 const formatBytes = (bytes) => {
   if (!Number.isFinite(bytes) || bytes <= 0) return "Unavailable";
@@ -2117,7 +2180,7 @@ const updateFluidPreview = (requestedWidth = fluidPreviewWidth) => {
   const cssWidth = Math.round(Math.min(maxWidth, Math.max(120, requestedWidth)));
   const automaticWidth = roundFluidWidth(cssWidth);
   const deviceDpr = window.devicePixelRatio || 1;
-  const automaticDpr = Math.max(1, Math.ceil(deviceDpr));
+  const automaticDpr = getRoundedDeviceDpr();
   const physicalWidth = automaticWidth * automaticDpr;
   const physicalHeight = Math.round(physicalWidth * BASE_HEIGHT / BASE_WIDTH);
   const resolvedUrl = buildResolvedFluidPreviewUrl(receiptUrls.fluid, automaticWidth, automaticDpr);
@@ -2364,11 +2427,13 @@ const openReceiptDialog = (key, trigger) => {
   const measurement = metrics.get(key);
   const originalBytes = metrics.get("original")?.bytes || 0;
   const row = document.querySelector(`[data-result-row="${key}"]`);
+  const body = document.querySelector(".receipt-dialog-body");
   const frame = document.querySelector("#receipt-preview-frame");
   const controls = document.querySelector("#receipt-fluid-controls");
   const resizeHandle = document.querySelector("#receipt-fluid-resize-handle");
   const liveBlock = document.querySelector("#receipt-fluid-live-block");
   activeReceiptKey = key;
+  body.classList.toggle("is-fluid-layout", isFluid);
   lastReceiptTrigger = trigger;
   document.querySelector("#receipt-dialog-title").textContent = `${RECEIPT_LABELS[key]} details`;
   const image = document.querySelector("#receipt-dialog-image");
@@ -2811,7 +2876,17 @@ const renderDomainScanPage = () => {
     } catch {
       deliveryOrigin.textContent = "Verify client-hint delegation for this delivery origin";
     }
-    copy.append(urlText, detail, score, deliveryOrigin);
+    const simulation = recommendation.automaticSimulation;
+    const simulationSummary = document.createElement("span");
+    simulationSummary.className = "domain-scan-simulation";
+    if (simulation) {
+      const simulationTitle = document.createElement("strong");
+      simulationTitle.textContent = `Expected auto on this device: ${simulation.targetDpr}×`;
+      simulationSummary.append(simulationTitle, ` · ${simulation.projectedLabel} · simulated without source-page client hints`);
+    } else {
+      simulationSummary.textContent = "Automatic DPR projection is unavailable for this transformation.";
+    }
+    copy.append(urlText, detail, score, deliveryOrigin, simulationSummary);
 
     const actions = document.createElement("div");
     actions.className = "domain-scan-actions";
@@ -2827,7 +2902,17 @@ const renderDomainScanPage = () => {
     open.rel = "noreferrer";
     open.textContent = "Open ↗";
     open.setAttribute("aria-label", `Open Cloudinary image ${resultIndex + 1} in a new tab`);
-    actions.append(analyze, open);
+    actions.append(analyze);
+    if (simulation?.canPreview) {
+      const openSimulation = document.createElement("a");
+      openSimulation.href = simulation.url;
+      openSimulation.target = "_blank";
+      openSimulation.rel = "noreferrer";
+      openSimulation.textContent = "Auto preview ↗";
+      openSimulation.setAttribute("aria-label", `Open the simulated automatic DPR output for Cloudinary image ${resultIndex + 1}`);
+      actions.append(openSimulation);
+    }
+    actions.append(open);
 
     item.append(number, copy, actions);
     list.append(item);
@@ -3019,6 +3104,18 @@ const getDprInfo = (tokens) => {
     isAuto: false,
     isExplicit: Number.isFinite(value)
   };
+};
+
+const getAspectRatioValue = (tokens) => {
+  const token = [...tokens].reverse().find((candidate) => /^ar_\d+(?:\.\d+)?(?::\d+(?:\.\d+)?)?$/.test(candidate));
+  if (!token) return 0;
+  const rawValue = token.slice(3);
+  if (rawValue.includes(":")) {
+    const [width, height] = rawValue.split(":").map(Number);
+    return width > 0 && height > 0 ? width / height : 0;
+  }
+  const ratio = Number(rawValue);
+  return Number.isFinite(ratio) && ratio > 0 ? ratio : 0;
 };
 
 const getFilenameDimensions = (assetSegments) => {
@@ -3305,6 +3402,73 @@ const buildAudit = (parsed, scanContext = null) => {
   };
 };
 
+const buildAutomaticDprSimulation = (parsed, audit) => {
+  const automaticUrl = audit.dpr.isExplicit
+    ? audit.responsiveUrl
+    : audit.dpr.isAuto ? audit.correctedUrl : "";
+  if (!automaticUrl) return null;
+
+  const targetDpr = getRoundedDeviceDpr();
+  const automaticParsed = parseCloudinaryUrl(automaticUrl);
+  const automaticWidth = Boolean(audit.autoWidth.token);
+  let logicalWidth = automaticWidth ? audit.autoWidth.fallback : audit.width;
+  let logicalHeight = audit.height;
+  const aspectRatio = getAspectRatioValue(automaticParsed.tokens);
+
+  if (!automaticWidth && !logicalWidth && logicalHeight && aspectRatio) logicalWidth = logicalHeight * aspectRatio;
+  if (!logicalHeight && logicalWidth && aspectRatio) logicalHeight = logicalWidth / aspectRatio;
+
+  let foundDpr = false;
+  const resolvedSegments = automaticParsed.transformationSegments
+    .map((segment) => segment
+      .split(",")
+      .map((token) => {
+        if (isDprToken(token)) {
+          foundDpr = true;
+          return targetDpr === 1 ? "" : `dpr_${targetDpr.toFixed(1)}`;
+        }
+        if (isWidthAutoToken(token) && logicalWidth) return `w_${Math.round(logicalWidth)}`;
+        return token;
+      })
+      .filter(Boolean)
+      .join(","))
+    .filter(Boolean);
+
+  if (!foundDpr) return null;
+
+  const projectedWidth = logicalWidth ? logicalWidth * targetDpr : 0;
+  const projectedHeight = logicalHeight ? logicalHeight * targetDpr : 0;
+  const projectedLabel = projectedWidth && projectedHeight
+    ? formatDimensions(projectedWidth, projectedHeight)
+    : projectedWidth
+      ? `${Math.round(projectedWidth)} px wide`
+      : projectedHeight
+        ? `${Math.round(projectedHeight)} px high`
+        : "Depends on the page’s CSS slot";
+  const sizingBasis = automaticWidth
+    ? logicalWidth ? `${Math.round(logicalWidth)} px w_auto fallback` : "CSS slot width unavailable"
+    : logicalWidth && logicalHeight
+      ? formatDimensions(logicalWidth, logicalHeight)
+      : logicalWidth
+        ? `${Math.round(logicalWidth)} px logical width`
+        : logicalHeight
+          ? `${Math.round(logicalHeight)} px logical height`
+          : "No delivery dimensions";
+  const isSigned = parsed.transformationSegments.some((segment) => /^s--.+--$/.test(segment));
+  const hasSizingBasis = Boolean(logicalWidth || logicalHeight);
+
+  return {
+    targetDpr,
+    deviceDpr: window.devicePixelRatio || 1,
+    url: buildDeliveryUrl(automaticParsed, resolvedSegments),
+    projectedLabel,
+    sizingBasis,
+    canPreview: hasSizingBasis && !isSigned,
+    isSigned,
+    usedWidthFallback: automaticWidth && Boolean(logicalWidth)
+  };
+};
+
 const getScannedUrlRecommendation = (url) => {
   try {
     const parsed = parseCloudinaryUrl(url);
@@ -3315,6 +3479,7 @@ const getScannedUrlRecommendation = (url) => {
     const actionableIssue = audit.issues.find((issue) => issue.severity === "error")
       || audit.issues.find((issue) => issue.severity === "warning");
     const customOriginSetup = audit.dpr.isAuto && parsed.url.origin !== "https://res.cloudinary.com";
+    const automaticSimulation = buildAutomaticDprSimulation(parsed, audit);
     const title = actionableIssue?.title
       || (audit.responsiveUrl ? "Automatic DPR alternative available" : "")
       || (audit.responsiveWidthUrl ? "Responsive-width alternative available" : "")
@@ -3338,7 +3503,8 @@ const getScannedUrlRecommendation = (url) => {
       score,
       errorCount,
       warningCount,
-      opportunityCount
+      opportunityCount,
+      automaticSimulation
     };
   } catch {
     return null;
@@ -3401,10 +3567,79 @@ const updateClientHintOption = (parsed, scanContext) => {
     : `Apply one option to ${sourcePage}. This custom delivery origin was discovered after the lab loaded, so the lab may measure dpr_auto as a 1× fallback even though the production page will adapt correctly after this setup.`;
 };
 
+const configureAutomaticDprSimulationOption = (parsed, audit, scanContext) => {
+  const option = document.querySelector("#simulated-auto-option");
+  const simulation = scanContext?.fromScan ? buildAutomaticDprSimulation(parsed, audit) : null;
+  option.hidden = !simulation;
+  if (!simulation) return null;
+
+  const preview = document.querySelector("#simulated-auto-preview");
+  const image = document.querySelector("#simulated-auto-image");
+  const state = document.querySelector("#simulated-auto-state");
+  const link = document.querySelector("#simulated-auto-link");
+  document.querySelector("#simulated-auto-device-dpr").textContent = `${simulation.deviceDpr.toFixed(2)}×`;
+  document.querySelector("#simulated-auto-target-dpr").textContent = `${simulation.targetDpr}× (rounded up)`;
+  document.querySelector("#simulated-auto-width-basis").textContent = simulation.sizingBasis;
+  document.querySelector("#simulated-auto-projected").textContent = simulation.projectedLabel;
+  document.querySelector("#simulated-auto-actual").textContent = simulation.canPreview ? "Loading…" : "Unavailable";
+  document.querySelector("#simulated-auto-bytes").textContent = simulation.canPreview ? "Loading…" : "Unavailable";
+  link.hidden = !simulation.canPreview;
+
+  if (!simulation.canPreview) {
+    image.removeAttribute("src");
+    preview.classList.remove("is-loading");
+    preview.classList.add("is-error");
+    state.textContent = simulation.isSigned
+      ? "A new signed URL is required before this transformed preview can load."
+      : "Add a logical width or height before simulating DPR output.";
+    document.querySelector("#simulated-auto-url").textContent = simulation.isSigned
+      ? "Unavailable: regenerate the signed URL for the resolved transformation"
+      : "Unavailable: the URL has no deterministic delivery size";
+    document.querySelector("#simulated-auto-note").textContent = simulation.isSigned
+      ? "The expected DPR target is shown above, but changing a signed transformation invalidates its signature. Generate the resolved variant on the server before previewing it."
+      : "The expected DPR target is shown above, but output dimensions require a logical delivery width or height. Add that sizing transformation, then keep dpr_auto in production.";
+    return simulation;
+  }
+
+  link.href = simulation.url;
+  document.querySelector("#simulated-auto-url").textContent = simulation.url;
+  document.querySelector("#simulated-auto-note").innerHTML = simulation.usedWidthFallback
+    ? `This deterministic diagnostic resolves <code>dpr_auto</code> to ${simulation.targetDpr}× and uses the URL’s <code>w_auto</code> fallback width. It does not depend on the scanned page’s client-hint setup. Keep <code>w_auto</code> and <code>dpr_auto</code> in production with accurate <code>sizes</code> and delegation.`
+    : `This deterministic diagnostic resolves <code>dpr_auto</code> to ${simulation.targetDpr}×, so it does not depend on the scanned page’s client-hint setup. Keep <code>dpr_auto</code> in production and apply the delegation setup above.`;
+  preview.classList.add("is-loading");
+  preview.classList.remove("is-error");
+  state.textContent = "Loading deterministic preview…";
+  image.src = simulation.url;
+  return simulation;
+};
+
+const updateAutomaticDprSimulationMeasurement = (simulation) => {
+  if (!simulation?.canPreview) return;
+  const preview = document.querySelector("#simulated-auto-preview");
+  const image = document.querySelector("#simulated-auto-image");
+  const state = document.querySelector("#simulated-auto-state");
+  preview.classList.remove("is-loading", "is-error");
+
+  if (!image.naturalWidth) {
+    preview.classList.add("is-error");
+    state.textContent = "The simulated transformation could not be loaded. Check delivery restrictions or generate the derived asset first.";
+    document.querySelector("#simulated-auto-actual").textContent = "Could not load";
+    document.querySelector("#simulated-auto-bytes").textContent = "Unavailable";
+    return;
+  }
+
+  const resource = getResourceDetails(image.currentSrc || image.src);
+  const deliveredWidth = resource.width || image.naturalWidth;
+  const deliveredHeight = resource.height || image.naturalHeight;
+  document.querySelector("#simulated-auto-actual").textContent = formatDimensions(deliveredWidth, deliveredHeight);
+  document.querySelector("#simulated-auto-bytes").textContent = formatBytes(resource.bytes);
+};
+
 let inspectorRun = 0;
 
 const analyzeAssetUrl = async () => {
   const run = ++inspectorRun;
+  const scanContext = activeScanAnalysisContext ? { ...activeScanAnalysisContext } : null;
   const input = document.querySelector("#asset-url");
   const preview = document.querySelector("#inspector-preview");
   const previewState = document.querySelector("#preview-state");
@@ -3420,6 +3655,7 @@ const analyzeAssetUrl = async () => {
   document.querySelector("#inspector-derived-file").textContent = "—";
   document.querySelector("#output-explanation").textContent = "Waiting for the asset response.";
   document.querySelector("#client-hint-option").hidden = true;
+  document.querySelector("#simulated-auto-option").hidden = true;
 
   let parsed;
   try {
@@ -3440,13 +3676,14 @@ const analyzeAssetUrl = async () => {
     return;
   }
 
-  const audit = buildAudit(parsed, activeScanAnalysisContext);
+  const audit = buildAudit(parsed, scanContext);
   updateDemoAssets(parsed);
   measureAll();
   renderTransformationList(parsed.transformationSegments);
   renderIssues(audit.issues);
   setAuditVerdict(audit.issues);
-  updateClientHintOption(parsed, activeScanAnalysisContext);
+  updateClientHintOption(parsed, scanContext);
+  const automaticSimulation = configureAutomaticDprSimulationOption(parsed, audit, scanContext);
 
   document.querySelector("#current-asset-link").href = parsed.raw;
   document.querySelector("#corrected-url").textContent = audit.correctedUrl;
@@ -3470,8 +3707,16 @@ const analyzeAssetUrl = async () => {
   updateInspectorMarkup(audit, 0, 0);
   updateResponsiveWidthMarkup(audit, 0, 0);
   image.src = parsed.raw;
-  await imageReady(image);
+  await Promise.all([
+    imageReady(image),
+    automaticSimulation?.canPreview
+      ? imageReady(document.querySelector("#simulated-auto-image"))
+      : Promise.resolve()
+  ]);
   if (run !== inspectorRun) return;
+
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  updateAutomaticDprSimulationMeasurement(automaticSimulation);
 
   if (!image.naturalWidth) {
     preview.classList.remove("is-loading");
@@ -3481,7 +3726,6 @@ const analyzeAssetUrl = async () => {
     return;
   }
 
-  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   const resource = getResourceDetails(image.currentSrc || image.src);
   const deliveredWidth = resource.width || image.naturalWidth;
   const deliveredHeight = resource.height || image.naturalHeight;
@@ -3499,7 +3743,7 @@ const analyzeAssetUrl = async () => {
   } else if (audit.dpr.isAuto) {
     const logicalWidth = audit.width || audit.autoWidth.fallback;
     const deliveredDpr = logicalWidth ? deliveredWidth / logicalWidth : 0;
-    const targetDpr = Math.ceil(window.devicePixelRatio || 1);
+    const targetDpr = getRoundedDeviceDpr();
     document.querySelector("#output-explanation").textContent = deliveredDpr && deliveredDpr + .05 < targetDpr
       ? `dpr_auto delivered ${deliveredDpr.toFixed(1)}× instead of this browser’s ${targetDpr}× target. The DPR client hint did not reach this delivery request; use the generated delegation setup for the exact image origin.`
       : `Cloudinary selected this ${formatDimensions(deliveredWidth, deliveredHeight)} response from the DPR client hint available in this browser context.`;
