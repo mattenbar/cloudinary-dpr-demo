@@ -588,7 +588,24 @@ h1 em {
 
 .domain-scan-pagination { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 12px; padding-top: 14px; border-top: 1px solid #2c3850; }
 .domain-scan-pagination[hidden] { display: none; }
-.domain-scan-pagination span { min-width: 86px; color: #9ba9bc; font-size: 9px; font-weight: 750; text-align: center; }
+.domain-scan-page-jumper { display: inline-flex; align-items: center; gap: 6px; color: #9ba9bc; font-size: 9px; font-weight: 750; }
+.domain-scan-page-jumper input {
+  width: 3.2rem;
+  padding: 6px 4px;
+  border: 1px solid #3a4860;
+  border-radius: 6px;
+  color: #d8e0ec;
+  background: #182236;
+  font-size: 9px;
+  font-weight: 850;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.domain-scan-page-jumper input::-webkit-outer-spin-button,
+.domain-scan-page-jumper input::-webkit-inner-spin-button { appearance: none; margin: 0; }
+.domain-scan-page-jumper input:focus { outline: none; border-color: var(--cyan); }
+.domain-scan-page-jumper span { min-width: 2.4rem; text-align: left; }
 .domain-scan-pagination button { padding: 7px 10px; border: 1px solid #3a4860; border-radius: 6px; color: #c5cfdd; background: #182236; font-size: 9px; font-weight: 850; cursor: pointer; }
 .domain-scan-pagination button:hover:not(:disabled) { border-color: var(--cyan); color: white; }
 .domain-scan-pagination button:disabled { cursor: default; opacity: .38; }

@@ -679,7 +679,10 @@ const clearDomainScanResults = ({ clearInput = false } = {}) => {
   document.querySelector("#domain-scan-results").hidden = true;
   document.querySelector("#domain-scan-count").textContent = "0 DPR candidates found";
   document.querySelector("#domain-scan-pagination").hidden = true;
-  document.querySelector("#domain-scan-page-status").textContent = "Page 1 of 1";
+  const pageInput = document.querySelector("#domain-scan-page-input");
+  pageInput.value = "1";
+  pageInput.max = "1";
+  document.querySelector("#domain-scan-page-total").textContent = "of 1";
   setDomainScanStatus("");
   if (clearInput) document.querySelector("#domain-url").value = "";
 };
@@ -833,7 +836,10 @@ const renderDomainScanPage = () => {
     ? `Showing ${startIndex + 1}–${endIndex} of ${domainScanCandidates.length} DPR candidates found on ${hostname} · ${orderLabel}`
     : `0 DPR optimization candidates found on ${hostname}`;
   pagination.hidden = totalPages <= 1;
-  document.querySelector("#domain-scan-page-status").textContent = `Page ${domainScanPage} of ${totalPages}`;
+  const pageInput = document.querySelector("#domain-scan-page-input");
+  pageInput.value = String(domainScanPage);
+  pageInput.max = String(totalPages);
+  document.querySelector("#domain-scan-page-total").textContent = `of ${totalPages}`;
   document.querySelector("#domain-scan-previous").disabled = domainScanPage <= 1;
   document.querySelector("#domain-scan-next").disabled = domainScanPage >= totalPages;
   results.hidden = false;
@@ -1736,6 +1742,33 @@ document.querySelector("#domain-scan-next").addEventListener("click", () => {
   if (domainScanPage >= totalPages) return;
   domainScanPage += 1;
   renderDomainScanPage();
+});
+
+const applyDomainScanPageJump = () => {
+  if (!domainScanPageUrl) return;
+  const pageInput = document.querySelector("#domain-scan-page-input");
+  const limitValue = Number(document.querySelector("#domain-scan-limit").value);
+  const limit = [5, 10, 25, 50].includes(limitValue) ? limitValue : DOMAIN_SCAN_DEFAULT_LIMIT;
+  const totalPages = Math.max(1, Math.ceil(domainScanCandidates.length / limit));
+  const requested = Number(pageInput.value);
+  if (!Number.isFinite(requested)) {
+    pageInput.value = String(domainScanPage);
+    return;
+  }
+  const nextPage = Math.min(Math.max(1, Math.round(requested)), totalPages);
+  if (nextPage === domainScanPage) {
+    pageInput.value = String(domainScanPage);
+    return;
+  }
+  domainScanPage = nextPage;
+  renderDomainScanPage();
+};
+
+document.querySelector("#domain-scan-page-input").addEventListener("change", applyDomainScanPageJump);
+document.querySelector("#domain-scan-page-input").addEventListener("keydown", (event) => {
+  if (event.key !== "Enter") return;
+  event.preventDefault();
+  applyDomainScanPageJump();
 });
 
 document.querySelector("#domain-scan-list").addEventListener("click", async (event) => {
