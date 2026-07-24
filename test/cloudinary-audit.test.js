@@ -27,6 +27,13 @@ describe("parseCloudinaryUrl", () => {
     assert.throws(() => parseCloudinaryUrl("https://example.com/photo.jpg"), /Cloudinary/);
   });
 
+  it("rejects video upload URLs", () => {
+    assert.throws(
+      () => parseCloudinaryUrl("https://res.cloudinary.com/demo/video/upload/v1/clip.mp4"),
+      /image\/upload/
+    );
+  });
+
   it("parses unsigned paths without a version segment", () => {
     const parsed = parseCloudinaryUrl(
       "https://res.cloudinary.com/demo/image/upload/w_360,dpr_auto/f_auto/q_auto/folder/hero.jpg"

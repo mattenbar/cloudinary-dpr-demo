@@ -8,9 +8,15 @@ A dependency-free HTML demo that makes the difference between incorrect DPR mark
 | --- | --- |
 | `index.html` | Markup only |
 | `styles.css` | Page styles |
-| `app.js` | UI, scanner, measurements |
+| `app.js` | UI wiring, measurements, dialogs |
 | `lib/cloudinary-audit.js` | Testable URL parse + DPR audit |
-| `test/` | Node tests for the audit module |
+| `lib/scanner.js` | Page URL validation, extraction, candidate ordering |
+| `lib/measurements.js` | Resource Timing helpers + byte formatters |
+| `lib/receipt.js` | Smallest-transfer / device-recommendation ranking |
+| `lib/fluid-urls.js` | `w_auto` / `dpr_auto` URL builders |
+| `lib/deep-links.js` | `?asset=` / `?scan=` query helpers |
+| `lib/browser.js` | Shared browser capability checks |
+| `test/` | Node tests for the pure modules |
 
 ## Open the demo
 
@@ -22,7 +28,14 @@ npm run serve
 
 Then open [http://localhost:8080](http://localhost:8080). An internet connection is still required for the Cloudinary images and documentation links.
 
-The same relative asset paths work on GitHub Pages or any static HTTPS host. Opening via `file://` will not load the module scripts in modern browsers.
+### Demo tips
+
+- Prefer **HTTPS** or **localhost**. Opening via `file://` will not load the ES modules in modern browsers, and even if served locally a `file://` page cannot delegate `Sec-CH-DPR`, so live `dpr_auto` shows Cloudinary’s documented 1× fallback.
+- Paste a delivery URL in section 01, or use the sample chips, without scanning a page first.
+- Shareable links: `?asset=<cloudinary-url>` opens the inspector; `?scan=<page-url>` prefills and runs the page scanner.
+- Sample scan targets in the UI hit Cloudinary documentation pages. Results depend on what those pages currently publish; the scanner may return zero DPR candidates if none are present.
+- Page scans send the target URL to [Jina Reader](https://github.com/jina-ai/reader). Rate limits and blocked pages are possible; wait and retry on HTTP 429.
+- The same relative asset paths work on GitHub Pages or any static HTTPS host.
 
 Browser security prevents a `file://` page from delegating the `Sec-CH-DPR` client hint, so the live `dpr_auto` example intentionally reports Cloudinary's documented 1× fallback when hints are unavailable. To demonstrate live server-side DPR matching, use HTTPS (or localhost) with the lab’s `delegate-ch` meta tag.
 
@@ -46,9 +59,9 @@ Every scraped candidate identifies its exact image delivery origin and clearly r
 
 Scanner results also show the expected automatic DPR for the current device. A parallel source-HTML pass matches each discovered URL back to its `<img>` element and records declared `width`, `height`, `sizes`, inline sizing, responsive classes, and multi-column ancestors. The sizing resolver prefers declared page data, then strong inferences such as filename dimensions that match the existing DPR transform, followed by `w_auto` fallback or Cloudinary sizing tokens. Each result states which source was used rather than silently substituting the lab’s 360 × 240 slot. Selecting **Analyze** loads a deterministic equivalent that resolves `dpr_auto` to the browser’s rounded DPR, then reports the projected and actual response dimensions and derived file size. This explicit URL is diagnostic only; production markup retains `dpr_auto`, the page-layout sizing, and generated client-hint delegation.
 
-## Scanned-asset optimizer
+## Asset optimizer
 
-Select a standard Cloudinary `/image/upload/` delivery URL discovered by the page scanner to:
+Paste a standard Cloudinary `/image/upload/` delivery URL, or select one discovered by the page scanner, to:
 
 - Preview the URL's current output.
 - Read its delivered physical dimensions and transferred bytes.

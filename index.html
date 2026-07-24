@@ -5,11 +5,23 @@
   <meta http-equiv="delegate-ch" content="sec-ch-dpr https://res.cloudinary.com; sec-ch-width https://res.cloudinary.com; sec-ch-viewport-width https://res.cloudinary.com;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Inspect Cloudinary image URLs and compare correct and incorrect DPR delivery with dpr_auto.">
+  <meta property="og:title" content="Cloudinary DPR Lab">
+  <meta property="og:description" content="Inspect Cloudinary image URLs and compare incorrect, correct, and automatic DPR delivery.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://res.cloudinary.com/doxfstysv/image/upload/c_fill,g_auto,w_1200,h_630,dpr_auto/f_auto/q_auto/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Cloudinary DPR Lab">
+  <meta name="twitter:description" content="Inspect Cloudinary image URLs and compare incorrect, correct, and automatic DPR delivery.">
+  <meta name="twitter:image" content="https://res.cloudinary.com/doxfstysv/image/upload/c_fill,g_auto,w_1200,h_630,dpr_auto/f_auto/q_auto/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg">
   <title>Cloudinary DPR, made visible</title>
   <link rel="preconnect" href="https://res.cloudinary.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+  <a class="skip-link" href="#inspector">Skip to inspector</a>
   <header class="site-header">
     <a class="brand" href="#top" aria-label="Cloudinary DPR demo home">
       <svg aria-hidden="true" viewBox="0 0 36 24" width="36" height="24">
@@ -30,8 +42,11 @@
       <div class="hero-copy">
         <p class="eyebrow">Device pixels ≠ CSS pixels</p>
         <h1>Make every pixel<br><em>earn its bytes.</em></h1>
-        <p class="hero-lede">A practical look at what Cloudinary delivers when DPR is set incorrectly, correctly, and automatically.</p>
-        <a class="primary-link" href="#rule">See the difference <span aria-hidden="true">↓</span></a>
+        <p class="hero-lede">Scan a page or paste a delivery URL to audit DPR mistakes, then compare fixed, hard-coded, and automatic strategies with live byte measurements.</p>
+        <div class="hero-actions">
+          <a class="primary-link" href="#inspector">Inspect an asset <span aria-hidden="true">↓</span></a>
+          <a class="secondary-link" href="#rule">See the rule</a>
+        </div>
       </div>
 
       <aside class="device-card" aria-label="Your current device information">
@@ -69,7 +84,34 @@
           <p class="eyebrow">01 / Inspect your own site</p>
           <h2>Find Cloudinary assets.<br>See what they really deliver.</h2>
         </div>
-        <p>Scan a public page for Cloudinary delivery URLs, then select a discovered asset to identify DPR and optimization mistakes and build corrected URLs without changing the underlying asset.</p>
+        <p>Paste a Cloudinary delivery URL or scan a public page. The lab identifies DPR and optimization mistakes and builds corrected URLs without changing the underlying asset.</p>
+      </div>
+
+      <div class="domain-scanner asset-inspector-panel">
+        <div class="domain-scanner-header">
+          <div>
+            <span class="inspector-kicker">Delivery URL</span>
+            <h3>Inspect a Cloudinary image URL</h3>
+          </div>
+          <p>Paste any public <code>/image/upload/</code> delivery URL to audit transformations, generate corrected markup, and reuse the asset in the comparison sections below.</p>
+        </div>
+        <form id="asset-inspect-form" class="domain-scan-form" novalidate>
+          <label for="asset-url">Cloudinary delivery URL</label>
+          <div class="domain-scan-input-row">
+            <input
+              id="asset-url"
+              name="asset-url"
+              type="url"
+              inputmode="url"
+              spellcheck="false"
+              autocomplete="off"
+              placeholder="https://res.cloudinary.com/…/image/upload/…"
+              aria-describedby="asset-inspect-status sample-asset-chips">
+            <button id="asset-inspect-button" class="scan-button" type="submit">Inspect URL</button>
+          </div>
+          <div id="sample-asset-chips" class="sample-chips" aria-label="Sample delivery URLs"></div>
+        </form>
+        <p id="asset-inspect-status" class="domain-scan-status" role="status" aria-live="polite"></p>
       </div>
 
       <div class="domain-scanner">
@@ -91,10 +133,12 @@
               spellcheck="false"
               autocomplete="url"
               placeholder="https://www.example.com/page"
-              aria-describedby="domain-scan-disclosure domain-scan-status">
+              aria-describedby="domain-scan-disclosure domain-scan-status sample-scan-chips"
+              aria-invalid="false">
             <button id="domain-scan-button" class="scan-button" type="submit">Scan page</button>
           </div>
-          <p id="domain-scan-disclosure" class="domain-scanner-disclosure">Public page content is retrieved as a fresh browser-rendered snapshot through <a href="https://github.com/jina-ai/reader" target="_blank" rel="noreferrer">Jina Reader</a> because browsers block most direct cross-domain scraping. A parallel HTML pass matches assets to declared dimensions, <code>sizes</code>, inline sizing, and responsive layout classes; every result identifies whether its slot was declared, inferred, or URL-derived. Each candidate projects this browser’s rounded automatic DPR without relying on the source page’s live client-hint request. Private and local network addresses are not accepted.</p>
+          <div id="sample-scan-chips" class="sample-chips" aria-label="Sample pages to scan"></div>
+          <p id="domain-scan-disclosure" class="domain-scanner-disclosure">Public page URLs are sent to the third-party <a href="https://github.com/jina-ai/reader" target="_blank" rel="noreferrer">Jina Reader</a> service to retrieve a fresh browser-rendered snapshot, because browsers block most direct cross-domain scraping. A parallel HTML pass matches assets to declared dimensions, <code>sizes</code>, inline sizing, and responsive layout classes; every result identifies whether its slot was declared, inferred, or URL-derived. Each candidate projects this browser’s rounded automatic DPR without relying on the source page’s live client-hint request. Private and local network addresses are not accepted.</p>
         </form>
         <p id="domain-scan-status" class="domain-scan-status" role="status" aria-live="polite"></p>
         <div id="domain-scan-results" class="domain-scan-results" hidden>
@@ -131,7 +175,9 @@
         </div>
       </div>
 
-      <div id="inspector-result" class="inspector-grid" aria-live="polite" hidden>
+      <p id="copy-status" class="visually-hidden" role="status" aria-live="polite"></p>
+
+      <div id="inspector-result" class="inspector-grid">
         <article class="output-card">
           <div class="inspector-card-header">
             <div>
@@ -162,7 +208,10 @@
               <span class="inspector-kicker">Transformation audit</span>
               <h3 id="audit-title">Checking URL…</h3>
             </div>
-            <span id="audit-verdict" class="audit-verdict">Checking</span>
+            <div class="audit-header-actions">
+              <button id="copy-findings" type="button" class="copy-findings-button" hidden>Copy findings</button>
+              <span id="audit-verdict" class="audit-verdict">Checking</span>
+            </div>
           </div>
 
           <div class="transform-readout">
@@ -297,6 +346,8 @@
               <img
                 id="image-wrong"
                 data-metric="wrong"
+                loading="lazy"
+                decoding="async"
                 src="https://res.cloudinary.com/doxfstysv/image/upload/c_fill,g_auto,w_360,h_240,dpr_2.0/f_auto/q_auto/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg"
                 alt="SpaceX rocket launch used to compare Cloudinary DPR output">
               <div id="rule-expected-outline" class="expected-outline" aria-hidden="true"><span id="rule-expected-label">Intended display<br>360 × 240 CSS px</span></div>
@@ -328,6 +379,8 @@
             <img
               id="image-correct"
               data-metric="correct"
+              loading="lazy"
+              decoding="async"
               src="https://res.cloudinary.com/doxfstysv/image/upload/c_fill,g_auto,w_360,h_240,dpr_2.0/f_auto/q_auto/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg"
               width="360"
               height="240"
@@ -371,12 +424,16 @@
           id="image-original"
           class="measurement-only"
           data-metric="original"
+          loading="eager"
+          decoding="async"
           src="https://res.cloudinary.com/doxfstysv/image/upload/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg"
           alt="">
         <img
           id="image-auto-expected"
           class="receipt-fixed-measure"
           data-metric="autoExpected"
+          loading="eager"
+          decoding="async"
           width="360"
           height="240"
           alt="">
@@ -386,6 +443,8 @@
             <img
               id="image-baseline"
               data-metric="baseline"
+              loading="lazy"
+              decoding="async"
               src="https://res.cloudinary.com/doxfstysv/image/upload/c_fill,g_auto,w_360,h_240/f_auto/q_auto/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg"
               width="360"
               height="240"
@@ -410,6 +469,8 @@
             <img
               id="image-fixed"
               data-metric="fixed"
+              loading="lazy"
+              decoding="async"
               src="https://res.cloudinary.com/doxfstysv/image/upload/c_fill,g_auto,w_360,h_240,dpr_2.0/f_auto/q_auto/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg"
               width="360"
               height="240"
@@ -435,6 +496,8 @@
             <img
               id="image-auto"
               data-metric="auto"
+              loading="lazy"
+              decoding="async"
               src="https://res.cloudinary.com/doxfstysv/image/upload/c_fill,g_auto,w_360,h_240,dpr_auto/f_auto/q_auto/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg"
               width="360"
               height="240"
@@ -574,6 +637,8 @@
           <div class="receipt-fluid-measure" aria-hidden="true">
             <img
               data-metric="fluid"
+              loading="eager"
+              decoding="async"
               sizes="(max-width: 360px) 100vw, 360px"
               width="360"
               height="240"

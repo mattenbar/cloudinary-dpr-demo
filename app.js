@@ -3,37 +3,62 @@ import {
   getRoundedDeviceDpr,
   getClientHintSetup,
   parseCloudinaryUrl,
-  replaceTransformationToken,
   buildDeliveryUrl,
-  buildScrapedLayoutContext,
   orderAuditIssues,
   buildAudit,
   buildAutomaticDprSimulation,
   getScannedUrlRecommendation
 } from "./lib/cloudinary-audit.js";
+import { isChromiumBrowser } from "./lib/browser.js";
+import { parseLabQuery, buildLabQuery, safeDecodeURIComponent } from "./lib/deep-links.js";
+import {
+  BASE_WIDTH,
+  BASE_HEIGHT,
+  roundFluidWidth,
+  buildFluidMarkup,
+  buildResolvedFluidPreviewUrl,
+  buildFluidAutomaticUrl
+} from "./lib/fluid-urls.js";
+import {
+  formatBytes,
+  formatBandwidth,
+  formatDelta,
+  imageReady,
+  getResourceDetails
+} from "./lib/measurements.js";
+import {
+  RECEIPT_LABELS,
+  RECEIPT_SETTINGS,
+  selectSmallestTransfers,
+  selectDeviceRecommendation,
+  buildDeviceRecommendationReason
+} from "./lib/receipt.js";
+import {
+  DOMAIN_SCAN_DEFAULT_LIMIT,
+  SAMPLE_SCAN_PAGES,
+  normalizePageUrl,
+  getCanonicalPageUrl,
+  fetchReaderData,
+  fetchReaderHtml,
+  describeScannedCloudinaryUrl,
+  orderDomainScanCandidates,
+  buildScanCandidates
+} from "./lib/scanner.js";
 
-const BASE_WIDTH = 360;
-const BASE_HEIGHT = 240;
 const FLUID_PREVIEW_MAX_WIDTH = 720;
 const DEFAULT_ASSET_URL = "https://res.cloudinary.com/doxfstysv/image/upload/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg";
-const DOMAIN_READER_ORIGIN = "https://r.jina.ai/";
-const DOMAIN_SCAN_DEFAULT_LIMIT = 5;
-const RECEIPT_LABELS = {
-  original: "Original source",
-  baseline: "Fixed 1×",
-  fixed: "Hard-coded 2×",
-  auto: "Automatic DPR",
-  autoExpected: "Expected automatic output",
-  fluid: "Fluid automatic width + DPR"
-};
-const RECEIPT_SETTINGS = {
-  original: "No transformations",
-  baseline: "DPR omitted",
-  fixed: "dpr_2.0",
-  auto: "dpr_auto",
-  autoExpected: "Resolved device DPR diagnostic",
-  fluid: "w_auto + dpr_auto"
-};
+const DEFAULT_INSPECT_URL = "https://res.cloudinary.com/doxfstysv/image/upload/c_fill,g_auto,w_360,h_240,dpr_2.0/v1783615661/SpacEx_Getty-1360560315_m8u9dx.jpg";
+const SAMPLE_ASSET_URLS = [
+  {
+    label: "Hard-coded 2× (missing f_auto/q_auto)",
+    url: DEFAULT_INSPECT_URL
+  },
+  {
+    label: "Original untransformed",
+    url: DEFAULT_ASSET_URL
+  }
+];
+
 const metrics = new Map();
 const receiptUrls = {};
 let measurementRun = 0;
@@ -51,12 +76,9 @@ let activeRuleContext = null;
 let expectedDprTarget = 0;
 let fluidPreviewWidth = BASE_WIDTH;
 let fluidResizeStart = null;
+let measureObserver = null;
+let pendingDeepLinkScroll = false;
 
-const buildFluidMarkup = (url, width = BASE_WIDTH) => {
-  const cssWidth = Math.max(1, Math.round(width));
-  const cssHeight = Math.round(cssWidth * BASE_HEIGHT / BASE_WIDTH);
-  return `<img src="${url}" sizes="(max-width: ${cssWidth}px) 100vw, ${cssWidth}px" width="${cssWidth}" height="${cssHeight}" style="width:100%;max-width:${cssWidth}px;height:auto" alt="">`;
-};
 
 const buildExpectedMarkup = (simulation, url) => {
   const measurement = metrics.get("autoExpected");
@@ -69,24 +91,8 @@ const buildExpectedMarkup = (simulation, url) => {
   return `<img src="${url}"${sizes ? ` sizes="${sizes}"` : ""} width="${width}" height="${height}"${fluid ? ` style="width:100%;max-width:${width}px;height:auto"` : ""} alt="">`;
 };
 
-const roundFluidWidth = (width) => Math.max(40, Math.ceil(width / 40) * 40);
 
-const buildResolvedFluidPreviewUrl = (url, width, dpr) => {
-  const parsed = parseCloudinaryUrl(url);
-  let segments = replaceTransformationToken(parsed.transformationSegments, /^w_auto(?:$|:)/, `w_${width}`);
-  segments = replaceTransformationToken(segments, /^dpr_auto$/, `dpr_${dpr.toFixed(1)}`);
-  return buildDeliveryUrl(parsed, segments);
-};
 
-const buildFluidAutomaticUrl = (url, fallbackWidth) => {
-  const parsed = parseCloudinaryUrl(url);
-  const segments = replaceTransformationToken(
-    parsed.transformationSegments,
-    /^w_auto(?:$|:)/,
-    `w_auto:40:${fallbackWidth}`
-  );
-  return buildDeliveryUrl(parsed, segments);
-};
 
 const getFluidPreviewMaxWidth = () => {
   const preview = document.querySelector(".receipt-dialog-preview");
@@ -115,6 +121,9 @@ const getFluidPreviewMaxWidth = () => {
 const updateFluidActualOutput = () => {
   if (activeReceiptKey !== "fluid") return;
   const image = document.querySelector("#receipt-dialog-image");
+  const expectedUrl = image.dataset.previewUrl || "";
+  const loadedUrl = image.getAttribute("src") || "";
+  if (expectedUrl && loadedUrl !== expectedUrl) return;
   if (!image.naturalWidth) {
     document.querySelector("#receipt-fluid-actual-output").textContent = "Could not load preview";
     document.querySelector("#receipt-fluid-file-size").textContent = "Unavailable";
@@ -182,42 +191,34 @@ const updateFluidPreview = (requestedWidth = fluidPreviewWidth) => {
   }
 };
 
-const imageReady = (image) => {
-  if (image.complete) return Promise.resolve();
-  return new Promise((resolve) => {
-    image.addEventListener("load", resolve, { once: true });
-    image.addEventListener("error", resolve, { once: true });
-  });
-};
 
-const getResourceDetails = (url) => {
-  const entries = performance.getEntriesByName(url);
-  const encodedBodySizes = entries.map((entry) => entry.encodedBodySize).filter((value) => value > 0);
-  const transferSizes = entries.map((entry) => entry.transferSize).filter((value) => value > 0);
-  const contentInfo = entries
-    .flatMap((entry) => [...(entry.serverTiming || [])])
-    .filter((timing) => timing.name === "content-info" && timing.description)
-    .at(-1);
-  const description = contentInfo?.description || "";
-  const width = Number(description.match(/(?:^|,)width=(\d+)/)?.[1]) || 0;
-  const height = Number(description.match(/(?:^|,)height=(\d+)/)?.[1]) || 0;
-  const responseBytes = Number(description.match(/(?:^|,)bytes=(\d+)/)?.[1]) || 0;
-  const bytes = encodedBodySizes.length ? Math.max(...encodedBodySizes) : responseBytes;
-  const transferBytes = transferSizes.length ? Math.max(...transferSizes) : 0;
-
-  return {
-    bytes,
-    transferBytes,
-    wasCached: entries.length > 0 && transferBytes === 0 && bytes > 0,
-    width,
-    height
-  };
-};
 
 const setMetricText = (key, value, text) => {
   document.querySelectorAll(`[data-for="${key}"][data-value="${value}"]`).forEach((element) => {
     element.textContent = text;
   });
+};
+
+const RECEIPT_METRIC_KEYS = ["original", "baseline", "fixed", "auto", "autoExpected", "fluid"];
+const FIXED_COMPARISON_SLOT_KEYS = new Set(["baseline", "fixed", "auto", "fluid"]);
+
+const resetReceiptMetrics = () => {
+  metrics.clear();
+  RECEIPT_METRIC_KEYS.forEach((key) => {
+    setMetricText(key, "natural", "Measuring…");
+    setMetricText(key, "rendered", "Measuring…");
+    setMetricText(key, "effective", "Measuring…");
+    setMetricText(key, "bytes", "Measuring…");
+    const row = document.querySelector(`[data-result-row="${key}"]`);
+    row?.querySelectorAll("[data-result]").forEach((cell) => {
+      cell.textContent = "Measuring…";
+    });
+    row?.classList.remove("is-smallest-transfer", "is-device-recommended", "needs-client-hint-setup");
+  });
+  const bandwidthVerdict = document.querySelector("#bandwidth-verdict");
+  const recommendationVerdict = document.querySelector("#recommendation-verdict");
+  if (bandwidthVerdict) bandwidthVerdict.textContent = "Measuring transfer sizes…";
+  if (recommendationVerdict) recommendationVerdict.textContent = "Measuring device recommendation…";
 };
 
 const measureImage = (image) => {
@@ -234,6 +235,13 @@ const measureImage = (image) => {
   } else if (activeRuleContext && key === "correct") {
     renderedWidth = activeRuleContext.displayWidth;
     renderedHeight = activeRuleContext.displayHeight;
+  } else if (FIXED_COMPARISON_SLOT_KEYS.has(key)) {
+    // Ranking and copy assume the documented 360 × 240 slot, not layout-shrunk rects.
+    renderedWidth = BASE_WIDTH;
+    renderedHeight = BASE_HEIGHT;
+  } else if (key === "autoExpected" && activeExpectedSimulation?.logicalWidth) {
+    renderedWidth = activeExpectedSimulation.logicalWidth;
+    renderedHeight = activeExpectedSimulation.logicalHeight || renderedHeight;
   }
   const effectiveDensity = renderedWidth ? deliveredWidth / renderedWidth : 0;
   const bytes = resource.bytes;
@@ -280,7 +288,6 @@ const updateEfficiencyVerdict = () => {
   const recommendationVerdict = document.querySelector("#recommendation-verdict");
   const targetDpr = getRoundedDeviceDpr();
   const receiptKeys = ["original", "baseline", "fixed", "auto"];
-  const strategyKeys = ["baseline", "fixed", "auto"];
   receiptKeys.forEach((key) => {
     const row = document.querySelector(`[data-result-row="${key}"]`);
     row?.classList.remove("is-smallest-transfer", "is-device-recommended", "needs-client-hint-setup");
@@ -298,42 +305,24 @@ const updateEfficiencyVerdict = () => {
     }
   });
 
-  const measuredReceipts = receiptKeys.map((key) => ({ key, measurement: metrics.get(key) }));
-  const hasCompleteNetworkTransfers = measuredReceipts.every((candidate) => candidate.measurement?.transferBytes > 0);
-  const bandwidthAvailable = measuredReceipts
-    .map(({ key, measurement }) => {
-      const comparisonBytes = hasCompleteNetworkTransfers ? measurement?.transferBytes : measurement?.bytes;
-      return comparisonBytes > 0 ? { key, measurement, comparisonBytes } : null;
-    })
-    .filter(Boolean);
-
-  if (bandwidthAvailable.length) {
-    const smallestBytes = Math.min(...bandwidthAvailable.map((candidate) => candidate.comparisonBytes));
-    const smallestTransfers = bandwidthAvailable.filter((candidate) => candidate.comparisonBytes === smallestBytes);
-    smallestTransfers.forEach((candidate) => {
-      document.querySelector(`[data-result-row="${candidate.key}"]`)?.classList.add("is-smallest-transfer");
-      const badge = document.querySelector(`[data-bandwidth-badge="${candidate.key}"]`);
+  const smallest = selectSmallestTransfers(metrics, receiptKeys);
+  if (smallest.keys.length) {
+    smallest.keys.forEach((key) => {
+      document.querySelector(`[data-result-row="${key}"]`)?.classList.add("is-smallest-transfer");
+      const badge = document.querySelector(`[data-bandwidth-badge="${key}"]`);
       if (badge) badge.hidden = false;
     });
-    const labels = smallestTransfers.map((candidate) => RECEIPT_LABELS[candidate.key]).join(" / ");
-    const basis = hasCompleteNetworkTransfers
+    const labels = smallest.labels.join(" / ");
+    const basis = smallest.hasCompleteNetworkTransfers
       ? "This is the lowest measured network transfer, including response overhead and regardless of DPR suitability."
       : "Some network transfers were cached or unavailable, so this comparison uses encoded file size instead.";
-    bandwidthVerdict.innerHTML = `<strong>Smallest transfer: ${labels}</strong> — ${formatBytes(smallestBytes)}. ${basis}`;
+    bandwidthVerdict.innerHTML = `<strong>Smallest transfer: ${labels}</strong> — ${formatBytes(smallest.smallestBytes)}. ${basis}`;
   } else {
     bandwidthVerdict.innerHTML = "<strong>Smallest transfer:</strong> Byte totals are unavailable in this browser session.";
   }
 
-  const recommendationAvailable = strategyKeys
-    .map((key) => {
-      const measurement = metrics.get(key);
-      return measurement?.bytes > 0
-        ? { key, measurement, deliveredDpr: measurement.naturalWidth / BASE_WIDTH }
-        : null;
-    })
-    .filter(Boolean);
-
-  if (!recommendationAvailable.length) {
+  const recommendation = selectDeviceRecommendation(metrics, { targetDpr, baseWidth: BASE_WIDTH });
+  if (!recommendation.selected) {
     const fallbackRow = document.querySelector('[data-result-row="auto"]');
     const fallbackBadge = document.querySelector('[data-recommendation-badge="auto"]');
     fallbackRow?.classList.add("is-device-recommended");
@@ -342,22 +331,10 @@ const updateEfficiencyVerdict = () => {
     return;
   }
 
-  const qualified = recommendationAvailable.filter((candidate) => candidate.deliveredDpr + .05 >= targetDpr);
-  const pool = qualified.length ? qualified : recommendationAvailable;
-  pool.sort((first, second) => {
-    if (!qualified.length && Math.abs(first.deliveredDpr - second.deliveredDpr) > .05) {
-      return second.deliveredDpr - first.deliveredDpr;
-    }
-    if (first.measurement.bytes !== second.measurement.bytes) {
-      return first.measurement.bytes - second.measurement.bytes;
-    }
-    return first.key === "auto" ? -1 : second.key === "auto" ? 1 : 0;
-  });
-
-  const selected = pool[0];
-  const autoMeasurement = metrics.get("auto");
-  const autoDeliveredDpr = autoMeasurement?.naturalWidth ? autoMeasurement.naturalWidth / BASE_WIDTH : 0;
-  const automaticMissedTarget = targetDpr > 1 && autoDeliveredDpr > 0 && autoDeliveredDpr + .05 < targetDpr;
+  const selected = recommendation.selected;
+  const autoDeliveredDpr = recommendation.autoDeliveredDpr;
+  const automaticMissedTarget = recommendation.automaticMissedTarget;
+  const qualified = recommendation.qualified;
   document.querySelector(`[data-result-row="${selected.key}"]`)?.classList.add("is-device-recommended");
   const badge = document.querySelector(`[data-recommendation-badge="${selected.key}"]`);
   if (badge) {
@@ -369,11 +346,10 @@ const updateEfficiencyVerdict = () => {
     document.querySelector('[data-result-row="auto"]')?.classList.add("needs-client-hint-setup");
     const setupBadge = document.querySelector('[data-setup-badge="auto"]');
     if (setupBadge) {
-      const isChromium = /Chrome|Chromium|Edg|OPR|SamsungBrowser/.test(navigator.userAgent) && !/Firefox|FxiOS/.test(navigator.userAgent);
       setupBadge.hidden = false;
       setupBadge.textContent = window.location.protocol === "file:"
         ? "Live preview requires HTTPS"
-        : isChromium ? "Live dpr_auto needs setup" : "Live preview needs Chromium";
+        : isChromiumBrowser() ? "Live dpr_auto needs setup" : "Live preview needs Chromium";
     }
   }
 
@@ -381,7 +357,7 @@ const updateEfficiencyVerdict = () => {
     let deliveryOrigin = "the image delivery origin";
     try { deliveryOrigin = new URL(receiptUrls.auto).origin; } catch { /* Keep the readable fallback. */ }
     const customScrapedOrigin = activeScanAnalysisContext?.fromScan && deliveryOrigin !== "https://res.cloudinary.com";
-    const isChromium = /Chrome|Chromium|Edg|OPR|SamsungBrowser/.test(navigator.userAgent) && !/Firefox|FxiOS/.test(navigator.userAgent);
+    const isChromium = isChromiumBrowser();
     const cause = window.location.protocol === "file:"
       ? "A file:// page cannot delegate the DPR client hint."
       : !isChromium
@@ -395,9 +371,7 @@ const updateEfficiencyVerdict = () => {
       : " The page-layout-based expected preview is unavailable because reliable sizing metadata could not be resolved.";
     recommendationVerdict.innerHTML = `<strong>Best live 360 × 240 benchmark fallback: ${RECEIPT_LABELS[selected.key]}</strong> — ${formatBytes(selected.measurement.bytes)} file, ${formatBandwidth(selected.measurement)} bandwidth at ${selected.deliveredDpr.toFixed(1)}× delivered DPR. Live dpr_auto delivered ${autoDeliveredDpr.toFixed(1)}× instead of the ${targetDpr}× target. ${cause}${expectedResult} The benchmark and scraped-page row use different layout sizes, so compare their bytes only within the displayed dimensions shown. Keep dpr_auto as the adaptive production strategy after client-hint setup is verified.`;
   } else {
-    const reason = qualified.length
-      ? `It is the smallest measured response that meets this browser’s rounded ${targetDpr}× DPR target.`
-      : `No measured strategy reached this browser’s rounded ${targetDpr}× DPR target, so this is the highest-density measured option with the fewest bytes.`;
+    const reason = buildDeviceRecommendationReason(qualified, targetDpr);
     recommendationVerdict.innerHTML = `<strong>Recommended for this device: ${RECEIPT_LABELS[selected.key]}</strong> — ${formatBytes(selected.measurement.bytes)} file, ${formatBandwidth(selected.measurement)} bandwidth at ${selected.deliveredDpr.toFixed(1)}× delivered DPR. ${reason}`;
   }
 };
@@ -428,8 +402,14 @@ const openReceiptDialog = (key, trigger) => {
   document.querySelector("#receipt-dialog-title").textContent = `${RECEIPT_LABELS[key]} details`;
   const image = document.querySelector("#receipt-dialog-image");
   image.dataset.previewUrl = "";
-  image.src = currentUrl;
-  image.alt = `${RECEIPT_LABELS[key]} image preview`;
+  if (isFluid) {
+    // Avoid loading the production w_auto URL before the diagnostic resolved preview.
+    image.removeAttribute("src");
+    image.alt = `${RECEIPT_LABELS[key]} image preview`;
+  } else {
+    image.src = currentUrl;
+    image.alt = `${RECEIPT_LABELS[key]} image preview`;
+  }
   frame.classList.toggle("is-fluid", isFluid);
   frame.classList.toggle("is-static", !isFluid);
   if (!isFluid) frame.style.removeProperty("width");
@@ -599,6 +579,14 @@ const measureAll = async () => {
   const run = ++measurementRun;
   const images = [...document.querySelectorAll("img[data-metric]")]
     .filter((image) => image.hasAttribute("src"));
+  // Off-screen measurement images (fluid / original / expected) must not stay
+  // lazy-deferred, or imageReady never resolves and the receipt stays empty.
+  images.forEach((image) => {
+    if (image.complete && image.naturalWidth > 0) return;
+    if (image.loading === "lazy") image.loading = "eager";
+    const src = image.getAttribute("src");
+    if (src) image.src = src;
+  });
   await Promise.all(images.map(imageReady));
   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   if (run !== measurementRun) return;
@@ -654,7 +642,7 @@ const updateDeviceReadout = () => {
   document.querySelector("#viewport-size").textContent = `${window.innerWidth} × ${window.innerHeight}`;
   document.querySelector("#auto-target").textContent = `${Math.ceil(dpr)}× (${BASE_WIDTH * Math.ceil(dpr)} px)`;
 
-  const isChromium = /Chrome|Chromium|Edg|OPR|SamsungBrowser/.test(navigator.userAgent) && !/Firefox|FxiOS/.test(navigator.userAgent);
+  const isChromium = isChromiumBrowser();
   const localFileMode = window.location.protocol === "file:";
   document.querySelector("#browser-note").textContent = localFileMode
     ? "Local file mode. Everything runs here, but browser security prevents DPR client-hint delegation, so dpr_auto demonstrates its 1× fallback."
@@ -663,279 +651,18 @@ const updateDeviceReadout = () => {
       : "This browser may use Cloudinary’s 1× fallback because server-side DPR hints currently require Chromium.";
 };
 
-const isPrivatePageHostname = (rawHostname) => {
-  const hostname = rawHostname.toLowerCase().replace(/^\[|\]$/g, "");
-  if (hostname === "localhost" || hostname.endsWith(".localhost") || hostname.endsWith(".local") || hostname.endsWith(".internal")) return true;
-  if (hostname === "::1" || hostname.startsWith("fc") || hostname.startsWith("fd") || hostname.startsWith("fe80:")) return true;
 
-  const ipv4 = hostname.split(".").map(Number);
-  if (ipv4.length !== 4 || ipv4.some((part) => !Number.isInteger(part) || part < 0 || part > 255)) return false;
-  return ipv4[0] === 0
-    || ipv4[0] === 10
-    || ipv4[0] === 127
-    || (ipv4[0] === 169 && ipv4[1] === 254)
-    || (ipv4[0] === 172 && ipv4[1] >= 16 && ipv4[1] <= 31)
-    || (ipv4[0] === 192 && ipv4[1] === 168);
-};
 
-const normalizePageUrl = (rawValue) => {
-  const trimmed = rawValue.trim();
-  if (!trimmed) throw new Error("Enter the public webpage URL you want to scan.");
-  const withProtocol = /^[a-z][a-z\d+.-]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
-  let pageUrl;
-  try {
-    pageUrl = new URL(withProtocol);
-  } catch {
-    throw new Error("Enter a complete webpage URL, such as https://www.example.com/page.");
-  }
-  if (!/^https?:$/.test(pageUrl.protocol)) throw new Error("Only public HTTP or HTTPS webpages can be scanned.");
-  if (pageUrl.username || pageUrl.password) throw new Error("URLs containing usernames or passwords are not accepted.");
-  if (isPrivatePageHostname(pageUrl.hostname)) throw new Error("Private and local network addresses cannot be scanned.");
-  pageUrl.hash = "";
-  return pageUrl;
-};
 
-const getCanonicalPageUrl = (readerData, fallbackUrl) => {
-  const canonicalCandidates = [
-    ...Object.keys(readerData?.external?.canonical || {}),
-    readerData?.metadata?.["og:url"]
-  ].filter(Boolean);
 
-  for (const candidate of canonicalCandidates) {
-    try {
-      return normalizePageUrl(candidate);
-    } catch {
-      // Ignore missing, malformed, or non-public canonical metadata.
-    }
-  }
-  return fallbackUrl;
-};
 
-const fetchReaderData = async (pageUrl, { metadataOnly = false, signal } = {}) => {
-  const response = await fetch(`${DOMAIN_READER_ORIGIN}${pageUrl.href}`, {
-    headers: metadataOnly
-      ? {
-          Accept: "application/json",
-          "X-No-Cache": "true",
-          "X-Engine": "curl",
-          "X-Respond-Timing": "html",
-          "X-Timeout": "8"
-        }
-      : {
-          Accept: "application/json",
-          "X-No-Cache": "true",
-          "X-Engine": "browser",
-          "X-Respond-Timing": "network-idle",
-          "X-Respond-With": "markdown+frontmatter",
-          "X-With-Images-Summary": "all",
-          "X-Timeout": "20"
-        },
-    credentials: "omit",
-    referrerPolicy: "no-referrer",
-    signal
-  });
 
-  if (!response.ok) {
-    const error = response.status === 429
-      ? new Error("The page reader rate limit was reached. Wait a minute and try again.")
-      : new Error(`The page reader returned HTTP ${response.status}. This page may block automated access.`);
-    error.status = response.status;
-    throw error;
-  }
 
-  const payload = await response.json();
-  if (!payload?.data) throw new Error("The page reader returned an incomplete browser snapshot.");
-  return payload.data;
-};
 
-const fetchReaderHtml = async (pageUrl, { signal } = {}) => {
-  const response = await fetch(`${DOMAIN_READER_ORIGIN}${pageUrl.href}`, {
-    headers: {
-      Accept: "application/json",
-      "X-No-Cache": "true",
-      "X-Engine": "curl",
-      "X-Respond-With": "html",
-      "X-Timeout": "8"
-    },
-    credentials: "omit",
-    referrerPolicy: "no-referrer",
-    signal
-  });
-  if (!response.ok) return "";
-  const payload = await response.json();
-  return payload?.data?.html || payload?.data?.content || "";
-};
 
-const stripMarkdownUrlDelimiter = (candidate) => {
-  let parenthesisDepth = 0;
-  for (let index = 0; index < candidate.length; index += 1) {
-    if (candidate[index] === "(") {
-      parenthesisDepth += 1;
-    } else if (candidate[index] === ")") {
-      if (parenthesisDepth === 0) return candidate.slice(0, index);
-      parenthesisDepth -= 1;
-    }
-  }
-  return candidate;
-};
 
-const extractCloudinaryImageUrls = (content) => {
-  const normalized = content
-    .replace(/\\\//g, "/")
-    .replace(/&amp;|&#38;|&#x26;/gi, "&")
-    .replace(/&quot;|&#34;|&#x22;/gi, '"');
-  const candidates = normalized.match(/(?:https?:)?\/\/[^\s<>"'`\\]+/gi) || [];
-  const unique = new Map();
 
-  candidates.forEach((candidate) => {
-    const withoutMarkdownDelimiter = stripMarkdownUrlDelimiter(candidate);
-    const cleaned = withoutMarkdownDelimiter.replace(/[\]}>.,;]+$/g, "");
-    const absolute = cleaned.startsWith("//") ? `https:${cleaned}` : cleaned;
-    try {
-      const url = new URL(absolute);
-      if (!/^https?:$/.test(url.protocol) || !/\/image\/upload\//.test(url.pathname)) return;
-      url.hash = "";
-      unique.set(url.href, url.href);
-    } catch {
-      // Ignore text fragments that resemble URLs but cannot be parsed.
-    }
-  });
 
-  return [...unique.values()];
-};
-
-const normalizeScrapedAssetUrl = (rawUrl, pageUrl) => {
-  try {
-    const url = new URL(rawUrl, pageUrl);
-    url.hash = "";
-    return url.href;
-  } catch {
-    return rawUrl;
-  }
-};
-
-const extractSrcsetUrls = (srcset) => {
-  const urls = [];
-  const matcher = /((?:https?:)?\/\/\S+?)(?=\s+\d+(?:\.\d+)?[wx](?:\s*,|$))/gi;
-  let match;
-  while ((match = matcher.exec(srcset))) urls.push(match[1]);
-  return urls;
-};
-
-const extractScrapedImageElements = (html, pageUrl) => {
-  const elements = new Map();
-  if (!html || typeof DOMParser === "undefined") return elements;
-  const documentSnapshot = new DOMParser().parseFromString(html, "text/html");
-
-  documentSnapshot.querySelectorAll("img").forEach((image, pageIndex) => {
-    const sources = [
-      image.getAttribute("src"),
-      image.getAttribute("data-src"),
-      image.getAttribute("data-lazy-src"),
-      image.getAttribute("data-original"),
-      ...extractSrcsetUrls(image.getAttribute("srcset") || ""),
-      ...[...(image.closest("picture")?.querySelectorAll("source[srcset]") || [])]
-        .flatMap((source) => extractSrcsetUrls(source.getAttribute("srcset") || ""))
-    ].filter(Boolean);
-    const ancestorClasses = [];
-    let layoutColumnCount = 0;
-    let layoutBreakpoint = "";
-    let ancestor = image.parentElement;
-    for (let depth = 0; ancestor && depth < 4; depth += 1, ancestor = ancestor.parentElement) {
-      if (ancestor.className && typeof ancestor.className === "string") {
-        ancestorClasses.push(ancestor.className);
-        if (!layoutColumnCount) {
-          const flexMatch = ancestor.className.match(/(?:^|\s)(?:(sm|md|lg|xl|2xl):)?flex-row(?:\s|$)/);
-          const gridMatch = ancestor.className.match(/(?:^|\s)(?:(sm|md|lg|xl|2xl):)?grid-cols-(\d+)(?:\s|$)/);
-          if (flexMatch && ancestor.children.length > 1) {
-            layoutColumnCount = ancestor.children.length;
-            layoutBreakpoint = flexMatch[1] || "";
-          } else if (gridMatch) {
-            layoutColumnCount = Number(gridMatch[2]);
-            layoutBreakpoint = gridMatch[1] || "";
-          }
-        }
-      }
-    }
-    const context = {
-      pageIndex,
-      widthAttribute: image.getAttribute("width") || "",
-      heightAttribute: image.getAttribute("height") || "",
-      sizes: image.getAttribute("sizes") || "",
-      styleWidth: image.style.width || "",
-      styleHeight: image.style.height || "",
-      styleMaxWidth: image.style.maxWidth || "",
-      styleAspectRatio: image.style.aspectRatio || "",
-      className: typeof image.className === "string" ? image.className : "",
-      ancestorClasses: ancestorClasses.join(" "),
-      layoutColumnCount,
-      layoutBreakpoint
-    };
-
-    sources.forEach((source) => {
-      const normalized = normalizeScrapedAssetUrl(source, pageUrl);
-      if (/\/image\/upload\//.test(normalized) && !elements.has(normalized)) elements.set(normalized, context);
-    });
-  });
-
-  return elements;
-};
-
-const detectCloudinaryClientSideHelper = (html) => {
-  if (!html || typeof DOMParser === "undefined") {
-    return {
-      status: "unknown",
-      evidence: "The source HTML was unavailable, so helper presence could not be verified."
-    };
-  }
-
-  const documentSnapshot = new DOMParser().parseFromString(html, "text/html");
-  const helperSourcePattern = /(?:cloudinary-core|cloudinary-js|@cloudinary\/(?:html|url-gen)|next-cloudinary|cloudinary(?:\.min)?\.js)/i;
-  const helperCodePattern = /(?:cloudinary_update\s*\(|\.cloudinary_update\s*\(|Cloudinary\.new\s*\(|new\s+Cloudinary(?:Image|Video)?\s*\()/i;
-  const scripts = [...documentSnapshot.querySelectorAll("script")];
-  const sourceMatch = scripts.find((script) => helperSourcePattern.test(script.getAttribute("src") || ""));
-  if (sourceMatch) {
-    return {
-      status: "detected",
-      evidence: `Detected helper script: ${sourceMatch.getAttribute("src")}`
-    };
-  }
-
-  const inlineMatch = scripts.find((script) => helperCodePattern.test(script.textContent || ""));
-  if (inlineMatch) {
-    return {
-      status: "detected",
-      evidence: "Detected Cloudinary helper initialization in an inline page script."
-    };
-  }
-
-  return {
-    status: "missing",
-    evidence: "No known Cloudinary client-side helper script or initialization call was detected in the scraped page HTML."
-  };
-};
-
-const describeScannedCloudinaryUrl = (url, recommendation = getScannedUrlRecommendation(url)) => {
-  try {
-    const parsed = parseCloudinaryUrl(url);
-    return recommendation
-      ? `${parsed.url.hostname} · ${recommendation.dprLabel} · ${recommendation.title}`
-      : `${parsed.url.hostname} · No optimization recommendation`;
-  } catch {
-    return new URL(url).hostname;
-  }
-};
-
-const orderDomainScanCandidates = (candidates, order) => {
-  const ordered = [...candidates];
-  const byFoundOrder = (first, second) => first.foundOrder - second.foundOrder;
-  if (order === "page-desc") return ordered.sort((first, second) => second.foundOrder - first.foundOrder);
-  if (order === "page-asc") return ordered.sort(byFoundOrder);
-  if (order === "potential-asc") {
-    return ordered.sort((first, second) => first.recommendation.score - second.recommendation.score || byFoundOrder(first, second));
-  }
-  return ordered.sort((first, second) => second.recommendation.score - first.recommendation.score || byFoundOrder(first, second));
-};
 
 const setDomainScanStatus = (message, state = "") => {
   const status = document.querySelector("#domain-scan-status");
@@ -948,10 +675,8 @@ const clearDomainScanResults = ({ clearInput = false } = {}) => {
   domainScanCandidates = [];
   domainScanPageUrl = null;
   domainScanPage = 1;
-  activeScanAnalysisContext = null;
   document.querySelector("#domain-scan-list").replaceChildren();
   document.querySelector("#domain-scan-results").hidden = true;
-  document.querySelector("#inspector-result").hidden = true;
   document.querySelector("#domain-scan-count").textContent = "0 DPR candidates found";
   document.querySelector("#domain-scan-pagination").hidden = true;
   document.querySelector("#domain-scan-page-status").textContent = "Page 1 of 1";
@@ -1139,6 +864,7 @@ const scanPageForCloudinaryUrls = async (rawValue) => {
   clearDomainScanResults();
   button.disabled = true;
   button.textContent = "Scanning…";
+  setSampleChipsBusy(true);
   setDomainScanStatus(`Checking ${pageUrl.href} for redirects and canonical page metadata…`, "loading");
 
   try {
@@ -1162,26 +888,22 @@ const scanPageForCloudinaryUrls = async (rawValue) => {
       );
     }
 
+    let htmlUnavailableReason = "";
     const [readerData, pageHtml] = await Promise.all([
       fetchReaderData(canonicalPageUrl, { signal: controller.signal }),
-      fetchReaderHtml(canonicalPageUrl, { signal: controller.signal }).catch(() => "")
+      fetchReaderHtml(canonicalPageUrl, { signal: controller.signal }).catch((error) => {
+        htmlUnavailableReason = error.message || "The HTML pass failed, so helper presence could not be verified.";
+        return "";
+      })
     ]);
     const content = readerData?.content;
     if (typeof content !== "string") throw new Error("The page reader returned an incomplete browser snapshot.");
     if (run !== domainScanRun) return;
     canonicalPageUrl = getCanonicalPageUrl(readerData, canonicalPageUrl);
     input.value = canonicalPageUrl.href;
-    const pageImageElements = extractScrapedImageElements(pageHtml, canonicalPageUrl);
-    const clientSideHelper = detectCloudinaryClientSideHelper(pageHtml);
-    const candidates = extractCloudinaryImageUrls(content)
-      .map((url) => {
-        const elementContext = pageImageElements.get(normalizeScrapedAssetUrl(url));
-        const layout = buildScrapedLayoutContext(url, elementContext);
-        return { url, layout, clientSideHelper, recommendation: getScannedUrlRecommendation(url, layout) };
-      })
-      .filter((candidate) => candidate.recommendation)
-      .map((candidate, foundOrder) => ({ ...candidate, foundOrder }));
+    const candidates = buildScanCandidates(content, pageHtml, canonicalPageUrl, { htmlUnavailableReason });
     renderDomainScanResults(candidates, canonicalPageUrl);
+    syncLabQuery({ scan: canonicalPageUrl.href });
     const canonicalNote = canonicalPageUrl.href !== pageUrl.href
       ? ` Canonical page: ${canonicalPageUrl.href}`
       : "";
@@ -1204,6 +926,7 @@ const scanPageForCloudinaryUrls = async (rawValue) => {
       button.disabled = false;
       button.textContent = "Scan page";
       domainScanController = null;
+      setSampleChipsBusy(false);
     }
   }
 };
@@ -1303,7 +1026,8 @@ const updateDemoAssets = (parsed, scanContext = null, audit = buildAudit(parsed,
   const layoutSimulation = scanContext?.fromScan
     ? buildAutomaticDprSimulation(parsed, audit, scanContext.layout)
     : null;
-  const expectedSimulation = layoutSimulation || {
+  // Prefer a previewable scan simulation; otherwise keep the lab 360×240 slot.
+  const expectedSimulation = (layoutSimulation?.canPreview ? layoutSimulation : null) || {
     targetDpr,
     deviceDpr: window.devicePixelRatio || 1,
     url: buildDeliveryUrl(parsed, [expectedFallbackTransform, "f_auto", "q_auto"]),
@@ -1330,6 +1054,8 @@ const updateDemoAssets = (parsed, scanContext = null, audit = buildAudit(parsed,
   activeAssetParsed = parsed;
   activeExpectedSimulation = expectedSimulation;
   expectedDprTarget = targetDpr;
+
+  resetReceiptMetrics();
 
   document.querySelector('[data-metric="original"]').src = sourceUrls.original;
   document.querySelector('[data-metric="baseline"]').src = sourceUrls.baseline;
@@ -1373,7 +1099,8 @@ const updateDemoAssets = (parsed, scanContext = null, audit = buildAudit(parsed,
   document.querySelector("#responsive-sizing-url").textContent = sourceUrls.fluid;
   document.querySelector("#responsive-sizing-markup").textContent = fluidMarkup;
 
-  const assetName = decodeURIComponent(parsed.assetSegments.at(-1) || "selected asset");
+  const rawAssetName = parsed.assetSegments.at(-1) || "selected asset";
+  const assetName = safeDecodeURIComponent(rawAssetName);
   document.querySelector("#demo-source-note").textContent =
     `All examples below use “${assetName}”, displayed at 360 × 240 CSS pixels. Compare its delivered dimensions and bytes on your current screen.`;
 };
@@ -1463,9 +1190,13 @@ const updateResponsiveWidthMarkup = (audit, deliveredWidth, deliveredHeight) => 
     return;
   }
 
-  const logicalWidth = Math.round(audit.width);
+  const logicalWidth = Number.isFinite(audit.width) && audit.width > 0 ? Math.round(audit.width) : 0;
   const ratio = deliveredWidth && deliveredHeight ? deliveredHeight / deliveredWidth : 0;
-  const logicalHeight = audit.height || (ratio ? Math.round(logicalWidth * ratio) : 0);
+  const logicalHeight = audit.height || (ratio && logicalWidth ? Math.round(logicalWidth * ratio) : 0);
+  if (!logicalWidth) {
+    output.textContent = `<img src="${audit.responsiveWidthUrl}" style="width:100%;height:auto" alt="">`;
+    return;
+  }
   const dimensions = [
     `width="${logicalWidth}"`,
     logicalHeight ? `height="${Math.round(logicalHeight)}"` : ""
@@ -1565,13 +1296,132 @@ const updateAutomaticDprSimulationMeasurement = (simulation) => {
 };
 
 let inspectorRun = 0;
+let activeInspectedUrl = "";
+
+const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const syncLabQuery = ({ asset = activeInspectedUrl, scan = domainScanPageUrl?.href || "" } = {}) => {
+  if (window.location.protocol === "file:") return;
+  const next = `${window.location.pathname}${buildLabQuery({ asset, scan })}${window.location.hash}`;
+  if (`${window.location.pathname}${window.location.search}${window.location.hash}` === next) return;
+  history.replaceState(null, "", next);
+};
+
+const scheduleMeasureAll = () => {
+  // Measure immediately so receipt URLs never sit next to stale bytes after a re-inspect.
+  measureObserver?.disconnect();
+  measureObserver = null;
+  measureAll();
+};
+
+const setAssetInputValidity = (input, message = "") => {
+  if (!input) return;
+  input.setCustomValidity(message);
+  input.setAttribute("aria-invalid", message ? "true" : "false");
+};
+
+const announceCopyStatus = (message) => {
+  const status = document.querySelector("#copy-status");
+  if (!status) return;
+  status.textContent = "";
+  // Retrigger polite announcements when the same message repeats.
+  requestAnimationFrame(() => { status.textContent = message; });
+};
+
+const setSampleChipsBusy = (busy) => {
+  document.querySelectorAll(".sample-chip").forEach((button) => {
+    button.disabled = busy;
+  });
+};
+
+const copyTextWithFeedback = async (button, text) => {
+  const original = button.textContent;
+  const payload = String(text || "").trim();
+  if (!payload) {
+    button.textContent = "Nothing to copy";
+    announceCopyStatus("Nothing to copy");
+    setTimeout(() => { button.textContent = original; }, 1400);
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(payload);
+    button.textContent = "Copied";
+    announceCopyStatus("Copied to clipboard");
+  } catch {
+    button.textContent = "Select code";
+    announceCopyStatus("Copy failed — select the code manually");
+  }
+  setTimeout(() => { button.textContent = original; }, 1400);
+};
+
+const buildFindingsReport = (url, audit) => {
+  const lines = [
+    "# Cloudinary DPR Lab findings",
+    "",
+    `Inspected URL: ${url}`,
+    `DPR: ${audit.dpr.label}`,
+    ""
+  ];
+  if (audit.issues.length) {
+    lines.push("## Issues");
+    audit.issues.forEach((issue) => {
+      lines.push(`- [${issue.severity}] ${issue.title}: ${issue.text}`);
+      if (issue.suggestion) lines.push(`  Suggestion: ${issue.suggestion}`);
+    });
+    lines.push("");
+  }
+  lines.push("## Recommended URLs");
+  lines.push(`- Corrected: ${audit.correctedUrl}`);
+  if (audit.responsiveUrl) lines.push(`- dpr_auto: ${audit.responsiveUrl}`);
+  if (audit.responsiveWidthUrl) lines.push(`- w_auto + dpr_auto: ${audit.responsiveWidthUrl}`);
+  return lines.join("\n");
+};
+
+const openInspectorForUrl = async (rawValue, scanContext = null, { scroll = false, syncQuery = true } = {}) => {
+  const inspectorResult = document.querySelector("#inspector-result");
+  const assetInput = document.querySelector("#asset-url");
+  inspectorResult.hidden = false;
+  if (assetInput && rawValue) {
+    assetInput.value = rawValue;
+    setAssetInputValidity(assetInput, "");
+  }
+  activeScanAnalysisContext = scanContext;
+  setSampleChipsBusy(true);
+  let ok = false;
+  try {
+    ok = await analyzeAssetUrl(rawValue, scanContext);
+  } finally {
+    setSampleChipsBusy(false);
+  }
+  if (syncQuery && activeInspectedUrl) {
+    syncLabQuery({
+      asset: activeInspectedUrl,
+      scan: scanContext?.sourcePageUrl || domainScanPageUrl?.href || ""
+    });
+  }
+  if (scroll || pendingDeepLinkScroll) {
+    pendingDeepLinkScroll = false;
+    inspectorResult.scrollIntoView({
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
+      block: "start"
+    });
+  }
+  return ok;
+};
+
+const seedDefaultInspector = async ({ scroll = false } = {}) => {
+  activeScanAnalysisContext = null;
+  return openInspectorForUrl(DEFAULT_INSPECT_URL, null, { scroll, syncQuery: false });
+};
 
 const analyzeAssetUrl = async (rawValue, scanContext) => {
   const run = ++inspectorRun;
   const preview = document.querySelector("#inspector-preview");
   const previewState = document.querySelector("#preview-state");
   const image = document.querySelector("#inspector-image");
+  const copyFindings = document.querySelector("#copy-findings");
 
+  document.querySelector("#inspector-result").hidden = false;
   preview.classList.add("is-loading");
   preview.classList.remove("is-error");
   previewState.textContent = "Loading output…";
@@ -1582,11 +1432,13 @@ const analyzeAssetUrl = async (rawValue, scanContext) => {
   document.querySelector("#output-explanation").textContent = "Waiting for the asset response.";
   document.querySelector("#client-hint-option").hidden = true;
   document.querySelector("#simulated-auto-option").hidden = true;
+  if (copyFindings) copyFindings.hidden = true;
 
   let parsed;
   try {
     parsed = parseCloudinaryUrl(rawValue);
   } catch (error) {
+    activeInspectedUrl = "";
     preview.classList.remove("is-loading");
     preview.classList.add("is-error");
     previewState.textContent = "Unable to load this URL";
@@ -1599,12 +1451,13 @@ const analyzeAssetUrl = async (rawValue, scanContext) => {
     document.querySelector("#responsive-option").hidden = true;
     document.querySelector("#responsive-width-option").hidden = true;
     document.querySelector("#responsive-width-markup").textContent = "—";
-    return;
+    return false;
   }
 
+  activeInspectedUrl = parsed.raw;
   const audit = buildAudit(parsed, scanContext);
   updateDemoAssets(parsed, scanContext, audit);
-  measureAll();
+  scheduleMeasureAll();
   renderTransformationList(parsed.transformationSegments);
   renderIssues(audit.issues);
   setAuditVerdict(audit.issues);
@@ -1615,6 +1468,10 @@ const analyzeAssetUrl = async (rawValue, scanContext) => {
   document.querySelector("#corrected-url").textContent = audit.correctedUrl;
   document.querySelector("#corrected-asset-link").href = audit.correctedUrl;
   document.querySelector("#inspector-dpr").textContent = audit.dpr.label;
+  if (copyFindings) {
+    copyFindings.hidden = false;
+    copyFindings.dataset.report = buildFindingsReport(parsed.raw, audit);
+  }
 
   const responsiveOption = document.querySelector("#responsive-option");
   responsiveOption.hidden = !audit.responsiveUrl;
@@ -1639,7 +1496,7 @@ const analyzeAssetUrl = async (rawValue, scanContext) => {
       ? imageReady(document.querySelector("#simulated-auto-image"))
       : Promise.resolve()
   ]);
-  if (run !== inspectorRun) return;
+  if (run !== inspectorRun) return false;
 
   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   updateAutomaticDprSimulationMeasurement(automaticSimulation);
@@ -1649,7 +1506,7 @@ const analyzeAssetUrl = async (rawValue, scanContext) => {
     preview.classList.add("is-error");
     previewState.textContent = "The asset could not be loaded";
     document.querySelector("#output-explanation").textContent = "Check access controls, the delivery URL, or whether this transformation is allowed.";
-    return;
+    return false;
   }
 
   const resource = getResourceDetails(image.currentSrc || image.src);
@@ -1677,33 +1534,49 @@ const analyzeAssetUrl = async (rawValue, scanContext) => {
     document.querySelector("#output-explanation").textContent =
       `The current URL delivered ${formatDimensions(deliveredWidth, deliveredHeight)} without a high-density DPR multiplier.`;
   }
+  return true;
 };
 
-document.querySelectorAll(".copy-button").forEach((button) => {
+const populateSampleChips = () => {
+  const scanChips = document.querySelector("#sample-scan-chips");
+  if (scanChips) {
+    scanChips.replaceChildren();
+    SAMPLE_SCAN_PAGES.forEach((sample) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "sample-chip";
+      button.dataset.sampleScan = sample.url;
+      button.textContent = sample.label;
+      scanChips.append(button);
+    });
+  }
+
+  const assetChips = document.querySelector("#sample-asset-chips");
+  if (assetChips) {
+    assetChips.replaceChildren();
+    SAMPLE_ASSET_URLS.forEach((sample) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "sample-chip";
+      button.dataset.sampleAsset = sample.url;
+      button.textContent = sample.label;
+      assetChips.append(button);
+    });
+  }
+};
+
+document.querySelectorAll(".copy-button, [data-copy-target]").forEach((button) => {
   button.addEventListener("click", async () => {
-    const original = button.textContent;
-    try {
-      await navigator.clipboard.writeText(button.dataset.copy);
-      button.textContent = "Copied";
-    } catch {
-      button.textContent = "Select code";
-    }
-    setTimeout(() => { button.textContent = original; }, 1400);
+    const text = button.dataset.copy
+      || document.querySelector(`#${button.dataset.copyTarget}`)?.textContent
+      || "";
+    await copyTextWithFeedback(button, text);
   });
 });
 
-document.querySelectorAll("[data-copy-target]").forEach((button) => {
-  button.addEventListener("click", async () => {
-    const target = document.querySelector(`#${button.dataset.copyTarget}`);
-    const original = button.textContent;
-    try {
-      await navigator.clipboard.writeText(target.textContent);
-      button.textContent = "Copied";
-    } catch {
-      button.textContent = "Select code";
-    }
-    setTimeout(() => { button.textContent = original; }, 1400);
-  });
+document.querySelector("#copy-findings")?.addEventListener("click", async (event) => {
+  const button = event.currentTarget;
+  await copyTextWithFeedback(button, button.dataset.report || "");
 });
 
 document.querySelectorAll("[data-receipt-key]").forEach((button) => {
@@ -1719,10 +1592,15 @@ document.querySelector("#receipt-dialog").addEventListener("close", () => {
 });
 
 document.querySelector("#receipt-dialog-image").addEventListener("load", () => {
+  const image = document.querySelector("#receipt-dialog-image");
+  if (activeReceiptKey !== "fluid") return;
+  if (image.dataset.previewUrl && image.getAttribute("src") !== image.dataset.previewUrl) return;
   requestAnimationFrame(updateFluidActualOutput);
 });
 document.querySelector("#receipt-dialog-image").addEventListener("error", () => {
+  const image = document.querySelector("#receipt-dialog-image");
   if (activeReceiptKey !== "fluid") return;
+  if (image.dataset.previewUrl && image.getAttribute("src") !== image.dataset.previewUrl) return;
   document.querySelector("#receipt-fluid-actual-output").textContent = "Could not load preview";
   document.querySelector("#receipt-fluid-file-size").textContent = "Unavailable";
   document.querySelector("#receipt-fluid-bandwidth").textContent = "Unavailable";
@@ -1761,16 +1639,66 @@ fluidResizeHandle.addEventListener("keydown", (event) => {
   }
 });
 
+document.querySelector("#asset-inspect-form")?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const input = document.querySelector("#asset-url");
+  const status = document.querySelector("#asset-inspect-status");
+  try {
+    parseCloudinaryUrl(input.value);
+    setAssetInputValidity(input, "");
+    const ok = await openInspectorForUrl(input.value.trim(), null, { scroll: true });
+    if (status) {
+      status.className = ok ? "domain-scan-status is-success" : "domain-scan-status is-error";
+      status.textContent = ok
+        ? "Asset loaded in the optimizer below."
+        : "The URL was parsed but the asset could not be loaded.";
+    }
+  } catch (error) {
+    setAssetInputValidity(input, error.message || "Enter a Cloudinary delivery URL.");
+    input.reportValidity();
+    if (status) {
+      status.className = "domain-scan-status is-error";
+      status.textContent = error.message || "Enter a Cloudinary /image/upload/ delivery URL.";
+    }
+  }
+});
+
+document.querySelector("#sample-asset-chips")?.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-sample-asset]");
+  if (!button || button.disabled) return;
+  document.querySelector("#asset-url").value = button.dataset.sampleAsset;
+  await openInspectorForUrl(button.dataset.sampleAsset, null, { scroll: true });
+});
+
+document.querySelector("#sample-scan-chips")?.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-sample-scan]");
+  if (!button || button.disabled) return;
+  document.querySelector("#domain-url").value = button.dataset.sampleScan;
+  setSampleChipsBusy(true);
+  try {
+    await scanPageForCloudinaryUrls(button.dataset.sampleScan);
+  } catch (error) {
+    setDomainScanStatus(error.message || "Enter a valid public webpage URL.", "error");
+  } finally {
+    setSampleChipsBusy(false);
+  }
+});
+
 document.querySelector("#domain-scan-form").addEventListener("submit", async (event) => {
   event.preventDefault();
+  const input = document.querySelector("#domain-url");
   try {
-    await scanPageForCloudinaryUrls(document.querySelector("#domain-url").value);
+    normalizePageUrl(input.value);
+    setAssetInputValidity(input, "");
+    await scanPageForCloudinaryUrls(input.value);
   } catch (error) {
+    setAssetInputValidity(input, error.message || "Enter a valid public webpage URL.");
+    input.reportValidity();
     setDomainScanStatus(error.message || "Enter a valid public webpage URL.", "error");
   }
 });
 
-document.querySelector("#clear-domain-scan").addEventListener("click", () => {
+document.querySelector("#clear-domain-scan").addEventListener("click", async () => {
   domainScanRun += 1;
   domainScanController?.abort();
   domainScanController = null;
@@ -1778,6 +1706,8 @@ document.querySelector("#clear-domain-scan").addEventListener("click", () => {
   button.disabled = false;
   button.textContent = "Scan page";
   clearDomainScanResults({ clearInput: true });
+  syncLabQuery({ asset: activeInspectedUrl || DEFAULT_INSPECT_URL, scan: "" });
+  await seedDefaultInspector();
   document.querySelector("#domain-url").focus();
 });
 
@@ -1800,18 +1730,19 @@ document.querySelector("#domain-scan-previous").addEventListener("click", () => 
 });
 
 document.querySelector("#domain-scan-next").addEventListener("click", () => {
-  const limit = Number(document.querySelector("#domain-scan-limit").value) || DOMAIN_SCAN_DEFAULT_LIMIT;
+  const limitValue = Number(document.querySelector("#domain-scan-limit").value);
+  const limit = [5, 10, 25, 50].includes(limitValue) ? limitValue : DOMAIN_SCAN_DEFAULT_LIMIT;
   const totalPages = Math.max(1, Math.ceil(domainScanCandidates.length / limit));
   if (domainScanPage >= totalPages) return;
   domainScanPage += 1;
   renderDomainScanPage();
 });
 
-document.querySelector("#domain-scan-list").addEventListener("click", (event) => {
+document.querySelector("#domain-scan-list").addEventListener("click", async (event) => {
   const button = event.target.closest("button[data-analyze-url]");
   if (!button) return;
   const candidate = domainScanCandidates.find((item) => item.url === button.dataset.analyzeUrl);
-  activeScanAnalysisContext = {
+  const scanContext = {
     fromScan: true,
     sourcePageUrl: button.dataset.sourcePageUrl || domainScanPageUrl?.href || "",
     layout: candidate?.layout || null,
@@ -1820,14 +1751,8 @@ document.querySelector("#domain-scan-list").addEventListener("click", (event) =>
       evidence: "The scan did not return client-side helper evidence."
     }
   };
-  const inspectorResult = document.querySelector("#inspector-result");
-  inspectorResult.hidden = false;
-  analyzeAssetUrl(button.dataset.analyzeUrl, { ...activeScanAnalysisContext });
   setDomainScanStatus("The selected image is loaded in the optimizer below.", "success");
-  inspectorResult.scrollIntoView({
-    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-    block: "start"
-  });
+  await openInspectorForUrl(button.dataset.analyzeUrl, scanContext, { scroll: true });
 });
 
 document.querySelector("#refresh-metrics").addEventListener("click", () => {
@@ -1844,9 +1769,35 @@ window.addEventListener("resize", () => {
   }, 120);
 });
 
-watchDeviceDprChanges();
-updateDeviceReadout();
-const defaultParsed = parseCloudinaryUrl(DEFAULT_ASSET_URL);
-updateDemoAssets(defaultParsed, null, buildAudit(defaultParsed));
-measureAll();
-  
+const bootFromQuery = async () => {
+  const { asset, scan } = parseLabQuery(window.location.search);
+  populateSampleChips();
+  watchDeviceDprChanges();
+  updateDeviceReadout();
+
+  if (scan) {
+    document.querySelector("#domain-url").value = scan;
+  }
+
+  if (asset) {
+    pendingDeepLinkScroll = true;
+    try {
+      const ok = await openInspectorForUrl(asset, null, { scroll: true });
+      if (!ok) await seedDefaultInspector();
+    } catch {
+      await seedDefaultInspector();
+    }
+  } else {
+    await seedDefaultInspector();
+  }
+
+  if (scan) {
+    try {
+      await scanPageForCloudinaryUrls(scan);
+    } catch (error) {
+      setDomainScanStatus(error.message || "Enter a valid public webpage URL.", "error");
+    }
+  }
+};
+
+bootFromQuery();
