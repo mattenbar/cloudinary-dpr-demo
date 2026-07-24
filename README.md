@@ -1,28 +1,54 @@
 # Cloudinary DPR Lab
 
-A dependency-free HTML demo that makes the difference between incorrect DPR markup, correct fixed DPR markup, and `dpr_auto` visible and measurable. It uses the SpaceX image from the `doxfstysv` cloud as its default comparison asset.
+A dependency-free HTML demo that makes the difference between incorrect DPR markup, correct fixed DPR markup, and `dpr_auto` visible and measurable. It uses the SpaceX image from the `doxfstysv` cloud as its default comparison asset. There is no bundler: the page loads relative CSS and JS, and pure URL parsing/audit logic lives in `lib/cloudinary-audit.js`.
+
+## Project layout
+
+| Path | Role |
+| --- | --- |
+| `index.html` | Markup only |
+| `styles.css` | Page styles |
+| `app.js` | UI, scanner, measurements |
+| `lib/cloudinary-audit.js` | Testable URL parse + DPR audit |
+| `test/` | Node tests for the audit module |
 
 ## Open the demo
 
-Double-click `index.html` or drag it into a browser. The CSS and JavaScript are embedded in that one file, so there is no build step, dependency install, or terminal command. An internet connection is still required for the Cloudinary images and documentation links.
+Serve the folder over HTTP (required for ES module imports and for live `dpr_auto` client hints):
 
-The explicit DPR comparisons, URL inspector, corrections, and performance readouts all work from the local file. Browser security prevents a `file://` page from delegating the `Sec-CH-DPR` client hint, so the live `dpr_auto` example intentionally reports Cloudinary's documented 1× fallback in local-file mode. To demonstrate live server-side DPR matching, place this same self-contained file on an HTTPS static host (or serve it from localhost).
+```bash
+npm run serve
+```
+
+Then open [http://localhost:8080](http://localhost:8080). An internet connection is still required for the Cloudinary images and documentation links.
+
+The same relative asset paths work on GitHub Pages or any static HTTPS host. Opening via `file://` will not load the module scripts in modern browsers.
+
+Browser security prevents a `file://` page from delegating the `Sec-CH-DPR` client hint, so the live `dpr_auto` example intentionally reports Cloudinary's documented 1× fallback when hints are unavailable. To demonstrate live server-side DPR matching, use HTTPS (or localhost) with the lab’s `delegate-ch` meta tag.
+
+## Audit module tests
+
+The URL parser and DPR audit logic live in [`lib/cloudinary-audit.js`](lib/cloudinary-audit.js) so they can be exercised without the browser UI:
+
+```bash
+npm test
+```
 
 ## Page scanner
 
-Enter one public webpage URL to scan that page for Cloudinary `/image/upload/` delivery URLs. Results are limited to URLs that contain a `dpr_` transformation and for which the audit finds an actionable issue or can generate an automatic-DPR or responsive-width alternative. Already-optimized DPR URLs with no recommendation and URLs without DPR are omitted. The scanner does not crawl the rest of the domain, follow links, or inspect a sitemap. Results are deduplicated and paginated, with 5 results shown by default and options for 10, 25, or 50 per page. Each result has an **Analyze** action that loads the URL into the optimizer.
+Enter one public webpage URL to scan that page for Cloudinary `/image/upload/` delivery URLs. Results are limited to URLs that contain a `dpr_` transformation and for which the audit finds an actionable issue or can generate an automatic-DPR or responsive-width alternative. Already-optimized DPR URLs with no recommendation and URLs without DPR are omitted. The scanner does not crawl the rest of the domain, follow links, or inspect a sitemap. Results are deduplicated and paginated, with 5 results shown by default and options for 10, 25, or 50 per page. Every visible result immediately loads a thumbnail using the exact scanned delivery URL without changing its transformations; CSS alone fits the image into the compact preview. A failed thumbnail request is retried twice with the same URL before being marked unavailable. Each result has an **Analyze** action that loads the URL into the optimizer.
 
 Every candidate receives an **Optimization potential** percentage. Errors contribute 30 percentage points, warnings 20 points, and generated automatic-DPR, fluid-width, or custom-origin setup opportunities contribute 10 points each, capped at 100%. Results default to highest potential first with original page position as the stable tie breaker. They can also be ordered by lowest potential, page top-to-bottom, or page bottom-to-top; every result retains its original `Found #` position when sorted.
 
 Because browsers normally block direct cross-origin page scraping, the page content is retrieved through the public [Jina Reader](https://github.com/jina-ai/reader) service. A fast metadata pass first resolves redirects and canonical metadata, then the scanner explains that it is rendering the canonical page and waiting for lazy-loaded images. The full scan requests a fresh browser-rendered, unfiltered page snapshot with a complete image summary. This keeps apex and `www` forms from producing different stale or lightweight snapshots while making the extra render time visible to the user. Private and local network addresses are rejected, and some public pages may still block automated reading or trigger the reader's rate limit.
 
-Every scraped candidate identifies its exact image delivery origin. Custom delivery hostnames are flagged because `Sec-CH-DPR` must be delegated to that origin for `dpr_auto` to match the device. Selecting **Analyze** carries the scanned page context into the audit and generates copyable `delegate-ch`, `Permissions-Policy`, and `Accept-CH` setup. A newly discovered custom origin cannot be added retroactively to the already-loaded lab document, so its live `dpr_auto` comparison may show the 1× fallback even though the production page will adapt correctly after the generated setup is applied.
+Every scraped candidate identifies its exact image delivery origin and clearly reports whether a known Cloudinary client-side helper script or initialization call was detected, missing, or could not be verified from the retrieved source HTML. Custom delivery hostnames are flagged because `Sec-CH-DPR` must be delegated to that origin for `dpr_auto` to match the device. Selecting **Analyze** is the only way to open the asset audit: it carries the scanned page context into the optimizer and generates copyable `delegate-ch`, `Permissions-Policy`, and `Accept-CH` setup. Actionable findings are ordered by severity, with errors before warnings and informational guidance. A newly discovered custom origin cannot be added retroactively to the already-loaded lab document, so its live `dpr_auto` comparison may show the 1× fallback even though the production page will adapt correctly after the generated setup is applied.
 
 Scanner results also show the expected automatic DPR for the current device. A parallel source-HTML pass matches each discovered URL back to its `<img>` element and records declared `width`, `height`, `sizes`, inline sizing, responsive classes, and multi-column ancestors. The sizing resolver prefers declared page data, then strong inferences such as filename dimensions that match the existing DPR transform, followed by `w_auto` fallback or Cloudinary sizing tokens. Each result states which source was used rather than silently substituting the lab’s 360 × 240 slot. Selecting **Analyze** loads a deterministic equivalent that resolves `dpr_auto` to the browser’s rounded DPR, then reports the projected and actual response dimensions and derived file size. This explicit URL is diagnostic only; production markup retains `dpr_auto`, the page-layout sizing, and generated client-hint delegation.
 
-## URL inspector
+## Scanned-asset optimizer
 
-Paste a standard Cloudinary `/image/upload/` delivery URL into the inspector to:
+Select a standard Cloudinary `/image/upload/` delivery URL discovered by the page scanner to:
 
 - Preview the URL's current output.
 - Read its delivered physical dimensions and transferred bytes.
@@ -34,7 +60,7 @@ Paste a standard Cloudinary `/image/upload/` delivery URL into the inspector to:
 - Flag unsupported `h_auto`, bare `w_auto` without a fallback, and `w_auto` markup that still needs an accurate `sizes` attribute.
 - Generate matching `<img>` display markup.
 - Compare the untransformed original SpaceX file size with the correctly optimized 1× delivery.
-- Reuse the inspected asset across the comparison cards, so entering a new URL updates the rest of the page to that asset.
+- Reuse the inspected asset across the comparison cards. Section 02 loads the exact scanned delivery URL, measures its delivered response dimensions, and uses the scanned page’s declared or inferred slot dimensions for its displayed-size and effective-DPR values. When the page exposes no usable slot dimensions, the section labels its 360 × 240 benchmark as a fallback rather than scanned data.
 
 Automatic optimization components are always normalized to the end of the transformation path:
 
@@ -50,7 +76,7 @@ The receipt keeps the fixed strategies as a 360 × 240 comparison benchmark and 
 
 The receipt includes a full fluid-layout strategy row using `w_auto:40:360`, `dpr_auto`, and matching `sizes`, width, height, and fluid CSS markup. It reports the same delivered dimensions, displayed dimensions, file size, bandwidth, comparison, and **Inspect** action as every other strategy. It is clearly badged as production layout guidance and excluded from smallest-transfer/device ranking because its responsive-width request is not directly comparable with the fixed 360 × 240 benchmark. Its popup uses the fluid URL as the optimal URL and repeats the complete fluid markup.
 
-The fluid popup includes a draggable resize handle and an accessible width slider. It shows the live CSS slot, the 40-pixel `w_auto` selection, the browser's rounded `dpr_auto` value, target physical pixels, actual response dimensions and bytes, and a concrete diagnostic URL representing those automatic choices. The production recommendation remains the automatic URL. The full-width preview sits above the information panel so the slot has maximum horizontal room; the lower details panel scrolls independently, with safe bottom padding on desktop and mobile so the preview stays in place and the final content is fully reachable.
+The fluid popup includes a draggable resize handle and an accessible width slider that can expand the preview up to 720 CSS pixels when the viewport has room. It shows the live CSS slot, the 40-pixel `w_auto` selection, the browser's rounded `dpr_auto` value, target physical pixels, actual response dimensions, derived file size, transfer bandwidth, and a concrete diagnostic URL representing those automatic choices. The production `w_auto` fallback and matching HTML markup update with the selected slot size while the explicit resolved URL remains diagnostic. The full-width preview sits above the information panel so the slot has maximum horizontal room; the lower details panel scrolls independently, with safe bottom padding on desktop and mobile so the preview stays in place and the final content is fully reachable.
 
 ## What the demo proves
 
